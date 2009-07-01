@@ -2717,7 +2717,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                   
                         TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                         TransmitBuffer[1] = ObjectNr&0xFF;
-                        TransmitBuffer[2] = ObjectMessageAction;
+                        TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
                         TransmitBuffer[3] = NO_DATA_DATATYPE;
    
                         SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
