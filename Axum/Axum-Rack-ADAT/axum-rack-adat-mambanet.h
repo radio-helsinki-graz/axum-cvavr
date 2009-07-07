@@ -23,8 +23,8 @@ Data Stack size     : 512
 #define PCB_MAJOR_VERSION        1
 #define PCB_MINOR_VERSION        0
 
-#define FIRMWARE_MAJOR_VERSION   0
-#define FIRMWARE_MINOR_VERSION   1
+#define FIRMWARE_MAJOR_VERSION   1
+#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR
 
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               5     //Axum-Rack-ADAT

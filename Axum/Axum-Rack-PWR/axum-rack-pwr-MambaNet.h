@@ -26,7 +26,7 @@ Data Stack size     : 512
 #define FIRMWARE_MAJOR_VERSION   2
 //Major version 1: initial release
 //Major version 2: corrected min-max bug on object 1027 (-15V)
-#define FIRMWARE_MINOR_VERSION   0
+#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR
 
 #define MANUFACTURER_ID          1      //D&R
 #define PRODUCT_ID               22     //Axum-Rack-PWR

@@ -36,6 +36,8 @@
 #define PROTOCOL_MAJOR_VERSION   1
 #define PROTOCOL_MINOR_VERSION   0
 
+#define TRANSPORTLAYER_MINOR     1
+
 #define PROTOCOL_OVERHEAD        16 //16 bytes of defined overhead in the protcol
 
 #define MAX_MAMBANET_CAN_BUFFER_SIZE   128
