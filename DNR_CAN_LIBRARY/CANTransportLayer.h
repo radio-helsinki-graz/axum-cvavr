@@ -1528,9 +1528,9 @@ inline unsigned char Decode7to8bits(unsigned char *Buffer, unsigned char BufferP
 
       if (Mask2 != 0x00)
       {
-         Buffer8Bit[cntBuffer8Bit++] |= (Buffer[BufferPosition+cntByte]&Mask2)<<(8-(cntByte&0x07));
+         Buffer8Bit[cntBuffer8Bit++] |= (unsigned char)((Buffer[BufferPosition+cntByte]&Mask2)<<(8-(cntByte&0x07)));
       }
-      Buffer8Bit[cntBuffer8Bit] = (Buffer[BufferPosition+cntByte]&Mask1)>>(cntByte&0x07);
+      Buffer8Bit[cntBuffer8Bit] = (unsigned char)((Buffer[BufferPosition+cntByte]&Mask1)>>(cntByte&0x07));
    }
    return cntBuffer8Bit;
 }
@@ -1635,7 +1635,7 @@ void SendCANParentControlMessage()
    }
 }
 
-void SendCANReservationResponse(unsigned int ReceivedManufacturerID, unsigned int ReceivedProductID, unsigned int ReceivedUniqueIDPerProduct, unsigned long int NewCANAddress)
+void SendCANReservationResponse(unsigned int ManufacturerID, unsigned int ProductID, unsigned int UniqueIDPerProduct, unsigned long int NewCANAddress)
 {
    if (!BusError)
    {
@@ -1661,21 +1661,21 @@ void SendCANReservationResponse(unsigned int ReceivedManufacturerID, unsigned in
           CANCDMOB |= 0x10; //IDE = 1
           CANCDMOB |= 0x08; //DLC = 1
 
-          CANAddressTransmit[0] = (ReceivedManufacturerID>>8)&0xFF;
-          CANAddressTransmit[1] = ReceivedManufacturerID&0xFF;
-          CANAddressTransmit[2] = (ReceivedProductID>>8)&0xFF;
-          CANAddressTransmit[3] = ReceivedProductID&0xFF;
-          CANAddressTransmit[4] = (ReceivedUniqueIDPerProduct>>8)&0xFF;
-          CANAddressTransmit[5] = ReceivedUniqueIDPerProduct&0xFF;
+          CANAddressTransmit[0] = (ManufacturerID>>8)&0xFF;
+          CANAddressTransmit[1] = ManufacturerID&0xFF;
+          CANAddressTransmit[2] = (ProductID>>8)&0xFF;
+          CANAddressTransmit[3] = ProductID&0xFF;
+          CANAddressTransmit[4] = (UniqueIDPerProduct>>8)&0xFF;
+          CANAddressTransmit[5] = UniqueIDPerProduct&0xFF;
           CANAddressTransmit[6] = 0x10 | (NewCANAddress>>8)&0x0F;
           CANAddressTransmit[7] =         NewCANAddress    &0xFF;
 
-          CANAddressTransmit[8] = (ReceivedManufacturerID>>8)&0xFF;
-          CANAddressTransmit[9] = ReceivedManufacturerID&0xFF;
-          CANAddressTransmit[10] = (ReceivedProductID>>8)&0xFF;
-          CANAddressTransmit[11] = ReceivedProductID&0xFF;
-          CANAddressTransmit[12] = (ReceivedUniqueIDPerProduct>>8)&0xFF;
-          CANAddressTransmit[13] = ReceivedUniqueIDPerProduct&0xFF;
+          CANAddressTransmit[8] = (ManufacturerID>>8)&0xFF;
+          CANAddressTransmit[9] = ManufacturerID&0xFF;
+          CANAddressTransmit[10] = (ProductID>>8)&0xFF;
+          CANAddressTransmit[11] = ProductID&0xFF;
+          CANAddressTransmit[12] = (UniqueIDPerProduct>>8)&0xFF;
+          CANAddressTransmit[13] = UniqueIDPerProduct&0xFF;
           CANAddressTransmit[14] = 0x20 | (NewGatewayAddress>>8)&0x0F;
           CANAddressTransmit[15] =         NewGatewayAddress    &0xFF;
 
@@ -1914,7 +1914,7 @@ void SendSensorChangeToMambaNet(unsigned int ObjectNr, unsigned char DataType, u
       TransmitBuffer[4] = DataSize;
       for (cntByte=0; cntByte<DataSize; cntByte++)
       {
-         TransmitBuffer[5+cntByte] = Data[cntByte];
+         TransmitBuffer[(unsigned char)(5+cntByte)] = Data[cntByte];
       }
    
       EngineMambaNetAddress = 0x10000000;
@@ -2043,13 +2043,13 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       TransmitBuffer[4] = cntSize;
                       for (cntChar=0; cntChar<32; cntChar++)
                       {
-                          TransmitBuffer[5+cntSize++] = ObjectVariableInformation[TableNr].Description[cntChar];
+                          TransmitBuffer[(unsigned char)(5+cntSize++)] = ObjectVariableInformation[TableNr].Description[cntChar];
                       }
-                      TransmitBuffer[5+cntSize++] = ObjectVariableInformation[TableNr].Services;
+                      TransmitBuffer[(unsigned char)(5+cntSize++)] = ObjectVariableInformation[TableNr].Services;
                       //Sensor
-                      TransmitBuffer[5+cntSize++] = ObjectVariableInformation[TableNr].Sensor.DataType;
+                      TransmitBuffer[(unsigned char)(5+cntSize++)] = ObjectVariableInformation[TableNr].Sensor.DataType;
                       DataSize = ObjectVariableInformation[TableNr].Sensor.DataSize;
-                      TransmitBuffer[5+cntSize++] = DataSize;
+                      TransmitBuffer[(unsigned char)(5+cntSize++)] = DataSize;
                       if ((ObjectVariableInformation[TableNr].Sensor.DataType == OCTET_STRING_DATATYPE) || (ObjectVariableInformation[TableNr].Sensor.DataType == BIT_STRING_DATATYPE))
                       {
                         DataSize = 1;
@@ -2057,17 +2057,17 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       TempData = ObjectVariableInformation[TableNr].Sensor.DataMinimal;
                       for (cntChar=0; cntChar<DataSize; cntChar++)
                       {
-                        TransmitBuffer[5+cntSize++] = (TempData>>(((DataSize-cntChar)-1)<<3))&0xFF;
+                        TransmitBuffer[(unsigned char)(5+cntSize++)] = (unsigned char)((TempData>>(((DataSize-cntChar)-1)<<3))&0xFF);
                       }
                       TempData = ObjectVariableInformation[TableNr].Sensor.DataMaximal;
                       for (cntChar=0; cntChar<DataSize; cntChar++)
                       {
-                        TransmitBuffer[5+cntSize++] = (TempData>>(((DataSize-cntChar)-1)<<3))&0xFF;
+                        TransmitBuffer[(unsigned char)(5+cntSize++)] = (unsigned char)((TempData>>(((DataSize-cntChar)-1)<<3))&0xFF);
                       }
                      //Actuator
-                      TransmitBuffer[5+cntSize++] = ObjectVariableInformation[TableNr].Actuator.DataType;
+                      TransmitBuffer[(unsigned char)(5+cntSize++)] = ObjectVariableInformation[TableNr].Actuator.DataType;
                       DataSize = ObjectVariableInformation[TableNr].Actuator.DataSize;
-                      TransmitBuffer[5+cntSize++] = DataSize;
+                      TransmitBuffer[(unsigned char)(5+cntSize++)] = DataSize;
                       if ((ObjectVariableInformation[TableNr].Actuator.DataType == OCTET_STRING_DATATYPE) || (ObjectVariableInformation[TableNr].Actuator.DataType == BIT_STRING_DATATYPE))
                       {
                         DataSize = 1;
@@ -2076,17 +2076,17 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       TempData = ObjectVariableInformation[TableNr].Actuator.DataMinimal;
                       for (cntChar=0; cntChar<DataSize; cntChar++)
                       {
-                        TransmitBuffer[5+cntSize++] = (TempData>>(((DataSize-cntChar)-1)<<3))&0xFF;
+                        TransmitBuffer[(unsigned char)(5+cntSize++)] = (unsigned char)((TempData>>(((DataSize-cntChar)-1)<<3))&0xFF);
                       }
                       TempData = ObjectVariableInformation[TableNr].Actuator.DataMaximal;
                       for (cntChar=0; cntChar<DataSize; cntChar++)
                       {
-                        TransmitBuffer[5+cntSize++] = (TempData>>(((DataSize-cntChar)-1)<<3))&0xFF;
+                        TransmitBuffer[(unsigned char)(5+cntSize++)] = (unsigned char)((TempData>>(((DataSize-cntChar)-1)<<3))&0xFF);
                       }
                       TempData = ObjectVariableInformation[TableNr].Actuator.DefaultData;
                       for (cntChar=0; cntChar<DataSize; cntChar++)
                       {
-                        TransmitBuffer[5+cntSize++] = (TempData>>(((DataSize-cntChar)-1)<<3))&0xFF;
+                        TransmitBuffer[(unsigned char)(5+cntSize++)] = (unsigned char)((TempData>>(((DataSize-cntChar)-1)<<3))&0xFF);
                       }
                       //Adjust the size
                       TransmitBuffer[4] = cntSize;
@@ -2348,7 +2348,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                            TransmitBuffer[4] = 64;
                            for (cntByte=0; cntByte<64; cntByte++)
                            {
-                              TransmitBuffer[5+cntByte] = DefaultNodeObjects.Description[cntByte];
+                              TransmitBuffer[(unsigned char)(5+cntByte)] = DefaultNodeObjects.Description[cntByte];
                            }
 
                            SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 69);
@@ -2575,7 +2575,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                            TransmitBuffer[4] = 32;
                            for (cntByte=0; cntByte<32; cntByte++)
                            {
-                              TransmitBuffer[5+cntByte] = NodeName[cntByte];
+                              TransmitBuffer[(unsigned char)(5+cntByte)] = NodeName[cntByte];
                            }
 
                            SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 37);
@@ -2640,7 +2640,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
 
                                  for (cntChar=0; cntChar<DataSize; cntChar++)
                                  {
-                                    NodeName[cntChar] = Data[5+cntChar];
+                                    NodeName[cntChar] = Data[(unsigned char)(5+cntChar)];
                                  }
                                  for (cntChar=DataSize; cntChar<32; cntChar++)
                                  {
@@ -2733,6 +2733,8 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
       }
    }
    return MessageProcessed;
+   ToAddress = 0;
+   DataLength = 0;
 }
 
 //make a 32 float representation.
@@ -2784,7 +2786,7 @@ unsigned char VariableFloat2Float(unsigned char *VariableFloatBuffer, unsigned c
 
             TemporyForCast = signbit;
             TemporyForCast <<= 8;
-            TemporyForCast |= (exponent+127)&0xFF;
+            TemporyForCast |= (((long)exponent+127)&0xFF);
             TemporyForCast <<= 4;
             TemporyForCast |= mantessa&0x0F;
             TemporyForCast <<= 8;
@@ -2816,7 +2818,7 @@ unsigned char VariableFloat2Float(unsigned char *VariableFloatBuffer, unsigned c
 
             TemporyForCast = signbit;
             TemporyForCast <<= 8;
-            TemporyForCast |= (exponent+127)&0xFF;
+            TemporyForCast |= ((long)exponent+127)&0xFF;
             TemporyForCast <<= 2;
             TemporyForCast |= (mantessa>>8)&0x03;
             TemporyForCast <<= 8;
