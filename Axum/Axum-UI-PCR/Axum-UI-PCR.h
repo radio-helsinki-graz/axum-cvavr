@@ -55,70 +55,39 @@
 /* Specific defines             */
 /********************************/
 #define SWITCHDELAY              10
-#define TRACK_WIBBLE             4
 
 #define OSCILLATOR_FREQUENCY     16000000
 
-const unsigned char SwitchNr2LogicSwitchNr[56] =
+const unsigned char SwitchNr2LogicSwitchNr[64] =
 {
-    0,  1,  2,  3,
-    4,  5,  6,  7,
-    8,  9, 10, 11,
-   12, 13, 14, 15,
+    0,  1,  2,
+    //Encoder switch
+    8,  
+    3,  4,  5,  6,
+   
+   11, 12,  13, 14,
+   15, 16,  17, 18,
+   19, 20,  21, 22,
+   23, 24,  25, 26,
+   27, 28,  29, 30,
+   31, 32,  33, 34,
+   35, 36,  37, 38,
+   39, 40,  41, 42,
 
-   16, 17, 18,
-   19, 20, 21,
+   43, 44,  45, 46,
+   47, 48,  49, 50,
 
-   22, 23,
+   51, 52, 53, 54,
+   //Encoder switch 
+   56,
 
-   24, 25,     38, 39,
-   26, 27,     40, 41,
-   28, 29,     42, 43,
-   30, 31,     44, 45,
-   32, 33,     46, 47,
-   34, 35,     48, 49,
-   36, 37,     50, 51,
-
-   52, 53, 54, 55
+   57, 58, 59, 60,
+   61, 62, 63, 64,
+   65, 66, 67
 };
 
-const unsigned char LogicLEDNr2LEDNr[64] =
+const unsigned char LogicLEDNr2LEDNr[68] =
 {
-   //Module control assignment
-    1,  0, 15, 14,
-    2,  3, 12, 13,
-    4,  5, 10, 11,
-    6,  7,  8,  9,
-
-   //Control
-   20, 19, 17,
-   21, 18, 16,
-   //Control LEDBar
-   25, 26, 27, 28, 29, 30, 31,
-
-   //CRM1
-   33, 32,
-   35, 34,
-   36, 37,
-   38, 39,
-   49, 48,
-   51, 50,
-   52, 53,
-
-   //CRM2
-   47, 46,
-   45, 44,
-   42, 43,
-   40, 41,
-   63, 62,
-   61, 60,
-   58, 59,
-
-   //GLOBAL (TB etc.)
-   54, 55, 56, 57,
-
-   //Not used
-   22, 23, 24
 };
 
 unsigned int cntTimer0;
@@ -126,30 +95,32 @@ unsigned int cntMilliSecond;
 unsigned int PreviousMilliSecond;
 unsigned int PreviousMilliSecondReservation;
 
-#define NR_OF_LEDS 64
-unsigned char LogicLEDData[NR_OF_LEDS/8];
+#define NR_OF_LOGIC_LEDS 68
+unsigned char LogicLEDData[NR_OF_LOGIC_LEDS]; //Index calculated from object number
+unsigned char SwitchColorOn[NR_OF_LOGIC_LEDS];
+unsigned char SwitchColorOff[NR_OF_LOGIC_LEDS];
+
+#define NR_OF_LEDS 96 
 unsigned char TLC5921DAPData[NR_OF_LEDS/8];
 
-unsigned char SwitchData[7][8];
-//unsigned int SwitchPressedTime[7][8];
-unsigned char SwitchState[64];
+unsigned char SwitchData[8][8];
+
+#define NR_OF_LOGIC_SWITCHES 68
+unsigned char SwitchState[NR_OF_LOGIC_SWITCHES]; //Index calculated from object number
 
 unsigned char EncoderABStatus;
 unsigned char PreviousEncoderABStatus;
 
-unsigned int EncoderPosition;
-unsigned int PreviousEncoderPosition;
-unsigned int EncoderPreviousUpTime;
-unsigned int EncoderPreviousDownTime;
-
-unsigned int PreviousADC_Data[8];
-unsigned int TrackPosition[4];
-unsigned int PreviousTrackPosition[4];
+unsigned int EncoderPosition[3];
+unsigned int PreviousEncoderPosition[3];
+unsigned int EncoderPreviousUpTime[3];
+unsigned int EncoderPreviousDownTime[3];
 
 void SetTLC5921DAP();
 void selectRow(unsigned char Row);
 char SwitchCheck(unsigned char cntRow, unsigned char SwitchNr, char SwitchReturn);
 void ReadSwitches();
+void ChangeEncoder(unsigned char EncoderNr, unsigned char UpDown);
 void ReadEncoders();
 void DoSwitch(unsigned char LogicSwitchNr, int Event);
 void SetLEDs();

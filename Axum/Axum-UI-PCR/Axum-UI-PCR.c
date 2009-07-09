@@ -52,28 +52,6 @@ interrupt [TIM0_COMP] void timer0_comp_isr(void)
    }
 }
 
-#define FIRST_ADC_INPUT 0
-#define LAST_ADC_INPUT 7
-unsigned int adc_data[LAST_ADC_INPUT-FIRST_ADC_INPUT+1];
-#define ADC_VREF_TYPE 0x00
-
-// ADC interrupt service routine
-// with auto input scanning
-interrupt [ADC_INT] void adc_isr(void)
-{
-   static unsigned char input_index=0;
-   // Read the AD conversion result
-   adc_data[input_index]=ADCW;
-   // Select next ADC input
-   if (++input_index > (LAST_ADC_INPUT-FIRST_ADC_INPUT))
-      input_index=0;
-   ADMUX=(FIRST_ADC_INPUT | (ADC_VREF_TYPE & 0xff))+input_index;
-   // Start the AD conversion
-   ADCSRA|=0x40;
-}
-
-// Declare your global variables here
-
 void main(void)
 {
    char cntByte;
@@ -232,16 +210,12 @@ void main(void)
    ACSR=0x80;
    ADCSRB=0x00;
 
-   // ADC initialization
-   // ADC Clock frequency: 1000,000 kHz
-   // ADC Voltage Reference: AVCC pin
-   // Digital input buffers on ADC0: On, ADC1: On, ADC2: On, ADC3: On
-   // ADC4: On, ADC5: On, ADC6: On, ADC7: On
-   DIDR0=0x00;
-   ADMUX=FIRST_ADC_INPUT | (ADC_VREF_TYPE & 0xff);
-   ADCSRA=0xCC;
+   // NO ADC initialization
 
-   HardwareMinorRevision = (((PINC>>5)&0x7) | ((PING<<1)&0x80));
+   PORTF |= 0xF0;
+   delay_us(100);
+   HardwareMinorRevision = (PINF>>4)&0x0F;
+   PORTA &= 0x0F;
 
    FPGAFirmwareMajorRevision = 0;
    FPGAFirmwareMinorRevision = 0;
@@ -251,22 +225,22 @@ void main(void)
 
    delay_ms(1000);   //else error?
 
-   for (cntByte=0; cntByte<NR_OF_LEDS/8; cntByte++)
+   for (cntByte=0; cntByte<NR_OF_LOGIC_LEDS; cntByte++)
    {
-      LogicLEDData[cntByte] = 0xFF;
+      LogicLEDData[cntByte] = 1;
    }
    SetLEDs();
-    BLANK = 0;
+   BLANK = 0;
 
    delay_ms(500);
 
-   for (cntByte=0; cntByte<NR_OF_LEDS/8; cntByte++)
+   for (cntByte=0; cntByte<NR_OF_LOGIC_LEDS; cntByte++)
    {
-      LogicLEDData[cntByte] = 0x00;
+      LogicLEDData[cntByte] = 0;
    }
    SetLEDs();
 
-   for (cntByte=0; cntByte<64; cntByte++)
+   for (cntByte=0; cntByte<NR_OF_LOGIC_SWITCHES; cntByte++)
    {
       SwitchState[cntByte] = 0;
    }
@@ -301,16 +275,21 @@ void main(void)
 
       if (cntMilliSecond - PreviousMilliSecond > 40)
       {  //Send track/relative information maximal 25 times per second.
-         if (PreviousEncoderPosition != EncoderPosition)
+         int cntEncoder;
+
+         for (cntEncoder=0; cntEncoder<3; cntEncoder++)
          {
-            unsigned char TransmitBuffer[1];
-            int Difference;
-            Difference = EncoderPosition-PreviousEncoderPosition;
+           if (PreviousEncoderPosition[cntEncoder] != EncoderPosition[cntEncoder])
+           {
+              unsigned char TransmitBuffer[1];
+              int Difference;
+              Difference = EncoderPosition[cntEncoder]-PreviousEncoderPosition[cntEncoder];
 
-            TransmitBuffer[0] = Difference&0xFF;
-            SendSensorChangeToMambaNet(1078, SIGNED_INTEGER_DATATYPE, 1, TransmitBuffer);
-
-            PreviousEncoderPosition = EncoderPosition;
+              TransmitBuffer[0] = Difference&0xFF;
+              SendSensorChangeToMambaNet(1078, SIGNED_INTEGER_DATATYPE, 1, TransmitBuffer);
+  
+              PreviousEncoderPosition[cntEncoder] = EncoderPosition[cntEncoder];
+           }
          }
          PreviousMilliSecond = cntMilliSecond;
       }
@@ -423,102 +402,133 @@ void ReadSwitches()
    char cntRow;
 
    //Switch Rows
-   for (cntRow=0; cntRow<7; cntRow++)
+   for (cntRow=0; cntRow<8; cntRow++)
    {
       char ReturnValue;
       unsigned char LogicSwitchNr;
 
       selectRow(cntRow);
 
-        ReturnValue = SwitchCheck(cntRow, 0, nSW1);
+      ReturnValue = SwitchCheck(cntRow, 0, nSW1);
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+0];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
-        ReturnValue = SwitchCheck(cntRow, 1, nSW2);
+      ReturnValue = SwitchCheck(cntRow, 1, nSW2);
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+1];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
-        ReturnValue = SwitchCheck(cntRow, 2, nSW3);
+      ReturnValue = SwitchCheck(cntRow, 2, nSW3);
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+2];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
-        ReturnValue = SwitchCheck(cntRow, 3, nSW4);
+      ReturnValue = SwitchCheck(cntRow, 3, nSW4);
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+3];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
-        ReturnValue = SwitchCheck(cntRow, 4, nSW5);
+      ReturnValue = SwitchCheck(cntRow, 4, nSW5);
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+4];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
-        ReturnValue = SwitchCheck(cntRow, 5, nSW6);
+      ReturnValue = SwitchCheck(cntRow, 5, nSW6);
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+5];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
-        ReturnValue = SwitchCheck(cntRow, 6, nSW7);
+      ReturnValue = SwitchCheck(cntRow, 6, nSW7);
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+6];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
-        ReturnValue = SwitchCheck(cntRow, 7, nSW8);
+      ReturnValue = SwitchCheck(cntRow, 7, nSW8);
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+7];
       DoSwitch(LogicSwitchNr, ReturnValue);
    }
 }
 
+void ChangeEncoder(unsigned char EncoderNr, unsigned char UpDown)
+{
+  unsigned int Difference;
+  unsigned int Offset;
+
+  Offset = 0;
+  if (UpDown)
+  {
+    Difference = cntMilliSecond - EncoderPreviousUpTime[EncoderNr];
+    EncoderPreviousUpTime[EncoderNr] = cntMilliSecond;
+  }
+  else
+  {
+    Difference = cntMilliSecond - EncoderPreviousDownTime[EncoderNr];
+    EncoderPreviousDownTime[EncoderNr] = cntMilliSecond;
+  }
+  if (Difference < 50)
+  {
+    Offset=5;
+  }
+  else if (Difference < 100)
+  {
+    Offset=2;
+  }
+  else
+  {
+    Offset=1;
+  }
+
+  if (UpDown)
+  {
+    EncoderPosition[EncoderNr] += Offset;
+  }
+  else
+  {
+    EncoderPosition[EncoderNr] -= Offset;
+  }
+}
+
 void ReadEncoders()
 {
-   unsigned char EncoderABStatusChanged;
+  unsigned char EncoderABStatusChanged;
+  unsigned int Difference;
 
-    //Check Encoder
-    EncoderABStatus = (PING>>3)&0x03;
+  //Check Encoder
+  EncoderABStatus = PINC;
 
-   EncoderABStatusChanged = PreviousEncoderABStatus^EncoderABStatus;
-   PreviousEncoderABStatus = EncoderABStatus;
+  EncoderABStatusChanged = PreviousEncoderABStatus^EncoderABStatus;
+  PreviousEncoderABStatus = EncoderABStatus;
 
-      if (EncoderABStatusChanged&0x02)
-      {     //Pulse Change
-        if ((EncoderABStatus&0x01) != ((EncoderABStatus>>1)&0x01))
-        {  //Up
-           unsigned int Difference;
-
-           Difference = cntMilliSecond - EncoderPreviousUpTime;
-
-            EncoderPreviousUpTime = cntMilliSecond;
-
-            if (Difference < 50)
-            {
-                EncoderPosition+=5;
-            }
-            else if (Difference < 100)
-            {
-                EncoderPosition+=2;
-            }
-            else
-            {
-                EncoderPosition++;
-            }
-
-        }
-        else
-        {  //Down
-            unsigned int Difference;
-
-            Difference = cntMilliSecond-EncoderPreviousDownTime;
-            EncoderPreviousDownTime = cntMilliSecond;
-
-            if (Difference < 50)
-            {
-                EncoderPosition-=5;
-            }
-            else if (Difference < 100)
-            {
-                EncoderPosition-=2;
-            }
-            else
-            {
-                EncoderPosition--;
-            }
-        }
-      }
+  //SW3
+  if (EncoderABStatusChanged&0x02)
+  {     //Pulse Change
+    if ((EncoderABStatus&0x01) != ((EncoderABStatus>>1)&0x01))
+    {  //Up
+      ChangeEncoder(2, 1);
+    }
+    else
+    {  //Down
+      ChangeEncoder(2, 0);
+    }
+  }
+  //SW2
+  if (EncoderABStatusChanged&0x10)
+  {     //Pulse Change
+    if ((EncoderABStatus&0x08) != ((EncoderABStatus>>1)&0x08))
+    {  //Up
+      ChangeEncoder(1, 1);
+    }
+    else
+    {  //Down
+      ChangeEncoder(1, 0);
+    }
+  }
+  //SW1
+  if (EncoderABStatusChanged&0x40)
+  {     //Pulse Change
+    if ((EncoderABStatus&0x20) != ((EncoderABStatus>>1)&0x20))
+    {  //Up
+      ChangeEncoder(0, 1);
+    }
+    else
+    {  //Down
+      ChangeEncoder(0, 0);
+    }
+  }
 }
 
 void DoSwitch(unsigned char LogicSwitchNr, int Event)
@@ -529,21 +539,7 @@ void DoSwitch(unsigned char LogicSwitchNr, int Event)
       unsigned int ObjectNr;
       char SwitchNr;
 
-      SwitchNr = LogicSwitchNr;
-      if (SwitchNr == 22)
-      {   //EncoderSwitch
-         SwitchNr = 55;
-      }
-      else if (SwitchNr == 23)
-      {   //Jumper
-         SwitchNr = 61;
-      }
-      else if (SwitchNr >= 24)
-      {   //Other switches
-         SwitchNr -= 2;
-      }
-
-      ObjectNr = 1024+SwitchNr;
+      ObjectNr = 1024+LogicSwitchNr;
 
       TransmitBuffer[0] = 0;
       if (Event == 1)
@@ -561,29 +557,42 @@ void SetLEDs()
 {
    unsigned char cntLogicLED;
    unsigned char LEDNr;
-   unsigned char LogicLEDMask;
-   unsigned char LogicLEDByteNr;
    unsigned char LEDMask;
    unsigned char LEDByteNr;
 
-   for (cntLogicLED=0; cntLogicLED<NR_OF_LEDS; cntLogicLED++)
+   for (cntLogicLED=0; cntLogicLED<NR_OF_LOGIC_LEDS; cntLogicLED++)
    {
-      LEDNr = LogicLEDNr2LEDNr[cntLogicLED];
-
-      LogicLEDMask = 0x01<<(cntLogicLED&0x07);
-      LogicLEDByteNr = cntLogicLED>>3;
-
-      LEDMask = 0x01<<(LEDNr&0x07);
-      LEDByteNr = LEDNr>>3;
-
-      if (LogicLEDData[LogicLEDByteNr]&LogicLEDMask)
-      {
-         TLC5921DAPData[LEDByteNr] |= LEDMask;
+      if ((cntLogicLED>=0) && (cntLogicLED<3))
+      { //dual color
+        if (LogicLEDData[cntLogicLED])
+        {
+          LEDMask = SwitchColorOn[cntLogicLED];
+        }
+        else
+        {
+          LEDMask = SwitchColorOff[cntLogicLED];
+        }
+        LEDMask = LEDMask<<(cntLogicLED);
+        ByteNr = 0;
       }
-      else
-      {
-         TLC5921DAPData[LEDByteNr] &= LEDMask^0xFF;
+      else if i((cntLogicLED>=3) && (cntLogicLED<7))
+      { //single color
       }
+      else if ((cntLogicLED>=11) && (cntLogicLED<43))
+      { //dual color
+      }
+      else if ((cntLogicLED>=43) && (cntLogicLED<55))
+      { //single color
+      }
+      else if ((cntLogicLED>=57) && (cntLogicLED<65))
+      { //single color
+      }
+      else if ((cntLogicLED>=65) && (cntLogicLED<68))
+      { //dual color
+      }
+
+
+      TLC5921DAPData[LEDByteNr] |= LEDMask;
    }
    SetTLC5921DAP();
 }
@@ -623,7 +632,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                TransmitBuffer[1] = ObjectNr&0xFF;
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
 
-               if ((ObjectNr>=1024) && (ObjectNr<1078))
+               if ((ObjectNr != 1031) && (ObjectNr != 1033) && (ObjectNr != 1079) && (ObjectNr>=1024) && (ObjectNr<1092))
                {  //Switches
                   char LogicSwitchNr = ObjectNr-1024;
 
@@ -634,35 +643,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               if ((ObjectNr>=1078) && (ObjectNr<1079))
+               else if ((ObjectNri==1031) || (ObjectNr==1033) || (ObjectNr == 1079))
                {  //Encoder
                   TransmitBuffer[3] = SIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = 0;
-                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-
-                  MessageDone = 1;
-               }
-               else if ((ObjectNr>=1079) && (ObjectNr<1080))
-               {  //Encoder switch
-                  char LogicSwitchNr = ObjectNr-1024;
-
-                  TransmitBuffer[3] = STATE_DATATYPE;
-                  TransmitBuffer[4] = 1;
-                  TransmitBuffer[5] = SwitchState[LogicSwitchNr];
-
-                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-
-                  MessageDone = 1;
-               }
-               else if ((ObjectNr>=1085) && (ObjectNr<1086))
-               {  //Jumper
-                  char LogicSwitchNr = ObjectNr-1024;
-
-                  TransmitBuffer[3] = STATE_DATATYPE;
-                  TransmitBuffer[4] = 1;
-                  TransmitBuffer[5] = SwitchState[LogicSwitchNr];
-
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
 
                   MessageDone = 1;
@@ -704,55 +689,23 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                TransmitBuffer[1] = ObjectNr&0xFF;
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
 
-               if ((ObjectNr>=1024) && (ObjectNr<1078))
-               {  //Switches with a single LED
-                  char TemporySwitchNr;
+               if ((ObjectNr>=1024) && (ObjectNr<1092) &&
+                   (ObjectNr != 1031) && (ObjectNr != 1032) &&
+                   (ObjectNr != 1033) && (ObjectNr != 1034) && 
+                   (ObjectNr != 1079) && (ObjectNr != 1080))
+               {  //Switches with a LED
                   char LEDNr;
-                  char ByteNr;
-                  char Mask;
 
-                  TemporySwitchNr = ObjectNr-1024;
-
-                  if (TemporySwitchNr<22)
-                  {
-                     LEDNr = TemporySwitchNr;
-                  }
-                  else
-                  {
-                     LEDNr = TemporySwitchNr+7;
-                  }
-
-                  ByteNr = LEDNr>>3;
-                  Mask = 0x01<<(LEDNr&0x7);
+                  LEDNr = ObjectNr-1024;
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
-
-                  if (LogicLEDData[ByteNr] & Mask)
-                  {
-                     TransmitBuffer[5] = 1;
-                  }
-                  else
-                  {
-                     TransmitBuffer[5] = 0;
-                  }
+                  TransmitBuffer[5] = LogicLEDData[LEDNr];
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1080) && (ObjectNr<1081))
-               {  //Control LED Bar
-                  TransmitBuffer[3] = BIT_STRING_DATATYPE;
-                  TransmitBuffer[4] = 1;
-
-                  TransmitBuffer[5] = (LogicLEDData[2]>>6)&0x03;
-                  TransmitBuffer[5] |= (LogicLEDData[3]<<2)&0x7C;
-
-                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-
-                  MessageDone = 1;
-               }               
 
                if (!MessageDone)
                {
@@ -801,51 +754,18 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   {
                      if (DataSize == 1)
                      {
-                        char TemporySwitchNr;
                         char LEDNr;
-                        char ByteNr;
-                        char Mask;
 
-                        TemporySwitchNr = ObjectNr-1024;
-
-                        if (TemporySwitchNr<22)
-                        {
-                           LEDNr = TemporySwitchNr;
-                        }
-                        else
-                        {
-                           LEDNr = TemporySwitchNr+7;
-                        }
-
-                        ByteNr = LEDNr>>3;
-                        Mask = 0x01<<(LEDNr&0x7);
+                        LEDNr = ObjectNr-1024;
 
                         if (Data[5])
                         {
-                           LogicLEDData[ByteNr] |= Mask;
+                           LogicLEDData[LEDNr] = 1;
                         }
                         else
                         {
-                           LogicLEDData[ByteNr] &= Mask^0xFF;
+                           LogicLEDData[LEDNr] = 0;
                         }
-                        SetLEDs();
-
-                        FormatError = 0;
-                        MessageDone = 1;
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1080) && (ObjectNr<1081))
-               {  //Control LED Bar
-                  if (DataType == BIT_STRING_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        //LEDNr     22, 23, 24, 25, 26, 27, 28
-                        LogicLEDData[2] &= 0x3F;
-                        LogicLEDData[2] |= (Data[5]<<6)&0xC0;
-                        LogicLEDData[3] &= 0xE0;
-                        LogicLEDData[3] |= (Data[5]>>2)&0x1F;
                         SetLEDs();
 
                         FormatError = 0;
