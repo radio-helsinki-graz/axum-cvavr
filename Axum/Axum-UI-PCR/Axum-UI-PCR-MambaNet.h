@@ -1,7 +1,7 @@
 /*****************************************************
 Project : Axum-UI-PCR
 Version :
-Date    : 3-10-2007
+Date    : 10-july-2007
 Author  : Anton Prins
 Company : DR Electronica Weesp b.v.
 Comments:
@@ -23,8 +23,8 @@ Data Stack size     : 512
 #define FIRMWARE_MAJOR_VERSION   1
 #define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR
 
-#define MANUFACTURER_ID          2     //D&R or BP?
-#define PRODUCT_ID               2     //Axum-UI-PCR
+#define MANUFACTURER_ID          1     //D&R
+#define PRODUCT_ID               9     //Axum-UI-PCR
 
 #define NR_OF_STATIC_OBJECTS     (1167-1023)
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
