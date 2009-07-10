@@ -86,10 +86,6 @@ const unsigned char SwitchNr2LogicSwitchNr[64] =
    65, 66, 67
 };
 
-const unsigned char LogicLEDNr2LEDNr[68] =
-{
-};
-
 unsigned int cntTimer0;
 unsigned int cntMilliSecond;
 unsigned int PreviousMilliSecond;
