@@ -33,6 +33,13 @@
 #ifndef CANTransportLayerH
 #define CANTransportLayerH
 
+#ifdef __GNUG__
+  #include <avr/interrupt.h>
+  #include <avr/pgmspace.h>
+  #define FLASHMEM PROGMEM
+  #define EEPROMMEM __attribute__((section(".eeprom")))
+#endif
+
 #define PROTOCOL_MAJOR_VERSION   1
 #define PROTOCOL_MINOR_VERSION   0
 
@@ -81,15 +88,24 @@
 #define OBJECT_INFORMATION_DATATYPE             128
 #define ERROR_DATATYPE                          255
 
+#ifdef __GNUG__
+unsigned long int LocalMambaNetAddress EEPROMMEM = 0x00000000;
+unsigned long int DefaultEngineMambaNetAddress EEPROMMEM = 0x00000000;
+extern unsigned int UniqueIDPerProduct EEPROMMEM;
+
+extern unsigned char NodeServices FLASHMEM;
+extern unsigned int NumberOfStaticObjects FLASHMEM;
+#else
 eeprom unsigned long int LocalMambaNetAddress = 0x00000000;
 eeprom unsigned long int DefaultEngineMambaNetAddress = 0x00000000;
+extern eeprom unsigned int UniqueIDPerProduct;
+extern flash unsigned char NodeServices;
+extern flash unsigned int NumberOfStaticObjects;
+#endif
 
 extern unsigned int ManufacturerID;
 extern unsigned int ProductID;
-extern eeprom unsigned int UniqueIDPerProduct;
 extern unsigned char CANServices;
-extern flash unsigned char NodeServices;
-extern flash unsigned int NumberOfStaticObjects;
 
 unsigned char AddressValidated;
 unsigned char BusError;
@@ -128,7 +144,11 @@ unsigned char CANControlMessage[8];
 unsigned char CANAddressTransmit[CAN_ADDRESS_TRANSMIT_BUFFER_LENGTH];
 unsigned char cntCANAddressTransmitTop;
 
+#ifdef __GNUG__
+typedef struct
+#else
 typedef eeprom struct
+#endif
 {
    unsigned long int CANAddress;
    unsigned int ManufacturerID;
@@ -137,11 +157,27 @@ typedef eeprom struct
    unsigned long int MambaNetAddress;
 } ADDRESS_RESERVATION_DATA_STRUCT;
 
+#ifdef __GNUG__
+typedef struct
+#else
 typedef eeprom struct
+#endif
 {
    unsigned long int UpdateFrequency:3;
    unsigned long int EngineMambaNetAddress:29;
 } OBJECT_WRITABLE_INFORMATION_STRUCT;
+
+#ifdef __GNUG__
+  #ifdef __AVR_AT90CAN32__
+    #define _CHIP_AT90CAN32_
+  #endif
+  #ifdef __AVR_AT90CAN64__
+    #define _CHIP_AT90CAN64_
+  #endif
+  #ifdef __AVR_AT90CAN128__
+    #define _CHIP_AT90CAN128_
+  #endif
+#endif
 
 //defines for eeprom usage
 #ifndef CAN_ADDRESS_SERVER
@@ -170,7 +206,11 @@ typedef eeprom struct
 
 #define CAN_ADDRESS_BUFFER_SIZE  48   //Depends on EEPROM Size
 
+#ifdef __GNUG__
+ADDRESS_RESERVATION_DATA_STRUCT AddressReservationData[CAN_ADDRESS_BUFFER_SIZE] EEPROMMEM =
+#else
 eeprom ADDRESS_RESERVATION_DATA_STRUCT AddressReservationData[CAN_ADDRESS_BUFFER_SIZE] =
+#endif
 {  //CANAddress,  ManID, ProdID, UniID, MambeNetAddress
    { 0x00000000, 0x0000, 0x0000, 0x0000, 0x00000000},
    { 0x00000000, 0x0000, 0x0000, 0x0000, 0x00000000},
@@ -223,7 +263,11 @@ eeprom ADDRESS_RESERVATION_DATA_STRUCT AddressReservationData[CAN_ADDRESS_BUFFER
 };
 #endif
 
+#ifdef __GNUG__
+OBJECT_WRITABLE_INFORMATION_STRUCT ObjectWritableInformation[MAX_NR_OF_OBJECTS] EEPROMMEM =
+#else
 eeprom OBJECT_WRITABLE_INFORMATION_STRUCT ObjectWritableInformation[MAX_NR_OF_OBJECTS] =
+#endif
 {
    {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000},
    {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000}, {1, 0x00000000},
@@ -261,13 +305,21 @@ eeprom OBJECT_WRITABLE_INFORMATION_STRUCT ObjectWritableInformation[MAX_NR_OF_OB
 #endif
 };
 
+#ifdef __GNUG__
+extern char NodeName[32] EEPROMMEM;
+#else
 extern eeprom char NodeName[32];
+#endif
 extern unsigned char Parent[6];
 extern unsigned char HardwareMinorRevision;
 extern unsigned char FPGAFirmwareMajorRevision;
 extern unsigned char FPGAFirmwareMinorRevision;
 
+#ifdef __GNUG__
+typedef struct
+#else
 typedef flash struct
+#endif
 {
    unsigned char  Description[64];
 //   unsigned char  Name[32]; // Stored in EEPROM
@@ -285,7 +337,11 @@ typedef flash struct
    unsigned int   NumberOfObjects;
 } DEFAULT_NODE_OBJECT_STRUCT;
 
+#ifdef __GNUG__
+typedef struct
+#else
 typedef flash struct
+#endif
 {
    unsigned char DataType;
    unsigned char DataSize;
@@ -293,7 +349,11 @@ typedef flash struct
    unsigned long int DataMaximal;   // is max 32 bits in AVR but could be 64 bits in the protocol
 } SENSOR_DATA_STRUCT;
 
+#ifdef __GNUG__
+typedef struct
+#else
 typedef flash struct
+#endif
 {
    unsigned char DataType;
    unsigned char DataSize;
@@ -302,7 +362,11 @@ typedef flash struct
    unsigned long int DefaultData;   // is max 32 bits in AVR but could be 64 bits in the protocol
 } ACTUATOR_DATA_STRUCT;
 
+#ifdef __GNUG__
+typedef struct
+#else
 typedef flash struct
+#endif
 {
    unsigned char Description[32];
    unsigned char Services;
@@ -358,8 +422,13 @@ unsigned int cntCANMessageTransmitted = 0;
 
 unsigned char timerReservationInfo = 1;
 
+#ifdef __GNUG__
+extern DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects FLASHMEM;
+extern OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[] FLASHMEM;
+#else
 extern flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects;
 extern flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[];
+#endif
 
 void SendMambaNetReservationInfo();
 void DecodeRawMambaNetMessageFromCAN(unsigned char *Buffer, unsigned char BufferPosition, unsigned char MessageLength);
@@ -379,7 +448,11 @@ void ProcessCANControlMessage(unsigned char CANControlMessageType);
 unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength);
 
 // CAN Timer Overrun interrupt service routine
+#ifdef __GNUG__
+ISR(OVRIT_vect)
+#else
 interrupt [CTIM_OVF] void can_timer_isr(void)
+#endif
 {
 // Place your code here
    cntCANTimerOverrun++;
@@ -395,9 +468,13 @@ unsigned char GlobalMambaNetEndOfMessageFound;
 
 
 // CAN interrupt service routine
+#ifdef __GNUG__
+ISR(CANIT_vect)
+#else
 interrupt [CAN_IT] void can_isr(void)
+#endif
 {
-   char cntByte;
+   unsigned char cntByte;
    unsigned char ReceivedByte;
    unsigned char SequenceNumber;
    unsigned int FromCANAddress;
@@ -1111,9 +1188,13 @@ void InitializeCAN()
    AddressValidated = 0;
    timerReservationInfo = 1;
    BusError = 0;
-         
 
+#ifdef __GNUG__
+   PORTD &= ~(_BV(PD7));
+#else
    RS_CAN = 0;
+#endif
+
 }
 
 void SendMambaNetReservationInfo()
@@ -1244,7 +1325,9 @@ void SendMambaNetMessage7BitsDataToCAN(unsigned long int ToAddress, unsigned lon
    {
       if ((DataLength <= MAX_MAMBANET_DATA_SIZE) && (LocalCANAddress != 0x00000000))
       {
-         while (cntTransmitCANMessageBuffer < TransmitCANMessageBufferLength);
+         while (cntTransmitCANMessageBuffer < TransmitCANMessageBufferLength)
+         {
+         }
                   
          if (cntTransmitCANMessageBuffer >= TransmitCANMessageBufferLength)
          {
@@ -1364,7 +1447,9 @@ void SendMambaNetMessage7BitsDataToCAN_DedicatedAddress(unsigned long int CANAdd
    {
       if ((DataLength <= MAX_MAMBANET_DATA_SIZE) && (LocalCANAddress != 0x00000000))
       {
-         while (cntTransmitCANMessageBuffer < TransmitCANMessageBufferLength);
+         while (cntTransmitCANMessageBuffer < TransmitCANMessageBufferLength)
+         {
+         }
 
          if (cntTransmitCANMessageBuffer >= TransmitCANMessageBufferLength)
          {            
@@ -1667,7 +1752,7 @@ void SendCANReservationResponse(unsigned int ManufacturerID, unsigned int Produc
           CANAddressTransmit[3] = ProductID&0xFF;
           CANAddressTransmit[4] = (UniqueIDPerProduct>>8)&0xFF;
           CANAddressTransmit[5] = UniqueIDPerProduct&0xFF;
-          CANAddressTransmit[6] = 0x10 | (NewCANAddress>>8)&0x0F;
+          CANAddressTransmit[6] = 0x10 | ((NewCANAddress>>8)&0x0F);
           CANAddressTransmit[7] =         NewCANAddress    &0xFF;
 
           CANAddressTransmit[8] = (ManufacturerID>>8)&0xFF;
@@ -1676,7 +1761,7 @@ void SendCANReservationResponse(unsigned int ManufacturerID, unsigned int Produc
           CANAddressTransmit[11] = ProductID&0xFF;
           CANAddressTransmit[12] = (UniqueIDPerProduct>>8)&0xFF;
           CANAddressTransmit[13] = UniqueIDPerProduct&0xFF;
-          CANAddressTransmit[14] = 0x20 | (NewGatewayAddress>>8)&0x0F;
+          CANAddressTransmit[14] = 0x20 | ((NewGatewayAddress>>8)&0x0F);
           CANAddressTransmit[15] =         NewGatewayAddress    &0xFF;
 
           cntCANAddressTransmitTop = 0;
@@ -1818,7 +1903,7 @@ void ProcessCAN()
       if (((unsigned char)PtrReceivedCANMessageBufferTop-PtrReceivedCANMessageBufferBottom)>PROTOCOL_OVERHEAD)
       {
          unsigned char cntCheck;
-         unsigned char StartPointer;
+         unsigned char StartPointer = 0;
          unsigned char ReceivedByte;
 
          cntCheck = PtrReceivedCANMessageBufferBottom;
@@ -1857,7 +1942,7 @@ void ProcessCAN()
       if (((unsigned char)PtrReceivedGlobalCANMessageBufferTop-PtrReceivedGlobalCANMessageBufferBottom)>PROTOCOL_OVERHEAD)
       {
          unsigned char cntCheck;
-         unsigned char StartPointer;
+         unsigned char StartPointer = 0;
          unsigned char ReceivedByte;
 
          cntCheck = PtrReceivedGlobalCANMessageBufferBottom;
@@ -2029,7 +2114,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       int TableNr;
                       char DataSize;
                       unsigned long int TempData;
-                      char cntChar;
+                      unsigned char cntChar;
 
                       ObjectNrInformationCount++;
                       LastObjectInformationRequested = ObjectNr;
@@ -2107,7 +2192,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_INFORMATION_RESPONSE;
                       TransmitBuffer[3] = ERROR_DATATYPE;
                       TransmitBuffer[4] = 15;
-                      sprintf(&TransmitBuffer[5], "Not implemented");
+                      sprintf((char *)&TransmitBuffer[5], "Not implemented");
 
                       SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                       MessageProcessed = 1;
@@ -2153,7 +2238,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ENGINE_ADDRESS_RESPONSE;
                       TransmitBuffer[3] = ERROR_DATATYPE;
                       TransmitBuffer[4] = 15;
-                      sprintf(&TransmitBuffer[5], "Not implemented");
+                      sprintf((char *)&TransmitBuffer[5], "Not implemented");
 
                       SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                       MessageProcessed = 1;
@@ -2221,7 +2306,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ENGINE_ADDRESS_RESPONSE;
                       TransmitBuffer[3] = ERROR_DATATYPE;
                       TransmitBuffer[4] = 15;
-                      sprintf(&TransmitBuffer[5], "Not implemented");
+                      sprintf((char *)&TransmitBuffer[5], "Not implemented");
 
                       SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                       MessageProcessed = 1;
@@ -2264,7 +2349,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_OBJECT_FREQUENCY_RESPONSE;
                       TransmitBuffer[3] = ERROR_DATATYPE;
                       TransmitBuffer[4] = 15;
-                      sprintf(&TransmitBuffer[5], "Not implemented");
+                      sprintf((char *)&TransmitBuffer[5], "Not implemented");
 
                       SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                       MessageProcessed = 1;
@@ -2323,7 +2408,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_OBJECT_FREQUENCY_RESPONSE;
                       TransmitBuffer[3] = ERROR_DATATYPE;
                       TransmitBuffer[4] = 15;
-                      sprintf(&TransmitBuffer[5], "Not implemented");
+                      sprintf((char *)&TransmitBuffer[5], "Not implemented");
 
                       SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                       MessageProcessed = 1;
@@ -2335,7 +2420,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                  if (ObjectNr<1024)
                  {  //Only for the standard obects.
                      unsigned char TransmitBuffer[69];
-                     char cntByte;
+                     unsigned char cntByte;
 
                      switch (ObjectNr)
                      {
@@ -2542,7 +2627,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                             TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
                             TransmitBuffer[3] = ERROR_DATATYPE;
                             TransmitBuffer[4] = 15;
-                            sprintf(&TransmitBuffer[5], "Not implemented");
+                            sprintf((char *)&TransmitBuffer[5], "Not implemented");
 
                             SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                             MessageProcessed = 1;
@@ -2562,7 +2647,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                  if (ObjectNr<1024)
                  {  //Only for the standard obects.
                      unsigned char TransmitBuffer[37];
-                     char cntByte;
+                     unsigned char cntByte;
 
                      switch (ObjectNr)
                      {
@@ -2603,7 +2688,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                             TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
                             TransmitBuffer[3] = ERROR_DATATYPE;
                             TransmitBuffer[4] = 15;
-                            sprintf(&TransmitBuffer[5], "Not implemented");
+                            sprintf((char *)&TransmitBuffer[5], "Not implemented");
 
                             SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                         }
@@ -2635,7 +2720,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                            {
                               if (DataSize <= 32)
                               {
-                                 char cntChar;
+                                 unsigned char cntChar;
                                  char TextString[33];
 
                                  for (cntChar=0; cntChar<DataSize; cntChar++)
@@ -2680,7 +2765,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                             TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
                             TransmitBuffer[3] = ERROR_DATATYPE;
                             TransmitBuffer[4] = 15;
-                            sprintf(&TransmitBuffer[5], "Not implemented");
+                            sprintf((char *)&TransmitBuffer[5], "Not implemented");
 
                             SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                             MessageProcessed = 1;
@@ -2748,7 +2833,7 @@ unsigned char VariableFloat2Float(unsigned char *VariableFloatBuffer, unsigned c
    unsigned long mantessa;
    char signbit;
    unsigned char ReturnStatus;
-   char cntSize;
+   unsigned char cntSize;
    char NonZero;
 
    ReturnStatus = 0;
@@ -2883,7 +2968,7 @@ unsigned char Float2VariableFloat(float InputFloat, unsigned char VariableFloatB
 
    if (TemporyCastedFloat == 0x00000000)
    {
-      char cntSize;
+      unsigned char cntSize;
 
       for (cntSize=0; cntSize<VariableFloatBufferSize; cntSize++)
       {
