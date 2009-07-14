@@ -23,13 +23,13 @@ Data Stack size     : 512
 #define PCB_MAJOR_VERSION        1
 #define PCB_MINOR_VERSION        0
 
-#define FIRMWARE_MAJOR_VERSION   1
+#define FIRMWARE_MAJOR_VERSION   2
 #define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR
 
 #define MANUFACTURER_ID          1      //D&R
 #define PRODUCT_ID               20     //Axum-Rack-DSP
 
-#define NR_OF_STATIC_OBJECTS    (1026-1023)
+#define NR_OF_STATIC_OBJECTS    (1024-1023)
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
 
 #if (NR_OF_STATIC_OBJECTS > MAX_NR_OF_OBJECTS)
@@ -77,12 +77,6 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    //                         , sensor {type, size, min, max}
    //                         , actuator {type, size, min, max, default}
    { "Slot number"            , 0x00
-                              , {UNSIGNED_INTEGER_DATATYPE  ,  1, 0     , 255    }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "FPGA major revision"    , 0x00
-                              , {UNSIGNED_INTEGER_DATATYPE  ,  1, 0     , 255    }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "FPGA minor revision"    , 0x00
                               , {UNSIGNED_INTEGER_DATATYPE  ,  1, 0     , 255    }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }}
 };
