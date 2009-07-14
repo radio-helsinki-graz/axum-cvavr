@@ -2318,7 +2318,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                {
                  if ((ObjectNr>=1024) && (ObjectNr<(1024+NumberOfStaticObjects)))
                  {  //Only for the non-standard objects
-                      if (ObjectVariableInformation[ObjectNr].Services != 0x00)
+                      if (ObjectVariableInformation[ObjectNr-1024].Services != 0x00)
                       {
                          unsigned char TransmitBuffer[6];
                          unsigned char ObjectFrequency;
