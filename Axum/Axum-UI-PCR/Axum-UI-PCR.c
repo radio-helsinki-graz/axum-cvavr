@@ -223,6 +223,12 @@ void main(void)
    // CAN Controller initialization
    InitializeCAN();
 
+   for (cntByte=0;cntByte<NR_OF_LOGIC_LEDS; cntByte++)
+   {
+     SwitchColorOn[cntByte] = 0x02;
+     SwitchColorOff[cntByte] = 0x00;
+   }
+
    delay_ms(1000);   //else error?
 
    for (cntByte=0; cntByte<NR_OF_LOGIC_LEDS; cntByte++)
@@ -283,11 +289,27 @@ void main(void)
            {
               unsigned char TransmitBuffer[1];
               int Difference;
+              int EncoderObject;
+
+              if (cntEncoder == 0)
+              {
+                EncoderObject = 1031;
+              }
+              else if (cntEncoder == 1)
+              {
+                EncoderObject = 1033;
+              }
+              else
+              {
+                EncoderObject = 1079;
+              }
+
               Difference = EncoderPosition[cntEncoder]-PreviousEncoderPosition[cntEncoder];
 
               TransmitBuffer[0] = Difference&0xFF;
-              SendSensorChangeToMambaNet(1078, SIGNED_INTEGER_DATATYPE, 1, TransmitBuffer);
-  
+
+              SendSensorChangeToMambaNet(EncoderObject, SIGNED_INTEGER_DATATYPE, 1, TransmitBuffer);
+
               PreviousEncoderPosition[cntEncoder] = EncoderPosition[cntEncoder];
            }
          }
@@ -326,6 +348,7 @@ void selectRow(unsigned char Row)
    nROW5 = 1;
    nROW6 = 1;
    nROW7 = 1;
+   nROW8 = 1;
 
    switch (Row)
    {
@@ -364,6 +387,11 @@ void selectRow(unsigned char Row)
          nROW7 = 0;
       }
       break;
+      case 7:
+      {
+         nROW8 = 0;
+      }
+      break;
    }
 }
 
@@ -400,13 +428,12 @@ char SwitchCheck(unsigned char cntRow, unsigned char SwitchNr, char SwitchReturn
 void ReadSwitches()
 {
    char cntRow;
+   char ReturnValue;
+   unsigned char LogicSwitchNr;
 
    //Switch Rows
    for (cntRow=0; cntRow<8; cntRow++)
    {
-      char ReturnValue;
-      unsigned char LogicSwitchNr;
-
       selectRow(cntRow);
 
       ReturnValue = SwitchCheck(cntRow, 0, nSW1);
@@ -441,6 +468,10 @@ void ReadSwitches()
       LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+7)];
       DoSwitch(LogicSwitchNr, ReturnValue);
    }
+
+   ReturnValue = SwitchCheck(8, 0, nSW_2C);
+   LogicSwitchNr = 10;
+   DoSwitch(LogicSwitchNr, ReturnValue);
 }
 
 void ChangeEncoder(unsigned char EncoderNr, unsigned char UpDown)
@@ -570,13 +601,13 @@ void SetLEDs()
         {
           LEDValue = SwitchColorOff[cntLogicLED];
         }
-        LEDMask = 0x03<<cntLogicLED;
-        LEDValue <<= cntLogicLED;
+        LEDMask = 0x03<<(cntLogicLED*2);
+        LEDValue <<= (cntLogicLED*2);
         LEDByteNr = 0;
       }
       else if ((cntLogicLED>=3) && (cntLogicLED<7))
       { //single color
-        int LEDNr = 3+((int)cntLogicLED-3);
+        int LEDNr = 6+((int)cntLogicLED-3);
 
         LEDMask = 0x01<<(LEDNr&0x07);
         if (LogicLEDData[cntLogicLED])
@@ -620,9 +651,37 @@ void SetLEDs()
         }
         LEDByteNr = LEDNr>>3;
       }
+      else if ((cntLogicLED>=51) && (cntLogicLED<55))
+      {
+        LEDMask = 0x00;
+
+        switch (cntLogicLED)
+        {
+          case 51:
+          {
+            nDL83 = !LogicLEDData[cntLogicLED];
+          }
+          break;
+          case 52:
+          {
+            nDL84 = !LogicLEDData[cntLogicLED];
+          }
+          break;
+          case 53:
+          {
+            nDL85 = !LogicLEDData[cntLogicLED];
+          }
+          break;
+          case 54:
+          {
+            nDL86 = !LogicLEDData[cntLogicLED];
+          }
+          break;
+        }
+      }
       else if ((cntLogicLED>=57) && (cntLogicLED<65))
       { //single color
-        int LEDNr = 82+((int)cntLogicLED-57);
+        int LEDNr = 86+((int)cntLogicLED-57)-4;
 
         LEDMask = 0x01<<(LEDNr&0x07);
         if (LogicLEDData[cntLogicLED])
@@ -637,7 +696,7 @@ void SetLEDs()
       }
       else if ((cntLogicLED>=65) && (cntLogicLED<68))
       { //dual color
-        int LEDNr = 90+(((int)cntLogicLED-65)*2);
+        int LEDNr = 94+(((int)cntLogicLED-65)*2)-4;
 
         if (LogicLEDData[cntLogicLED])
         {
@@ -750,10 +809,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                TransmitBuffer[1] = ObjectNr&0xFF;
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
 
-               if ((ObjectNr>=1024) && (ObjectNr<1092) &&
-                   (ObjectNr != 1031) && (ObjectNr != 1032) &&
-                   (ObjectNr != 1033) && (ObjectNr != 1034) && 
-                   (ObjectNr != 1079) && (ObjectNr != 1080))
+               if ( ((ObjectNr>=1024) && (ObjectNr<1031)) ||
+                    ((ObjectNr>=1035) && (ObjectNr<1079)) ||
+                    ((ObjectNr>=1081) && (ObjectNr<1092)))
                {  //Switches with a LED
                   char LEDNr;
 
@@ -762,6 +820,30 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = LogicLEDData[LEDNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1092) && (ObjectNr<1130))
+               {
+                  char SwitchNr = ObjectNr-1092;
+
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = SwitchColorOn[SwitchNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1130) && (ObjectNr<1168))
+               {
+                  char SwitchNr = ObjectNr-1130;
+
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = SwitchColorOff[SwitchNr];
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
 
@@ -809,7 +891,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                DataType = Data[3];
                DataSize = Data[4];
 
-               if ((ObjectNr>=1024) && (ObjectNr<1078))
+               if ( ((ObjectNr>=1024) && (ObjectNr<1031)) ||
+                    ((ObjectNr>=1035) && (ObjectNr<1079)) ||
+                    ((ObjectNr>=1081) && (ObjectNr<1092)))
                {  //Switches with a single LED
                   if (DataType == STATE_DATATYPE)
                   {
@@ -833,6 +917,26 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         MessageDone = 1;
                      }
                   }
+               }
+               else if ((ObjectNr>=1092) && (ObjectNr<1130))
+               {
+                  char SwitchNr = ObjectNr-1092;
+
+                  SwitchColorOn[SwitchNr] = Data[5]&0x03;
+                  SetLEDs();
+
+                  FormatError = 0;
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1130) && (ObjectNr<1168))
+               {
+                  char SwitchNr = ObjectNr-1130;
+
+                  SwitchColorOff[SwitchNr] = Data[5]&0x03;
+                  SetLEDs();
+
+                  FormatError = 0;
+                  MessageDone = 1;
                }
                else
                {

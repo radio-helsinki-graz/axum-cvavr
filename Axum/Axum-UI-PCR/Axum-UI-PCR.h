@@ -1,6 +1,8 @@
 #ifndef Axum_UI_PCRH
 #define Axum_UI_PCRH
 
+#define TRANSPORTLAYER_MINOR_CORRECTION 1
+
 /********************************/
 /* Define Ports                 */
 /********************************/
@@ -40,7 +42,7 @@
 #define  SIN            PORTE.3
 #define  XLAT           PORTE.4
 #define  BLANK          PORTE.5
-#define  nROW1          PORTE.7 
+#define  nROW1          PORTE.7
 
 #define  nDL86          PORTF.0
 #define  nDL85          PORTF.1
@@ -62,9 +64,9 @@ const unsigned char SwitchNr2LogicSwitchNr[64] =
 {
     0,  1,  2,
     //Encoder switch
-    8,  
+    8,
     3,  4,  5,  6,
-   
+
    11, 12,  13, 14,
    15, 16,  17, 18,
    19, 20,  21, 22,
@@ -77,13 +79,11 @@ const unsigned char SwitchNr2LogicSwitchNr[64] =
    43, 44,  45, 46,
    47, 48,  49, 50,
 
+   65, 66, 67, 56,
    51, 52, 53, 54,
-   //Encoder switch 
-   56,
 
    57, 58, 59, 60,
    61, 62, 63, 64,
-   65, 66, 67
 };
 
 unsigned int cntTimer0;
@@ -96,10 +96,12 @@ unsigned char LogicLEDData[NR_OF_LOGIC_LEDS]; //Index calculated from object num
 unsigned char SwitchColorOn[NR_OF_LOGIC_LEDS];
 unsigned char SwitchColorOff[NR_OF_LOGIC_LEDS];
 
-#define NR_OF_LEDS 96 
+#define NR_OF_LEDS 96
 unsigned char TLC5921DAPData[NR_OF_LEDS/8];
 
-unsigned char SwitchData[8][8];
+unsigned char SwitchData[9][8];
+//row 0-8 are physical rows.
+//row 9 is used for nSW_2C
 
 #define NR_OF_LOGIC_SWITCHES 68
 unsigned char SwitchState[NR_OF_LOGIC_SWITCHES]; //Index calculated from object number
