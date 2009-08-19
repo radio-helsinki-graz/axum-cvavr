@@ -251,7 +251,7 @@ void main(void)
    ADCSRA=0xCC;
 
    HardwareMinorRevision = (PINF>>4)&0x0F;
-   
+
    FPGAFirmwareMajorRevision = 0;
    FPGAFirmwareMinorRevision = 0;
 
@@ -273,8 +273,8 @@ void main(void)
    for (cntByte=0; cntByte<NR_OF_LEDS/8; cntByte++)
    {
       LogicLEDData[cntByte] = 0x00;
-   }                
-   
+   }
+
    for (cntByte=0; cntByte<36; cntByte++)
    {
       SwitchState[cntByte] = 0;
@@ -300,8 +300,8 @@ void main(void)
       SetLCDModule(cntModule, 0, TextString);
       sprintf(TextString, " by D&R ");
       SetLCDModule(cntModule, 1, TextString);
-   }    
-   
+   }
+
    for (cntModule=0; cntModule<4; cntModule++)
    {
       SwitchColorOn[cntModule][0] = 2;
@@ -312,6 +312,10 @@ void main(void)
       SwitchColorOff[cntModule][1] = 0;
       SwitchColorOff[cntModule][2] = 0;
       SwitchColorOff[cntModule][3] = 0;
+      DualColorSwitchState[cntModule][0] = 0;
+      DualColorSwitchState[cntModule][1] = 0;
+      DualColorSwitchState[cntModule][2] = 0;
+      DualColorSwitchState[cntModule][3] = 0;
    }
 
    cntMilliSecond = 0;
@@ -328,7 +332,7 @@ void main(void)
    PreviousFaderPosition[1] = 0;
    PreviousFaderPosition[2] = 0;
    PreviousFaderPosition[3] = 0;
-   
+
    MotorActive[0] = 1;
    MotorActive[1] = 1;
    MotorActive[2] = 1;
@@ -369,10 +373,10 @@ void main(void)
 
          /*{
             unsigned char DebugString[64];
-            
+
             sprintf(DebugString, "cntCAN:%d P:0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X", cntReceiveCANControl, Parent[0], Parent[1], Parent[2], Parent[3], Parent[4], Parent[5]);
             SetLCDModule(0, 0, DebugString);
-            
+
             sprintf(DebugString, "Count:%d, last %d", ObjectNrInformationCount, LastObjectInformationRequested);
             SetLCDModule(0, 1, DebugString);
          }*/
@@ -403,6 +407,7 @@ void main(void)
                PreviousEncoderPosition[cntModule] = EncoderPosition[cntModule];
             }
 
+//            if ((!MotorActive[cntModule]) || (CurrentTouch[cntModule]))
             if (CurrentTouch[cntModule])
             {
                if (PreviousFaderPosition[cntModule] != FaderPosition[cntModule])
@@ -775,10 +780,10 @@ void DoSwitch(unsigned char LogicSwitchNr, int Event)
       unsigned int ObjectNr;
       char ModuleNr;
       char SwitchNr;
-      
+
       ObjectNrInformationCount = 0;
       LastObjectInformationRequested = 0;
-      
+
 
       ModuleNr = LogicSwitchNr/9;
       SwitchNr = LogicSwitchNr%9;
@@ -788,8 +793,8 @@ void DoSwitch(unsigned char LogicSwitchNr, int Event)
       {
          TransmitBuffer[0] = 1;
       }
-      
-      SwitchState[ModuleNr+(SwitchNr<<2)] = TransmitBuffer[0]; 
+
+      SwitchState[ModuleNr+(SwitchNr<<2)] = TransmitBuffer[0];
 
       SendSensorChangeToMambaNet(ObjectNr, STATE_DATATYPE, 1, TransmitBuffer);
     }
@@ -1054,7 +1059,7 @@ void ControlMotors()
          {
             PWMValue = MotorSpeed[0];
             PWMValue ^= 0xFFFF;
-   
+
             OCR3AH=(PWMValue>>8)&0xFF;
             OCR3AL=PWMValue&0xFF;
             PWM_M1_B = 1;
@@ -1062,7 +1067,7 @@ void ControlMotors()
          else if (Difference<-MOTOR_POSITION_DEADZONE)
          {
             PWMValue = MotorSpeed[0];
-   
+
             OCR3AH=(PWMValue>>8)&0xFF;
             OCR3AL=PWMValue&0xFF;
             PWM_M1_B = 0;
@@ -1070,7 +1075,7 @@ void ControlMotors()
          else
          {  //Motor off
             MotorActive[0] = 0;
-            
+
             if (PWM_M1_B)
             {
                OCR3AH=0xFF;
@@ -1121,7 +1126,7 @@ void ControlMotors()
          {
             PWMValue = MotorSpeed[1];
             PWMValue ^= 0xFFFF;
-   
+
             OCR3BH=(PWMValue>>8)&0xFF;
             OCR3BL=PWMValue&0xFF;
             PWM_M2_B = 1;
@@ -1129,7 +1134,7 @@ void ControlMotors()
          else if (Difference<-MOTOR_POSITION_DEADZONE)
          {
             PWMValue = MotorSpeed[1];
-   
+
             OCR3BH=(PWMValue>>8)&0xFF;
             OCR3BL=PWMValue&0xFF;
             PWM_M2_B = 0;
@@ -1188,7 +1193,7 @@ void ControlMotors()
          {
             PWMValue = MotorSpeed[2];
             PWMValue ^= 0xFFFF;
-   
+
             OCR1AH=(PWMValue>>8)&0xFF;
             OCR1AL=PWMValue&0xFF;
             PWM_M3_B = 1;
@@ -1196,14 +1201,14 @@ void ControlMotors()
          else if (Difference<-MOTOR_POSITION_DEADZONE)
          {
             PWMValue = MotorSpeed[2];
-   
+
             OCR1AH=(PWMValue>>8)&0xFF;
             OCR1AL=PWMValue&0xFF;
             PWM_M3_B = 0;
          }
          else
          {  //Motor off
-            MotorActive[2] = 0;            
+            MotorActive[2] = 0;
             if (PWM_M3_B)
             {
                OCR1AH=0xFF;
@@ -1218,7 +1223,7 @@ void ControlMotors()
       }
       else
       {  //Motor off
-         MotorActive[2] = 0;            
+         MotorActive[2] = 0;
          if (PWM_M3_B)
          {
             OCR1AH=0xFF;
@@ -1264,7 +1269,7 @@ void ControlMotors()
          else if (Difference<-MOTOR_POSITION_DEADZONE)
          {
             PWMValue = MotorSpeed[3];
-   
+
             OCR1BH=(PWMValue>>8)&0xFF;
             OCR1BL=PWMValue&0xFF;
             PWM_M4_B = 0;
@@ -1296,21 +1301,21 @@ void ControlMotors()
             OCR1BH=0x00;
             OCR1BL=0x00;
          }
-      }     
+      }
    }
 }
 
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
    unsigned char MessageDone;
-   
+
    MessageDone = 0;
-   
+
    if (MessageID)
    {
       Ack = 1;
    }
-   
+
 
    switch (MessageType)
    {
@@ -1334,14 +1339,14 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                TransmitBuffer[1] = ObjectNr&0xFF;
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
-                   
+
                if ((ObjectNr>=1032) && (ObjectNr<1036))
                {  //Encoder
                   TransmitBuffer[3] = SIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = 0;
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-               
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1036) && (ObjectNr<1072))
@@ -1350,9 +1355,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = SwitchState[SwitchNr];
-                  
+
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-               
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1104) && (ObjectNr<1108))
@@ -1394,7 +1399,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[19] = 'c';
                   TransmitBuffer[20] = 't';
 
-                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 21);            
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 21);
                }
             }
             break;
@@ -1405,11 +1410,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                TransmitBuffer[1] = ObjectNr&0xFF;
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
-                   
+
                if ((ObjectNr>=1024) && (ObjectNr<1032))
                {  //LCD
                   unsigned char DisplayNr = ObjectNr-1024;
-                  
+
                   TransmitBuffer[3] = OCTET_STRING_DATATYPE;
                   TransmitBuffer[4] = 8;
                   TransmitBuffer[5] = LCDTextString[DisplayNr][0];
@@ -1432,7 +1437,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   char LEDNr = (TemporySwitchNr>>2) + (ModuleNr*20);
                   char ByteNr = LEDNr>>3;
                   char Mask = 0x01<<(LEDNr&0x7);
-                        
+
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   if (LogicLEDData[ByteNr]&Mask)
@@ -1455,7 +1460,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   char LEDNr = (4+((TemporySwitchNr>>1)&0xFE)) + (ModuleNr*20);
                   char ByteNr;
                   char Mask;
-                  char TransmitLength;                     
+                  char TransmitLength;
 
                   if (ObjectNr >= 1064)
                   {
@@ -1467,38 +1472,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = DualColorSwitchState[ModuleNr][TemporySwitchNr/4];
+                  TransmitLength = 6;
 
-                  if ((LogicLEDData[ByteNr] & Mask) == (SwitchColorOn[ModuleNr][TemporySwitchNr/4]<<(LEDNr&0x7))) 
-                  {
-                     TransmitBuffer[5] = 1;
-                     TransmitLength = 6;                     
-                  }
-                  else if ((LogicLEDData[ByteNr] & Mask) == (SwitchColorOff[ModuleNr][TemporySwitchNr/4]<<(LEDNr&0x7))) 
-                  {
-                     TransmitBuffer[5] = 0;
-                     TransmitLength = 6;                     
-                  }
-                  else
-                  {
-                     TransmitBuffer[3] = ERROR_DATATYPE;
-                     TransmitBuffer[4] = 13;
-                     TransmitBuffer[5] = 'U';
-                     TransmitBuffer[6] = 'n';
-                     TransmitBuffer[7] = 'k';
-                     TransmitBuffer[8] = 'n';
-                     TransmitBuffer[9] = 'o';
-                     TransmitBuffer[10] = 'w';
-                     TransmitBuffer[11] = 'n';
-                     TransmitBuffer[12] = ' ';
-                     TransmitBuffer[13] = 's';
-                     TransmitBuffer[14] = 't';
-                     TransmitBuffer[15] = 'a';
-                     TransmitBuffer[16] = 't';
-                     TransmitBuffer[17] = 'e';
-                     
-                     TransmitLength = 18;   
-                  }
-                  
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, TransmitLength);
 
                   MessageDone = 1;
@@ -1558,7 +1534,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   char TemporySwitchNr = ObjectNr-1128;
                   char ModuleNr = TemporySwitchNr&0x03;
                   char SwitchNr = TemporySwitchNr/4;
-                                                                 
+
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = SwitchColorOff[ModuleNr][SwitchNr];
@@ -1567,7 +1543,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               
+
                if (!MessageDone)
                {
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -1595,7 +1571,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[22] = 't';
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 23);
-               }               
+               }
             }
             break;
             case  MAMBANET_OBJECT_ACTION_SET_ACTUATOR_DATA:
@@ -1603,7 +1579,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -1642,7 +1618,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         }
 
                         FormatError = 0;
-                        MessageDone = 1;                        
+                        MessageDone = 1;
                      }
                   }
                }
@@ -1669,7 +1645,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         SetLEDs();
 
                         FormatError = 0;
-                        MessageDone = 1;                        
+                        MessageDone = 1;
                      }
                   }
                }
@@ -1693,6 +1669,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         ByteNr = LEDNr>>3;
 
                         MaskOff = (0x03<<(LEDNr&0x7))^0xFF;
+
+                        DualColorSwitchState[ModuleNr][TemporySwitchNr/4] = Data[5];
                         if (Data[5])
                         {
                            Mask = SwitchColorOn[ModuleNr][TemporySwitchNr/4]<<(LEDNr&0x7);
@@ -1706,7 +1684,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         SetLEDs();
 
                         FormatError = 0;
-                        MessageDone = 1;                        
+                        MessageDone = 1;
                      }
                   }
                }
@@ -1734,7 +1712,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         SetLEDs();
 
                         FormatError = 0;
-                        MessageDone = 1;                        
+                        MessageDone = 1;
                      }
                   }
                }
@@ -1751,7 +1729,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         MotorActive[ModuleNr] = 1;
 
                         FormatError = 0;
-                        MessageDone = 1;                        
+                        MessageDone = 1;
                      }
                   }
                }
@@ -1764,15 +1742,40 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         char TemporySwitchNr = ObjectNr-1112;
                         char ModuleNr = TemporySwitchNr&0x03;
                         char SwitchNr = TemporySwitchNr/4;
-                                                                 
+                        char LEDNr = (4+((TemporySwitchNr>>1)&0xFE)) + (ModuleNr*20);
+                        char ByteNr;
+                        char Mask;
+                        char MaskOff;
+
+                        if (ObjectNr >= 1120)
+                        {
+                           LEDNr+=8;
+                        }
+                        ByteNr = LEDNr>>3;
+
+                        Mask = (0x03<<(LEDNr&0x7));
+
                         SwitchColorOn[ModuleNr][SwitchNr] = Data[5];
                         if (SwitchColorOn[ModuleNr][SwitchNr]>3)
                         {
                            SwitchColorOn[ModuleNr][SwitchNr] = 3;
                         }
 
+                        MaskOff = (0x03<<(LEDNr&0x7))^0xFF;
+                        if (DualColorSwitchState[ModuleNr][TemporySwitchNr/4])
+                        {
+                           Mask = SwitchColorOn[ModuleNr][SwitchNr]<<(LEDNr&0x7);
+                        }
+                        else
+                        {
+                           Mask = SwitchColorOff[ModuleNr][SwitchNr]<<(LEDNr&0x7);
+                        }
+                        LogicLEDData[ByteNr] &= MaskOff;
+                        LogicLEDData[ByteNr] |= Mask;
+                        SetLEDs();
+
                         FormatError = 0;
-                        MessageDone = 1;                        
+                        MessageDone = 1;
                      }
                   }
                }
@@ -1785,15 +1788,40 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         char TemporySwitchNr = ObjectNr-1128;
                         char ModuleNr = TemporySwitchNr&0x03;
                         char SwitchNr = TemporySwitchNr/4;
-                                                                 
+                        char LEDNr = (4+((TemporySwitchNr>>1)&0xFE)) + (ModuleNr*20);
+                        char ByteNr;
+                        char Mask;
+                        char MaskOff;
+
+                        if (ObjectNr >= 1136)
+                        {
+                           LEDNr+=8;
+                        }
+                        ByteNr = LEDNr>>3;
+
+                        Mask = (0x03<<(LEDNr&0x7));
+
                         SwitchColorOff[ModuleNr][SwitchNr] = Data[5];
                         if (SwitchColorOff[ModuleNr][SwitchNr]>3)
                         {
                            SwitchColorOff[ModuleNr][SwitchNr] = 3;
                         }
 
+                        MaskOff = (0x03<<(LEDNr&0x7))^0xFF;
+                        if (DualColorSwitchState[ModuleNr][TemporySwitchNr/4])
+                        {
+                           Mask = SwitchColorOn[ModuleNr][SwitchNr]<<(LEDNr&0x7);
+                        }
+                        else
+                        {
+                           Mask = SwitchColorOff[ModuleNr][SwitchNr]<<(LEDNr&0x7);
+                        }
+                        LogicLEDData[ByteNr] &= MaskOff;
+                        LogicLEDData[ByteNr] |= Mask;
+                        SetLEDs();
+
                         FormatError = 0;
-                        MessageDone = 1;                        
+                        MessageDone = 1;
                      }
                   }
                }
@@ -1805,7 +1833,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1828,7 +1856,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1836,7 +1864,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }                 
+               }
             }
             break;
          }

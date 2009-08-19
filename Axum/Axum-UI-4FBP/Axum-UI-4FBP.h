@@ -156,6 +156,7 @@ char Direction[4];
 
 unsigned char SwitchColorOn[4][4];
 unsigned char SwitchColorOff[4][4];
+unsigned char DualColorSwitchState[4][4];
 
 unsigned char LCDTextString[8][9];
 unsigned char SwitchState[36];

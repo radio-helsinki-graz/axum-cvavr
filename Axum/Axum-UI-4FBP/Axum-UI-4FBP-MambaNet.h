@@ -24,7 +24,11 @@ Data Stack size     : 512
 #define PCB_MINOR_VERSION        0
 
 #define FIRMWARE_MAJOR_VERSION   1
-#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+
+#define TRANSPORTLAYER_MINOR_CORRECTION 0
+#define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+//FIRMWARE_MINOR_VERSION
+// 1: On/Off color set direct
 
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               7     //Axum-UI-4FBP
@@ -41,7 +45,7 @@ Data Stack size     : 512
 /********************************/
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
-eeprom unsigned int UniqueIDPerProduct    = 24;//0x0005;
+eeprom unsigned int UniqueIDPerProduct    = 2;//0x0005;
 unsigned char CANServices                 = 0x00;
 flash unsigned char NodeServices          = 0x00;
 
