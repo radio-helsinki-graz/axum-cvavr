@@ -79,7 +79,7 @@ void main(void)
 {
    char cntByte;
 
-   // Declare your local variables here     
+   // Declare your local variables here
 
    // Crystal Oscillator division factor: 1
    #pragma optsize-
@@ -240,33 +240,33 @@ void main(void)
    // ADC4: On, ADC5: On, ADC6: On, ADC7: On
    DIDR0=0x00;
    ADMUX=FIRST_ADC_INPUT | (ADC_VREF_TYPE & 0xff);
-   ADCSRA=0xCC;                          
-   
+   ADCSRA=0xCC;
+
    //DELAY To make sure clocks and power are stabalized
-   delay_ms(250); 
-   
+   delay_ms(250);
+
    // I2C Bus initialization
    i2c_init();
    i2c_stop();
 
-   //Initialize convertors (via I2C)  
-   delay_ms(40); 
+   //Initialize convertors (via I2C)
+   delay_ms(40);
    IO112 = 1; //nRST-DA
    delay_ms(40);
    SetCS4385();
-   
+
    IO113 = 1; //nRST-PGA
    InitializeCS3318();
-   
+
 /*   while (1)
    {
       InitializeCS3318();
       delay_ms(250);
    }*/
    PORTA |= 0x0F;
-   delay_us(100);            
+   delay_us(100);
    HardwareMinorRevision = PINA&0x0F;
-   PORTA &= 0xF0;            
+   PORTA &= 0xF0;
 
    delay_ms(10);
 
@@ -279,7 +279,7 @@ void main(void)
 
    // CAN Controller initialization
    InitializeCAN();
-   
+
    LEDState[0] = 0x00;
    LEDState[1] = 0x00;
    LEDState[2] = 0x00;
@@ -348,7 +348,7 @@ void main(void)
    GPOActiveState[5] = 0x01;
    GPOActiveState[6] = 0x01;
    GPOActiveState[7] = 0x01;
-   
+
    GPOState[0] = !GPOActiveState[0];
    GPOState[1] = !GPOActiveState[1];
    GPOState[2] = !GPOActiveState[2];
@@ -373,16 +373,17 @@ void main(void)
 
    for (cntByte=0; cntByte<8; cntByte++)
    {
+      InterpolationLevel[cntByte] = -90;
       CRMLevel[cntByte] = -96;
       CRMStereoSelect[cntByte] = 0x01<<(cntByte&0x01);
       CRMDimLevelFPGA[cntByte] = -20;
       CRMDim[cntByte] = 0x00;
       CRMMute[cntByte] = 0x00;
-      CRMPhase[cntByte] = 0x00;   
+      CRMPhase[cntByte] = 0x00;
       if (cntByte<4)
       {
          char cntTalkback;
-         for (cntTalkback=0; cntTalkback<16; cntTalkback++)         
+         for (cntTalkback=0; cntTalkback<16; cntTalkback++)
          {
             CRMTalkback[cntByte][cntTalkback] = 0x00;
          }
@@ -392,7 +393,7 @@ void main(void)
       CRMTalkbackPhase[cntByte] = 0x00;
       SetCRMRoutingAndLevel(cntByte);
    }
-   SetCRMLevels();   
+   SetCRMLevels();
 
    TransmitCANMessageBufferLength = 0;
    cntTransmitCANMessageBuffer = 0;
@@ -413,9 +414,9 @@ void main(void)
       LEDData[7] = 1;
       SetLEDs();
    }
-   
+
    nMUTE = 1;
-   
+
    // Global enable interrupts
    #asm("sei")
 
@@ -447,7 +448,7 @@ void main(void)
          unsigned char cntLED;
          unsigned char DoSetLEDs;
          unsigned char cntChannel;
-                  
+
          DoSetLEDs = 0;
          for (cntLED=0; cntLED<8; cntLED++)
          {
@@ -493,11 +494,11 @@ void main(void)
          for  (cntChannel=0; cntChannel<8; cntChannel++)
          {
             unsigned char Mask = 0x01<<cntChannel;
-            
+
             if ((SignalState^NewSignalState)&Mask)
             {
                unsigned char TransmitBuffer[1];
-                             
+
                TransmitBuffer[0] = 0;
                if (NewSignalState&Mask)
                {
@@ -534,6 +535,7 @@ void main(void)
       }
 
       ReadSwitches();
+      SetCRMLevels();
    }
 }
 
@@ -603,7 +605,7 @@ void DoSwitch(unsigned char LogicSwitchNr, int Event)
    {
       unsigned char TransmitBuffer[1];
       unsigned int ObjectNr = 0;
-                     
+
       if ((LogicSwitchNr>=0) && (LogicSwitchNr<8))
       {
          ObjectNr = LogicSwitchNr + 1027;
@@ -647,14 +649,14 @@ void SetGPOs()
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
    unsigned char MessageDone;
-   
+
    MessageDone = 0;
-   
+
    if (MessageID)
    {
       Ack = 1;
    }
-   
+
    switch (MessageType)
    {
       //MessageType = 0, handled in the stack
@@ -688,7 +690,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = RackSlotNr;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1025) && (ObjectNr<1026))
@@ -701,7 +703,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = 0;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1026) && (ObjectNr<1027))
@@ -714,7 +716,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = 8;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1027) && (ObjectNr<1035))
@@ -747,7 +749,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1083) && (ObjectNr<1091))
                {  //DAC signal
-                  unsigned char Mask = 0x01<<(ObjectNr-1083);                  
+                  unsigned char Mask = 0x01<<(ObjectNr-1083);
 
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
@@ -777,7 +779,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   if (SignalState&Mask)
-                  {                                
+                  {
                      TransmitBuffer[5] = 1;
                   }
                   else
@@ -823,7 +825,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             }
             break;
             case  MAMBANET_OBJECT_ACTION_GET_ACTUATOR_DATA:
-            {       
+            {
                unsigned char TransmitBuffer[23];
 
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -831,7 +833,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
 
                if ((ObjectNr>=1035) && (ObjectNr<1043))
-               {  //GPI-Active-state  
+               {  //GPI-Active-state
                   unsigned char GPINr;
                   GPINr = ObjectNr-1035;
 
@@ -870,7 +872,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1067) && (ObjectNr<1075))
-               {  //GPO-Active-state  
+               {  //GPO-Active-state
                   unsigned char GPONr;
                   GPONr = ObjectNr-1067;
 
@@ -1099,7 +1101,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -1128,7 +1130,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      {
                         unsigned char GPONr;
                         GPONr = ObjectNr-1051;
-                        
+
                         if (Data[5])
                         {
                            GPOState[GPONr] = GPOActiveState[GPONr];
@@ -1156,7 +1158,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                         GPOPulseTime[GPONr] = Data[5];
                         SetGPOs();
-                     
+
                         FormatError = 0;
                         MessageDone = 1;
                      }
@@ -1217,7 +1219,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1099) && (ObjectNr<1107))
                {  //CRM routing
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1099;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1237,20 +1239,20 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   {
                      float FloatData;
                      if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
-                     {                     
+                     {
                         unsigned char ChannelNr;
-                        
+
                         ChannelNr = ObjectNr-1107;
-                        
+
                         CRMLevel[ChannelNr] = FloatData;
                         if (CRMLevel[ChannelNr]>22)
                         {
                            CRMLevel[ChannelNr] = 22;
                         }
                         else if (CRMLevel[ChannelNr]<-96)
-                        {                                             
+                        {
                            CRMLevel[ChannelNr] = -96;
-                        }                       
+                        }
                         SetCRMLevels();
 
                         FormatError = 0;
@@ -1261,7 +1263,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1115) && (ObjectNr<1123))
                {  //CRM phase
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1115;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1278,7 +1280,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1123) && (ObjectNr<1131))
                {  //CRM dim
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1123;
 
                   if (DataType == STATE_DATATYPE)
@@ -1286,7 +1288,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      if (DataSize == 1)
                      {
                         CRMDim[ChannelNr] = Data[5];
-                        SetCRMRoutingAndLevel(ChannelNr);                      
+                        SetCRMRoutingAndLevel(ChannelNr);
 
                         FormatError = 0;
                         MessageDone = 1;
@@ -1296,7 +1298,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1131) && (ObjectNr<1139))
                {  //CRM dim level
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1131;
 
                   if (DataType == FLOAT_DATATYPE)
@@ -1315,7 +1317,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                            {
                               CRMDimLevelFPGA[ChannelNr] = -60;
                            }
-                           SetCRMRoutingAndLevel(ChannelNr);                      
+                           SetCRMRoutingAndLevel(ChannelNr);
 
                            FormatError = 0;
                            MessageDone = 1;
@@ -1327,7 +1329,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                {  //CRM talkback
                   unsigned char TalkbackNr;
                   unsigned char OutputNr;
-                  
+
                   TalkbackNr = (ObjectNr-1139)&0x0F;
                   OutputNr = (ObjectNr-1139)>>4;
 
@@ -1346,7 +1348,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1203) && (ObjectNr<1211))
                {  //CRM talkback routing
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1203;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1363,7 +1365,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1211) && (ObjectNr<1219))
                {  //CRM talkback level
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1211;
 
                   if (DataType == FLOAT_DATATYPE)
@@ -1374,16 +1376,16 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
                         {
                            CRMTalkbackLevel[ChannelNr] = FloatData;
-                           
+
                            if (CRMTalkbackLevel[ChannelNr]>24)
                            {
                               CRMTalkbackLevel[ChannelNr] = 24;
                            }
                            else if (CRMTalkbackLevel[ChannelNr]<-60)
                            {
-                              CRMTalkbackLevel[ChannelNr] = -60;                       
+                              CRMTalkbackLevel[ChannelNr] = -60;
                            }
-                           
+
                            SetCRMRoutingAndLevel(ChannelNr);
 
                            FormatError = 0;
@@ -1395,7 +1397,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1219) && (ObjectNr<1227))
                {  //CRM talkback phase
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1219;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1412,7 +1414,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1227) && (ObjectNr<1235))
                {  //Total CRM mute
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1227;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1455,7 +1457,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1478,7 +1480,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1486,7 +1488,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }                 
+               }
             }
             break;
          }
@@ -1534,38 +1536,64 @@ char GetSlotNr()
 
    return SlotNr;
 }
- 
+
 void SetCRMLevels()
 {
-   unsigned int CS3318Levels[8];
-   char cntChannel;
-   
-   for (cntChannel=0; cntChannel<8; cntChannel++)
-   {
-      float FloatLevel;
-      
-      FloatLevel = CRMLevel[cntChannel];
-      /*if (CRMDim[cntChannel])
+  unsigned int CS3318Levels[8];
+  char cntChannel;
+  char SetLevels = 0;
+  unsigned int CS3318Value = 0;
+  float FloatLevel = -96;
+
+  for (cntChannel=0; cntChannel<8; cntChannel++)
+  {
+    if (CRMLevel[cntChannel] != InterpolationLevel[cntChannel])
+    {
+      float Difference = CRMLevel[cntChannel]-InterpolationLevel[cntChannel];
+      float Steps = -(((float)InterpolationLevel[cntChannel]-22)/10);
+      if (Steps == 0)
       {
-         FloatLevel += CRMDimLevel[cntChannel];
-      }*/
-      
-      if (CRMMute[cntChannel])
-      {
-         FloatLevel = -96;
+        Steps = 0.1;
       }
 
-      if (FloatLevel<-96)
+      if (Difference>Steps)
       {
-         FloatLevel = -96;
+        Difference = Steps;
       }
-      else if (FloatLevel>22)
+      else if (Difference<-Steps)
       {
-         FloatLevel = 22;
+        Difference = -Steps;
       }
-      CS3318Levels[cntChannel] = (FloatLevel*4)+420;
-   }      
-   SetCS3318(CS3318Levels);
+
+      InterpolationLevel[cntChannel] += Difference;
+    }
+    FloatLevel = InterpolationLevel[cntChannel];
+
+    if (CRMMute[cntChannel])
+    {
+      FloatLevel = -96;
+    }
+
+    if (FloatLevel<-96)
+    {
+      FloatLevel = -96;
+    }
+    else if (FloatLevel>22)
+    {
+      FloatLevel = 22;
+    }
+    CS3318Value = (FloatLevel*4)+420;
+
+    if (CS3318Levels[cntChannel] != CS3318Value)
+    {
+      CS3318Levels[cntChannel] = CS3318Value;
+      SetLevels = 1;
+    }
+  }
+  if (SetLevels)
+  {
+    SetCS3318(CS3318Levels);
+  }
 }
 
 void InitializeCS3318()
@@ -1574,7 +1602,7 @@ void InitializeCS3318()
    i2c_write(0x80);              //Chip address + write
    i2c_write(0x8B);              //MAP -> auto increment + address of Volume Ch. 1
    i2c_write(0x00);              //Mute control
-   i2c_stop();   
+   i2c_stop();
 
    SetCRMLevels();
 
@@ -1582,7 +1610,7 @@ void InitializeCS3318()
    i2c_write(0x80);              //Chip address + write
    i2c_write(0x8E);              //MAP -> auto increment + address of Volume Ch. 1
    i2c_write(0x00);              //Master Power
-   i2c_stop();   
+   i2c_stop();
 
 }
 
@@ -1590,7 +1618,7 @@ void SetCS3318(unsigned int *Levels)
 {
    unsigned char cntBit;
    unsigned char QuaterVolumes;
-      
+
    QuaterVolumes = 0x00;
    for (cntBit=0; cntBit<8; cntBit++)
    {
@@ -1602,7 +1630,7 @@ void SetCS3318(unsigned int *Levels)
       {
          Levels[cntBit] = 508;
       }
-      
+
       QuaterVolumes >>= 1;
       if (Levels[cntBit]&0x01)
       {
@@ -1622,7 +1650,7 @@ void SetCS3318(unsigned int *Levels)
    i2c_write(Levels[6]>>1);  //Volume Ch 7
    i2c_write(Levels[7]>>1);  //Volume Ch 8
    i2c_write(QuaterVolumes);  //Volume CH1-8: Quarters
-   i2c_stop();   
+   i2c_stop();
 }
 
 void SetCS4385()
@@ -1632,8 +1660,8 @@ void SetCS4385()
    i2c_write(0x82);              //MAP -> auto increment + address 2: Mode Control
    i2c_write(0x80);              //Mode Control
 //   i2c_write(0x03);              //PCM Control
-   i2c_stop();   
-   
+   i2c_stop();
+
 }
 
 void ReadFPGA()
@@ -1679,7 +1707,7 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 
    nSS = 0;
    SCK_PSCK = 0;
-   
+
    Mask = 0x80;
    for (cntBit=0; cntBit<8; cntBit++)
    {
@@ -1712,33 +1740,33 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 }
 
 void SetCRMRoutingAndLevel(unsigned char ChannelNr)
-{          
-   unsigned char FPGABlockAddress; 
-   unsigned int StereoSelect;          
+{
+   unsigned char FPGABlockAddress;
+   unsigned int StereoSelect;
    float Level;
    unsigned int IntegerLevel;
    char cntNrOfSummation;
    char cntTalkback;
    unsigned int TalkbackData[2];
-                 
+
    FPGABlockAddress = ((ChannelNr&0xFE)<<3)+0x10;
 
    if (CRMDim[ChannelNr])
-   {   
+   {
       Level = CRMDimLevelFPGA[ChannelNr]; //+CRMLevelFPGA[ChannelNr]
    }
    else
    {
       Level = 0;
-   }  
+   }
    IntegerLevel = ((float)32)/pow(10, (float)Level/20);
    if (CRMPhase[ChannelNr])
    {
       IntegerLevel *= -1;
    }
    SetFPGA(FPGABlockAddress+3+(ChannelNr&0x01), IntegerLevel);
-      
-//Talkback   
+
+//Talkback
    IntegerLevel = ((float)32)/pow(10, (float)CRMTalkbackLevel[ChannelNr]/20);
    if (CRMTalkbackPhase[ChannelNr])
    {
@@ -1751,43 +1779,43 @@ void SetCRMRoutingAndLevel(unsigned char ChannelNr)
    StereoSelect |= (CRMTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
    StereoSelect |= (CRMTalkbackStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<6;
    SetFPGA(FPGABlockAddress+7, StereoSelect);
-  
+
    //Talkback
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
-   
+
    cntNrOfSummation = 0;
    TalkbackData[0] = 0;
    TalkbackData[1] = 0;
    for (cntTalkback = 0; cntTalkback<16; cntTalkback++)
    {
       if (CRMTalkback[(ChannelNr>>1)][cntTalkback])
-      {  
+      {
          switch (cntNrOfSummation)
          {
             case 0:
-            { 
+            {
                TalkbackData[0] |= ((unsigned int)cntTalkback+1);
             }
             break;
             case 1:
-            { 
+            {
                TalkbackData[0] |= ((unsigned int)cntTalkback+1)<<8;
             }
             break;
             case 2:
-            { 
+            {
                TalkbackData[1] |= ((unsigned int)cntTalkback+1);
             }
             break;
             case 3:
-            { 
+            {
                TalkbackData[1] |= ((unsigned int)cntTalkback+1)<<8;
             }
             break;
          }
          cntNrOfSummation++;
       }
-   }   
+   }
 
    SetFPGA(FPGABlockAddress+8, TalkbackData[0]);
    SetFPGA(FPGABlockAddress+9, TalkbackData[1]);
@@ -1811,11 +1839,11 @@ void GetGPIOModes()
    READ_SLOTADR = 1;
    delay_ms(1);
    GPIOModesB = PINF;
-      
+
    for (cntBit=0; cntBit<8; cntBit++)
    {
       unsigned char Mask = 0x80>>cntBit;
-      if ((GPIOModesA&Mask) == (GPIOModesB&Mask)) 
+      if ((GPIOModesA&Mask) == (GPIOModesB&Mask))
       {
          GPIOMode[cntBit] = 1;
       }

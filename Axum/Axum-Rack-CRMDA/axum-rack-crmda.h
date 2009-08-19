@@ -83,7 +83,7 @@ unsigned char GPIActiveState[8];
 unsigned char GPIOMode[8];
 unsigned int GPOStartTime[8];
 unsigned char GPOPulseTime[8];
-unsigned char GPOState[8];  
+unsigned char GPOState[8];
 unsigned char GPOActiveState[8];
 
 unsigned char SwitchData[2][8];
@@ -95,6 +95,7 @@ unsigned char RackSlotNr;
 unsigned char FPGAData[12];
 unsigned int FPGAFirmwareType;
 
+float InterpolationLevel[8] = { 0, 0, 0, 0, 0, 0, 0, 0};
 float CRMLevel[8] = { 0, 0, 0, 0, 0, 0, 0, 0};
 unsigned char CRMDim[8] = { 0, 0, 0, 0, 0, 0, 0, 0};
 //float CRMDimLevel[8] = {-10, -10, -10, -10, -10, -10, -10, -10};
@@ -109,7 +110,7 @@ unsigned char CRMPhase[8];
 unsigned char CRMTalkback[4][16];
 float CRMTalkbackLevel[8];
 unsigned char CRMTalkbackStereoSelect[8];
-unsigned char CRMTalkbackPhase[8];   
+unsigned char CRMTalkbackPhase[8];
 unsigned char TalkbackFPGAAddress[16] = { 0x78, 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38, 0x40, 0x48, 0x50, 0x58, 0x60, 0x68, 0x70};
 
 
@@ -118,7 +119,7 @@ void ReadSwitches();
 void DoSwitch(unsigned char LogicSwitchNr, int Event);
 void SetLEDs();
 void SetGPOs();
-char GetSlotNr();     
+char GetSlotNr();
 void SetCRMLevels();
 void InitializeCS3318();
 void SetCS3318(unsigned int *Levels);

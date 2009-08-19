@@ -24,7 +24,11 @@ Data Stack size     : 512
 #define PCB_MINOR_VERSION        0
 
 #define FIRMWARE_MAJOR_VERSION   1
-#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+#define TRANSPORTLAYER_MINOR_CORRECTION 0
+#define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+//Local minor:
+// 0 Initial release
+// 1 Added gain interpolation
 
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               4     //Axum-Rack-CRMDA
@@ -41,9 +45,9 @@ Data Stack size     : 512
 /********************************/
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
-eeprom unsigned int UniqueIDPerProduct    = 10;//0x0007;
+eeprom unsigned int UniqueIDPerProduct    = 3;//0x0007;
 unsigned char CANServices                 = 0x00;
-flash unsigned char NodeServices          = 0x00;        
+flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 
@@ -74,7 +78,7 @@ flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
 #if (NR_OF_OBJECTS != 0)
 flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_OBJECTS] =
 {
-   // Description             , services, 
+   // Description             , services,
    //                         , sensor {type, size, min, max}
    //                         , actuator {type, size, min, max, default}
    { "Slot number"            , 0x00
@@ -88,7 +92,7 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_OBJECTS
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
    { "GPI-1"                  , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},                              
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
    { "GPI-2"                  , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
@@ -584,10 +588,10 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_OBJECTS
    { "CRM-4-Talkback-6"       , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "CRM-4-Talkback-7"       , 0x00                                                                              
+   { "CRM-4-Talkback-7"       , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "CRM-4-Talkback-8"       , 0x00                                             
+   { "CRM-4-Talkback-8"       , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "CRM-4-Talkback-9"       , 0x00
