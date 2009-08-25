@@ -120,8 +120,8 @@ extern void (*ProcessMambaNetMessageFromCAN)(unsigned long int ToAddress, unsign
 extern void CanBussError();
 
 #define BROADCAST_CAN_ADDRESS                   0x10000000  //0x1000zzz0   z = from address
-#define BROADCAST_ADDRESS_RESERVATION_ADDRESS   0x0FFF0000  //0x1FFFzzz0   z = from address
-#define BROADCAST_PARENT_CONTROL_ADDRESS        0x0FFF0001  //0x1FFFzzz0   z = from address
+#define BROADCAST_ADDRESS_RESERVATION_ADDRESS   0x0FFF0000  //0x0FFFzzz0   z = from address
+#define BROADCAST_PARENT_CONTROL_ADDRESS        0x0FFF0001  //0x0FFFzzz1   z = from address
 
 unsigned long int LocalCANAddress;
 unsigned long int GatewayCANAddress;
