@@ -827,7 +827,21 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1092) && (ObjectNr<1130))
                {
-                  char SwitchNr = ObjectNr-1092;
+                  char SeqNr = ObjectNr-1092;
+
+                  char SwitchNr = 0;
+                  if (SeqNr < 3)
+                  {
+                    SwitchNr = SeqNr;
+                  }
+                  else if (SeqNr < 35)
+                  {
+                    SwitchNr = SeqNr+8;
+                  }
+                  else
+                  {
+                    SwitchNr = SeqNr+30;
+                  }
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -839,7 +853,21 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1130) && (ObjectNr<1168))
                {
-                  char SwitchNr = ObjectNr-1130;
+                  char SeqNr = ObjectNr-1130;
+
+                  char SwitchNr = 0;
+                  if (SeqNr < 3)
+                  {
+                    SwitchNr = SeqNr;
+                  }
+                  else if (SeqNr < 35)
+                  {
+                    SwitchNr = SeqNr+8;
+                  }
+                  else
+                  {
+                    SwitchNr = SeqNr+30;
+                  }
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -920,7 +948,21 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1092) && (ObjectNr<1130))
                {
-                  char SwitchNr = ObjectNr-1092;
+                  char SeqNr = ObjectNr-1092;
+
+                  char SwitchNr = 0;
+                  if (SeqNr < 3)
+                  {
+                    SwitchNr = SeqNr;
+                  }
+                  else if (SeqNr < 35)
+                  {
+                    SwitchNr = SeqNr+8;
+                  }
+                  else
+                  {
+                    SwitchNr = SeqNr+30;
+                  }
 
                   SwitchColorOn[SwitchNr] = Data[5]&0x03;
                   SetLEDs();
@@ -930,7 +972,21 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1130) && (ObjectNr<1168))
                {
-                  char SwitchNr = ObjectNr-1130;
+                  char SeqNr = ObjectNr-1130;
+
+                  char SwitchNr = 0;
+                  if (SeqNr < 3)
+                  {
+                    SwitchNr = SeqNr;
+                  }
+                  else if (SeqNr < 35)
+                  {
+                    SwitchNr = SeqNr+8;
+                  }
+                  else
+                  {
+                    SwitchNr = SeqNr+30;
+                  }
 
                   SwitchColorOff[SwitchNr] = Data[5]&0x03;
                   SetLEDs();
