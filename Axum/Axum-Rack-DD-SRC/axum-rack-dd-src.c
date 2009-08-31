@@ -664,6 +664,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
    MessageDone = 0;
 
+   if (MessageID)
+   {
+      Ack = 1;
+   }
+
    switch (MessageType)
    {
       //MessageType = 0, handled in the stack
