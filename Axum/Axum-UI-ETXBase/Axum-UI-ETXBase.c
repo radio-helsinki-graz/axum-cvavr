@@ -489,8 +489,6 @@ void main(void)
    
    while (1)
    {             
-       //PDO=!PDO;   
-
       // Place your code here     
       if ((cntMilliSecond-PreviousMilliSecond)>1000)
       {
@@ -599,7 +597,6 @@ void main(void)
       while (UARTTransmitBufferBottom != UARTTransmitBufferTop)
       {
          char cntTransmitByte;
-         PDO=1;
                  
          for (cntTransmitByte=0; cntTransmitByte<13; cntTransmitByte++)
          {         
@@ -610,7 +607,6 @@ void main(void)
          {
             UARTTransmitBufferBottom = 0;
          }
-         PDO=0;
       }
    }
 }
