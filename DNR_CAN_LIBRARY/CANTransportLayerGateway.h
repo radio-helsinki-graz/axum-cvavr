@@ -1270,7 +1270,7 @@ void ProcessCANControlMessage(unsigned char CANControlMessageType)
                char FreeSlot;
                unsigned long cnt;
                //Check for address
-               AddressToAssign = 0x0000001;
+               AddressToAssign = 0x0000002;
                Found = 0;
                FreeSlot = -1;
                for (cnt=0; cnt<CAN_ADDRESS_BUFFER_SIZE; cnt++)
