@@ -104,7 +104,7 @@ void main(void)
    // Port C initialization
    // Func7=In Func6=In Func5=In Func4=Out Func3=Out Func2=In Func1=Out Func0=In
    // State7=T State6=T State5=T State4=0 State3=1 State2=T State1=1 State0=T
-   PORTC=0x0E;
+   PORTC=0xEE;
    DDRC=0x1E;
 
    // Port D initialization
@@ -128,7 +128,7 @@ void main(void)
    // Port G initialization
    // Func4=In Func3=In Func2=In Func1=In Func0=In
    // State4=T State3=T State2=T State1=T State0=T
-   PORTG=0x00;
+   PORTG=0x04;
    DDRG=0x00;
 
    // Timer/Counter 0 initialization
@@ -241,7 +241,7 @@ void main(void)
    ADMUX=FIRST_ADC_INPUT | (ADC_VREF_TYPE & 0xff);
    ADCSRA=0xCC;
 
-   HardwareMinorRevision = (((PINC>>5)&0x7) | ((PING<<1)&0x80));
+   HardwareMinorRevision = (((PINC>>4)&0xE) | ((PING>>2)&0x01))^0x0F;
 
    FPGAFirmwareMajorRevision = 0;
    FPGAFirmwareMinorRevision = 0;
