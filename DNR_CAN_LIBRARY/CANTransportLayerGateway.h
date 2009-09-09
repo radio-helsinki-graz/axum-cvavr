@@ -132,7 +132,7 @@ typedef eeprom struct
    #endif
    #ifdef _CHIP_AT90CAN64_
       #define MAX_NR_OF_OBJECTS 501     //CAN 64
-      #define NR_OF_UART_BUFFERS  64//176
+      #define NR_OF_UART_BUFFERS  32//176
    #endif
    #ifdef _CHIP_AT90CAN128_
       #define MAX_NR_OF_OBJECTS 1013    //CAN 128
@@ -145,7 +145,7 @@ typedef eeprom struct
    #endif
    #ifdef _CHIP_AT90CAN64_
       #define MAX_NR_OF_OBJECTS 333     //CAN 64
-      #define NR_OF_UART_BUFFERS  64//176
+      #define NR_OF_UART_BUFFERS  96//64//176
    #endif
    #ifdef _CHIP_AT90CAN128_
       #define MAX_NR_OF_OBJECTS 845     //CAN 128

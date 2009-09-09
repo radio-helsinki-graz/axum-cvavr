@@ -65,6 +65,8 @@ Data Stack size     : 512
 
 extern unsigned char AddressValidated;
 
+unsigned char FragmentFilled[16];
+
 unsigned long int cntAlive;
 #ifdef LCD_CONNECTED            
 unsigned char DebugString[64];  
@@ -91,13 +93,7 @@ unsigned char SerialReceiveMambaNetMessage;
 // Timer 0 output compare interrupt service routine
 interrupt [TIM0_COMP] void timer0_comp_isr(void)
 {
-   //every 100 useconds a pulse.
-//   cntTimer0++;
-//   if (cntTimer0 == 10)
-//   {  //1mS
-//      cntTimer0 = 0;
-      cntMilliSecond++;     
-//   }
+  cntMilliSecond++;     
 }
 
 #define FIRST_ADC_INPUT 0
@@ -145,7 +141,7 @@ interrupt [TWI] void twi_isr(void)
 #ifdef _CHIP_AT90CAN32_
    #define RX_BUFFER_SIZE1 128
 #else
-   #define RX_BUFFER_SIZE1 512
+   #define RX_BUFFER_SIZE1 1024
 #endif
 char rx_buffer1[RX_BUFFER_SIZE1];
 
@@ -217,7 +213,7 @@ char getchar1(void)
 #ifdef _CHIP_AT90CAN32_
    #define TX_BUFFER_SIZE1 256
 #else   
-   #define TX_BUFFER_SIZE1 1024
+   #define TX_BUFFER_SIZE1 256
 #endif   
 char tx_buffer1[TX_BUFFER_SIZE1];
 
@@ -490,35 +486,25 @@ void main(void)
    while (1)
    {             
       // Place your code here     
+#ifdef LCD_CONNECTED   
       if ((cntMilliSecond-PreviousMilliSecond)>1000)
       {
          PreviousMilliSecond = cntMilliSecond;
-                               
-//         SendCANParentControlMessage();
-         
          cntAlive++;  
-         
-#ifndef LCD_CONNECTED            
-         //LEDDebug = !LEDDebug;
-         //DEBUG_LED = LEDDebug;
-#endif
-         
-         
-         
-#ifdef LCD_CONNECTED   
+
          sprintf(DebugString, "Alive (%d) %04X%04X - S:%02X C:%02X", cntAlive, GlobalReceiveSequenceCANAddress>>16, GlobalReceiveSequenceCANAddress&0xFFFF, Debug_SerialTransmitBufferCount, Debug_CANReceiveBufferCount);
          SetLCDModule(0, 0, DebugString);
-#endif         
-#ifdef LCD_CONNECTED   
          sprintf(DebugString, "D%d S%d O%d, M%d O%d R%d T%d ", cntUSART1DataOverrun, cntMambaNetFormatErrorFromSerial, cntTransmitOverrunToUART, cntMambaNetFormatErrorFromCAN, cntMambaNetOverrunFromCAN, cntGlobalCANMessageReceived, cntCANMessageTransmitted);
          SetLCDModule(0, 1, DebugString);               
-#endif         
       }
+#endif         
 
      
-      while (rx_counter1)
+      if (rx_counter1)
+      //while (rx_counter1)
       {
          unsigned char ReceivedByte;
+         char cnt;
 
          ReceivedByte = getchar1();       
          
@@ -547,11 +533,13 @@ void main(void)
                         SerialReceiveMambaNetMessage = 1;               
                      }                  
                      ToCANAddress = (ReceivedByte<<7)&0x1F;
+                     SequenceNumber = 0;
                   }
                   break;
                   case 1:
                   {
                      ToCANAddress |= ReceivedByte&0x7F;
+                     SequenceNumber = 0;
                   }
                   break; 
                   case 2:
@@ -563,10 +551,21 @@ void main(void)
                   {
                      if (SerialReceiveMambaNetMessage)
                      {
+                        FragmentFilled[SequenceNumber] = 1;
                         ReceivedSerialMessageBuffer[(SequenceNumber*8)+cntReceivedSerialMessageBuffer-3] = ReceivedByte;
                         if (ReceivedByte == 0xFF)
                         {
-                           SendMambaNetMessageToCAN_DedicatedAddress(ToCANAddress, ReceivedSerialMessageBuffer, ((SequenceNumber*8)+cntReceivedSerialMessageBuffer-3)+1);
+                           char MessageComplete = 1;
+                           for (cnt=0; cnt<=SequenceNumber; cnt++)
+                           {
+                             MessageComplete &= FragmentFilled[cnt];
+                           }
+                           if (MessageComplete)
+                            SendMambaNetMessageToCAN_DedicatedAddress(ToCANAddress, ReceivedSerialMessageBuffer, ((SequenceNumber*8)+cntReceivedSerialMessageBuffer-3)+1);
+                         for (cnt=0; cnt<16; cnt++)
+                         {
+                           FragmentFilled[cnt] = 0;
+                         }
                         }
                      }
                      else
@@ -594,7 +593,8 @@ void main(void)
       }
 
 
-      while (UARTTransmitBufferBottom != UARTTransmitBufferTop)
+//      while (UARTTransmitBufferBottom != UARTTransmitBufferTop)
+      if (UARTTransmitBufferBottom != UARTTransmitBufferTop)
       {
          char cntTransmitByte;
                  

@@ -66,7 +66,7 @@ unsigned char ReceivedSerialMessageBuffer[128];
 //unsigned char ReceivedSerialMessageBuffer[4096];
 
 unsigned char SerialReceiveMambaNetMessage;
-
+unsigned char FragmentFilled[16];
 
 /**********************************/
 // Timer 0 output compare interrupt service routine
@@ -123,7 +123,7 @@ interrupt [TWI] void twi_isr(void)
 #define RX_COMPLETE (1<<RXC)
 
 // USART1 Receiver buffer
-#define RX_BUFFER_SIZE1 512
+#define RX_BUFFER_SIZE1 1024
 char rx_buffer1[RX_BUFFER_SIZE1];
 
 #if RX_BUFFER_SIZE1<256
@@ -191,7 +191,7 @@ char getchar1(void)
 #pragma used-
 
 // USART1 Transmitter buffer
-#define TX_BUFFER_SIZE1 1024
+#define TX_BUFFER_SIZE1 256
 char tx_buffer1[TX_BUFFER_SIZE1];
 
 #if TX_BUFFER_SIZE1<256
@@ -474,9 +474,12 @@ void main(void)
       }
 
 
-      while (rx_counter1)
+      if (rx_counter1)
+      //while (rx_counter1)
       {
          unsigned char ReceivedByte;
+         char cnt;
+         
          ReceivedByte = getchar1();
          
          switch (ReceivedByte)
@@ -504,11 +507,13 @@ void main(void)
                         SerialReceiveMambaNetMessage = 1;               
                      }                  
                      ToCANAddress = (ReceivedByte<<7)&0x1F;
+                     SequenceNumber = 0;
                   }
                   break;
                   case 1:
                   {
                      ToCANAddress |= ReceivedByte&0x7F;
+                     SequenceNumber = 0;
                   }
                   break; 
                   case 2:
@@ -520,10 +525,21 @@ void main(void)
                   {
                      if (SerialReceiveMambaNetMessage)
                      {
+                        FragmentFilled[SequenceNumber] = 1;
                         ReceivedSerialMessageBuffer[(SequenceNumber*8)+cntReceivedSerialMessageBuffer-3] = ReceivedByte;
                         if (ReceivedByte == 0xFF)
                         {
-                           SendMambaNetMessageToCAN_DedicatedAddress(ToCANAddress, ReceivedSerialMessageBuffer, ((SequenceNumber*8)+cntReceivedSerialMessageBuffer-3)+1);
+                           char MessageComplete = 1;
+                           for (cnt=0; cnt<=SequenceNumber; cnt++)
+                           {
+                            MessageComplete &= FragmentFilled[cnt];
+                           }
+                           if (MessageComplete)
+                            SendMambaNetMessageToCAN_DedicatedAddress(ToCANAddress, ReceivedSerialMessageBuffer, ((SequenceNumber*8)+cntReceivedSerialMessageBuffer-3)+1);
+                           for (cnt=0; cnt<16; cnt++)
+                           {
+                            FragmentFilled[cnt] = 0;
+                           }
                         }
                      }
                      else
@@ -550,7 +566,8 @@ void main(void)
          }       
       }
 
-      while (UARTTransmitBufferBottom != UARTTransmitBufferTop)
+      //while (UARTTransmitBufferBottom != UARTTransmitBufferTop)
+      if (UARTTransmitBufferBottom != UARTTransmitBufferTop)
       {
          char cntTransmitByte;
                  
