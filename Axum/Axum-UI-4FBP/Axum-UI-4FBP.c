@@ -356,6 +356,12 @@ void main(void)
    while (1)
    {
       ProcessCAN();
+      
+      if (DoSetLEDs)
+      {
+        DoSetLEDs = 0;
+        SetLEDs();
+      }
 
       // Place your code here
       if (cntMilliSecond - PreviousMilliSecondReservation > 1000)
@@ -1642,7 +1648,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         {
                            LogicLEDData[ByteNr] &= Mask^0xFF;
                         }
-                        SetLEDs();
+                        DoSetLEDs = 1;
+                        //SetLEDs();
 
                         FormatError = 0;
                         MessageDone = 1;
@@ -1681,7 +1688,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         }
                         LogicLEDData[ByteNr] &= MaskOff;
                         LogicLEDData[ByteNr] |= Mask;
-                        SetLEDs();
+                        DoSetLEDs = 1;
+                        //SetLEDs();
 
                         FormatError = 0;
                         MessageDone = 1;
@@ -1708,8 +1716,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         {
                            LogicLEDData[ByteNr] &= Mask^0xFF;
                         }
-
-                        SetLEDs();
+                               
+                        DoSetLEDs=1;
+                        //SetLEDs();
 
                         FormatError = 0;
                         MessageDone = 1;
@@ -1772,7 +1781,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         }
                         LogicLEDData[ByteNr] &= MaskOff;
                         LogicLEDData[ByteNr] |= Mask;
-                        SetLEDs();
+                        DoSetLEDs=1;
+                        //SetLEDs();
 
                         FormatError = 0;
                         MessageDone = 1;
@@ -1818,7 +1828,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         }
                         LogicLEDData[ByteNr] &= MaskOff;
                         LogicLEDData[ByteNr] |= Mask;
-                        SetLEDs();
+                        DoSetLEDs=1;
+                        //SetLEDs();
 
                         FormatError = 0;
                         MessageDone = 1;
