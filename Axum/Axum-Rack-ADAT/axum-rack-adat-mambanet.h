@@ -25,6 +25,8 @@ Data Stack size     : 512
 
 #define FIRMWARE_MAJOR_VERSION   1
 #define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+//Local FIRMWARE_MINOR_VERSION
+//0:  Initial release
 
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               5     //Axum-Rack-ADAT
@@ -47,7 +49,7 @@ flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 
-eeprom char NodeName[32] = "Axum-Rack-ADAT\0x00";
+eeprom char NodeName[32] = "Rack-ADAT";
 
 unsigned char Parent[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 unsigned char HardwareMinorRevision = 0x00;
@@ -57,7 +59,7 @@ unsigned char FPGAFirmwareMinorRevision = 0;
 
 flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
 {
-   "Axum rack 2x ADAT in/out board\0",    //Description
+   "Rack 2x ADAT in/out board\0",         //Description
                                           //Name is stored in EEPROM, see above
    MANUFACTURER_ID,                       //ManufacturerID
    PRODUCT_ID,                            //ProductID

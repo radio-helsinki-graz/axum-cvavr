@@ -280,12 +280,12 @@ void main(void)
       SwitchState[cntByte] = 0;
    }
    for (cntByte=0; cntByte<4; cntByte++)
-   {
-      sprintf(LCDTextString[cntByte], "  AXUM  ");
+   {                                     
+      sprintf(LCDTextString[cntByte], "  4FBP  ");
    }
    for (cntByte=4; cntByte<8; cntByte++)
-   {
-      sprintf(LCDTextString[cntByte], " by D&R ");
+   {                                   
+      sprintf(LCDTextString[cntByte], "Waiting!");
    }
 
    SetLEDs();
@@ -296,9 +296,9 @@ void main(void)
 
    for (cntModule=0; cntModule<4; cntModule++)
    {
-      sprintf(TextString, "  AXUM  ");
+      sprintf(TextString, "  4FBP  ");
       SetLCDModule(cntModule, 0, TextString);
-      sprintf(TextString, " by D&R ");
+      sprintf(TextString, "Waiting!");
       SetLCDModule(cntModule, 1, TextString);
    }
 

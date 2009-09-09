@@ -24,7 +24,12 @@ Data Stack size     : 512
 #define PCB_MINOR_VERSION        0
 
 #define FIRMWARE_MAJOR_VERSION   2
-#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+#define TRANSPORTLAYER_MINOR_CORRECTION 0
+#define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+//Local FIRMWARE_MINOR_VERSION
+//0:  Initial release
+//1:  Changed name/description with 'Axum' word
+//    Acknowlegde only on processed messages
 
 #define MANUFACTURER_ID          1      //D&R
 #define PRODUCT_ID               20     //Axum-Rack-DSP
@@ -47,7 +52,7 @@ flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 
-eeprom char NodeName[32] = "Axum-Rack-DSP\0";
+eeprom char NodeName[32] = "Rack-DSP";
 
 unsigned char Parent[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 unsigned char HardwareMinorRevision = 0x00;
@@ -56,7 +61,7 @@ unsigned char FPGAFirmwareMinorRevision = 0;
 
 flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
 {
-   "Axum rack DSP - 4x C6727B\0",         //Description
+   "Rack DSP - 4x C6727B",                //Description
                                           //Name is stored in EEPROM, see above
    MANUFACTURER_ID,                       //ManufacturerID
    PRODUCT_ID,                            //ProductID

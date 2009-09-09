@@ -25,8 +25,13 @@ Data Stack size     : 512
 
 #define FIRMWARE_MAJOR_VERSION   2
 //Major version 1: initial release
-//Major version 2: corrected min-max bug on object 1027 (-15V)
-#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+//Major version 2: corrected min-max bug on object 1027 (-15V), transport lyer minor correction of 1 (will be 2.0)
+#define TRANSPORTLAYER_MINOR_CORRECTION 1
+#define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+//Local FIRMWARE_MINOR_VERSION
+//0:  Initial release
+//1:  Changed name/description with 'Axum' word
+//    Acknowlegde only on processed messages
 
 #define MANUFACTURER_ID          1      //D&R
 #define PRODUCT_ID               22     //Axum-Rack-PWR
@@ -49,7 +54,7 @@ flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 
-eeprom char NodeName[32] = "Axum-Rack-PWR\0";
+eeprom char NodeName[32] = "Rack-PWR";
 
 unsigned char Parent[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 unsigned char HardwareMinorRevision;
@@ -58,7 +63,7 @@ unsigned char FPGAFirmwareMinorRevision;
 
 flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
 {
-   "Axum rack power\0",                   //Description
+   "Rack power",                          //Description
                                           //Name is stored in EEPROM, see above
    MANUFACTURER_ID,                       //ManufacturerID
    PRODUCT_ID,                            //ProductID

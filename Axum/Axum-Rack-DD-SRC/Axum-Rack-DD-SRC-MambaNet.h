@@ -24,7 +24,13 @@ Data Stack size     : 512
 #define PCB_MINOR_VERSION        0
 
 #define FIRMWARE_MAJOR_VERSION   1
-#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+#define TRANSPORTLAYER_MINOR_CORRECTION 0
+#define FIRMWARE_MINOR_VERSION   2+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+//Local FIRMWARE_MINOR_VERSION
+//0 Initial release
+//1 Correct bug in Acknowlege of custom messages
+//2 Changed name/description with 'Axum' word
+//    Acknowlegde only on processed messages
 
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               23     //Axum-Rack-DD-SRC
@@ -47,7 +53,7 @@ flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 
-eeprom char NodeName[32] = "Axum-Rack-DD-SRC";
+eeprom char NodeName[32] = "Rack-DD-SRC";
 
 unsigned char Parent[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 unsigned char HardwareMinorRevision = 0x00;
@@ -57,7 +63,7 @@ unsigned char FPGAFirmwareMinorRevision = 0;
 
 flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
 {
-   "Axum rack 4x stereo AES3 SRC in/out board", //Description
+   "Rack 4x stereo AES3 SRC in/out board", //Description
                                           //Name is stored in EEPROM, see above
    MANUFACTURER_ID,                       //ManufacturerID
    PRODUCT_ID,                            //ProductID
