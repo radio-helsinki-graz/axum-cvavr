@@ -44,16 +44,6 @@ unsigned int cntDebug;
 //  extern unsigned char CANServices;
 //#include "Axum-Rack-ETXBase-MambaNet.h"
 
-
-#define 	D4LCD  		   PORTA.7
-#define 	D5LCD  			PORTA.6
-#define 	D6LCD  			PORTA.5
-#define 	D7LCD  			PORTA.4
-#define	RW_LCD			PORTA.3
-#define	E_LCD				PORTA.2
-#define	RS_LCD			PORTA.1
-#define  BLANK          PORTA.0
-
 unsigned long int cntUSART1DataOverrun;
 unsigned long int cntUSART1FramingError;
 unsigned long int cntUSART1ParityError;
@@ -81,8 +71,8 @@ interrupt [TIM0_COMP] void timer0_comp_isr(void)
 //   }
 }
 
-#define FIRST_ADC_INPUT 4
-#define LAST_ADC_INPUT 7
+#define FIRST_ADC_INPUT 0
+#define LAST_ADC_INPUT 4
 unsigned int adc_data[LAST_ADC_INPUT-FIRST_ADC_INPUT+1];
 #define ADC_VREF_TYPE 0x40
 
@@ -256,12 +246,13 @@ void main(void)
    // Func7=Out Func6=Out Func5=Out Func4=In Func3=In Func2=In Func1=In Func0=In
    // State7=0 State6=0 State5=0 State4=0 State3=0 State2=0 State1=0 State0=0
    PORTA=0x80;
-   DDRA=0xE0;
+   DDRA=0xC0;
 
    // Port B initialization
    // Func7=In Func6=In Func5=Out Func4=Out Func3=Out Func2=Out Func1=In Func0=In
    // State7=T State6=T State5=1 State4=1 State3=1 State2=1 State1=T State0=T
    PORTB=0x3C;
+   PORTB=0x00;
    DDRB=0x3C;
 
    // Port C initialization
