@@ -1238,7 +1238,7 @@ void SendMambaNetReservationInfo()
 
 void DecodeRawMambaNetMessageFromCAN(unsigned char *Buffer, unsigned char BufferPosition, unsigned char MessageLength)
 {
-   if (MessageLength>PROTOCOL_OVERHEAD)
+   if ((MessageLength>PROTOCOL_OVERHEAD) && (MessageLength<MAX_MAMBANET_CAN_BUFFER_SIZE))
    {
       unsigned long int ToAddress;
       unsigned long int FromAddress;
