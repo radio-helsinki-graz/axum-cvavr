@@ -280,11 +280,11 @@ void main(void)
       SwitchState[cntByte] = 0;
    }
    for (cntByte=0; cntByte<4; cntByte++)
-   {                                     
+   {
       sprintf(LCDTextString[cntByte], "  4FBP  ");
    }
    for (cntByte=4; cntByte<8; cntByte++)
-   {                                   
+   {
       sprintf(LCDTextString[cntByte], "Waiting!");
    }
 
@@ -356,7 +356,7 @@ void main(void)
    while (1)
    {
       ProcessCAN();
-      
+
       if (DoSetLEDs)
       {
         DoSetLEDs = 0;
@@ -639,46 +639,49 @@ char SwitchCheck(unsigned char cntRow, unsigned char SwitchNr, char SwitchReturn
 
 void ReadSwitches()
 {
-   char cntRow;
+   unsigned char cntRow;
 
    //Switch Rows
    for (cntRow=0; cntRow<5; cntRow++)
    {
       char ReturnValue;
       unsigned char LogicSwitchNr;
+      unsigned char SwitchOffset;
 
       selectRow(cntRow);
 
+      SwitchOffset = cntRow*8;
+
 		ReturnValue = SwitchCheck(cntRow, 0, nSW1);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+0];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+0];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 1, nSW2);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+1];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+1];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 2, nSW3);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+2];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+2];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 3, nSW4);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+3];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+3];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 4, nSW5);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+4];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+4];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 5, nSW6);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+5];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+5];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 6, nSW7);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+6];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+6];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 7, nSW8);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+7];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+7];
       DoSwitch(LogicSwitchNr, ReturnValue);
    }
 
@@ -784,8 +787,8 @@ void DoSwitch(unsigned char LogicSwitchNr, int Event)
    {
       unsigned char TransmitBuffer[1];
       unsigned int ObjectNr;
-      char ModuleNr;
-      char SwitchNr;
+      int ModuleNr;
+      int SwitchNr;
 
       ObjectNrInformationCount = 0;
       LastObjectInformationRequested = 0;
@@ -1716,7 +1719,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         {
                            LogicLEDData[ByteNr] &= Mask^0xFF;
                         }
-                               
+
                         DoSetLEDs=1;
                         //SetLEDs();
 
