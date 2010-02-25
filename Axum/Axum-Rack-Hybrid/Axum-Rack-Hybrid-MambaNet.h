@@ -32,7 +32,7 @@ Data Stack size     : 512
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               29    //Axum-Rack-Hybrid
 
-#define NR_OF_STATIC_OBJECTS    (1147-1023)
+#define NR_OF_STATIC_OBJECTS    (1168-1023)
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
 
 #if (NR_OF_STATIC_OBJECTS > MAX_NR_OF_OBJECTS)
@@ -449,6 +449,69 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    { "Total-hybrid-out-4-Mute"        , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "Ring-1"                    , 0x01
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      }
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Ring-2"                    , 0x01
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      }
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Ring-3"                    , 0x01
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      }
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Ring-4"                    , 0x01
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      }
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Caller-ID-1"               , 0x00
+                                 , {OCTET_STRING_DATATYPE      ,  32, 0    , 127    }
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Caller-ID-2"               , 0x00
+                                 , {OCTET_STRING_DATATYPE      ,  32, 0    , 127    }
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Caller-ID-3"               , 0x00
+                                 , {OCTET_STRING_DATATYPE      ,  32, 0    , 127    }
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Caller-ID-4"               , 0x00
+                                 , {OCTET_STRING_DATATYPE      ,  32, 0    , 127    }
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Off-hook-1"                , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "Off-hook-2"                , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "Off-hook-3"                , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "Off-hook-4"                , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "Dial-number-1"             , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {OCTET_STRING_DATATYPE      ,  32,0     , 127    , 0   }},
+   { "Dial-number-2"             , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {OCTET_STRING_DATATYPE      ,  32,0     , 127    , 0   }},
+   { "Dial-number-3"             , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {OCTET_STRING_DATATYPE      ,  32,0     , 127    , 0   }},
+   { "Dial-number-4"             , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {OCTET_STRING_DATATYPE      ,  32,0     , 127    , 0   }},
+   { "Off-hook-loop-delay"       , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {UNSIGNED_INTEGER_DATATYPE  ,  1, 0     , 255    , 10  }},
+   { "DTMF-tone-length"          , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {UNSIGNED_INTEGER_DATATYPE  ,  2, 0     , 1000   , 50  }},
+   { "DTMF-space-length"         , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {UNSIGNED_INTEGER_DATATYPE  ,  2, 0     , 1000   , 50  }},
+   { "DTMF-comma-pause"          , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {UNSIGNED_INTEGER_DATATYPE  ,  2, 0     , 5000   , 2000}},
+   { "DTMF-space-pause"          , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {UNSIGNED_INTEGER_DATATYPE  ,  2, 0     , 1000   , 100 }},
    { "FPGA function"             , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {OCTET_STRING_DATATYPE      ,  3, 0     , 255    , 0   }}
