@@ -92,7 +92,7 @@ void main(void)
    // Port A initialization
    // Func7=In Func6=In Func5=Out Func4=Out Func3=In Func2=In Func1=Out Func0=Out
    // State7=T State6=T State5=1 State4=1 State3=T State2=T State1=1 State0=1
-   PORTA=0x33;
+   PORTA=0x22;
    DDRA=0x33;
 
    // Port B initialization
@@ -103,9 +103,9 @@ void main(void)
 
    // Port C initialization
    // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=Out Func1=Out Func0=In
-   // State7=0 State6=0 State5=1 State4=1 State3=0 State2=0 State1=1 State0=1
-   PORTC=0x06;
-   DDRC=0x00;
+   // State7=T State6=T State5=T State4=T State3=T State2=0 State1=0 State0=T
+   PORTC=0x00;
+   DDRC=0x06;
 
    // Port D initialization
    // Func7=In Func6=In Func5=In Func4=Out Func3=In Func2=Out Func1=Out Func0=Out
@@ -116,20 +116,20 @@ void main(void)
    // Port E initialization
    // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=Out Func0=Out
    // State7=P State6=P State5=P State4=P State3=0 State2=0 State1=1 State0=1
-   PORTE=0x03;
-   DDRE=0xFC;
+   PORTE=0xF0;
+   DDRE=0x03;
 
    // Port F initialization
    // Func7=In Func6=In Func5=Out Func4=Out Func3=In Func2=In Func1=Out Func0=Out
    // State7=T State6=T State5=1 State4=1 State3=T State2=T State1=1 State0=1
-   PORTA=0x33;
-   DDRA=0x33;
+   PORTF=0x22;
+   DDRF=0x33;
 
    // Port G initialization
-   // Func4=In Func3=Out Func2=In Func1=In Func0=In
-   // State4=T State3=0 State2=T State1=T State0=T
-   PORTG=0x00;
-   DDRG=0x08;
+   // Func4=In Func3=Out Func2=Out Func1=Out Func0=Out
+   // State4=T State3=0 State2=0 State1=0 State0=0
+   PORTG=0x07;
+   DDRG=0x0F;
 
    // Timer/Counter 0 initialization
    // Clock source: System Clock
@@ -244,10 +244,10 @@ void main(void)
    // I2C Bus initialization
    i2c_init();
 
-   PORTA |= 0x0F;
+   PORTE |= 0xF0;
    delay_us(100);
-   HardwareMinorRevision = PINA&0x0F;
-   PORTA &= 0xF0;
+   HardwareMinorRevision = (PINE&0xF0)>>4;
+   PORTE &= 0x0F;
 
    delay_ms(200);
 

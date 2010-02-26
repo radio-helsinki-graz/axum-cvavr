@@ -54,9 +54,9 @@
 #define nOH_HYB4        PORTF.1
 #define nLOOP_HYB4      PORTF.0
 
-#define IO113_AOnCSCMX  PING.0
-#define IO112_A1nCSCMX  PING.1
-#define IO114           PING.2
+#define IO113_AOnCSCMX  PORTG.0
+#define IO112_A1nCSCMX  PORTG.1
+#define IO114_A2nCSCMX  PORTG.2
 #define READ_SLOTADR    PORTG.3
 #define CAN_INT         PING.4
 
