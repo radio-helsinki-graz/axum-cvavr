@@ -98,7 +98,7 @@ unsigned char OutputPhase[8];
 unsigned char OutputTalkback[4][16];
 float OutputTalkbackLevel[8];
 unsigned char OutputTalkbackStereoSelect[8];
-unsigned char OutputTalkbackPhase[8];   
+unsigned char OutputTalkbackPhase[8];
 //unsigned char TalkbackFPGAAddress[8] = { 0x38, 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30 };
 
 char GetSlotNr();
