@@ -25,6 +25,7 @@ Data Stack size     : 512
 #include <stdio.h>
 #include <delay.h>
 #include <math.h>
+#include <string.h>
 
 #include "Axum-Rack-Hybrid.h"
 #include "CANTransportLayer.h"
@@ -77,6 +78,7 @@ ADCSRA|=0x40;
 void main(void)
 {
    char cntByte;
+   unsigned char cntChip;
 
    // Declare your local variables here
 
@@ -249,7 +251,39 @@ void main(void)
    HardwareMinorRevision = (PINE&0xF0)>>4;
    PORTE &= 0x0F;
 
+   for (cntChip=0; cntChip<4; cntChip++)
+   {
+     ResetCMX865A(cntChip);
+     delay_ms(200);
+     SetCMX865A(cntChip, 0xE0, 0x81C1);
+   }
    delay_ms(200);
+
+   for (cntChip=0; cntChip<4; cntChip++)
+   {
+     SetCMX865A(cntChip, 0xE0, 0x8141);
+     SetCMX865A(cntChip, 0xE1, 0x1E00);
+     SetCMX865A(cntChip, 0xE2, 0x1E01);
+
+     OffHookTimerEnabled[cntChip] = 0;
+     OffHookTimer[cntChip] = 0;
+     PreviousOffHookState[cntChip] = 0;
+     OffHookState[cntChip] = 0;
+     LastDialedNumber[cntChip][0] = 0;
+     DialPtr[cntChip] = 32;
+
+     DTMFTimerDelay[cntChip] = 0;
+     DTMFTimer[cntChip] = 0;
+     DTMFSpaceTimerDelay[cntChip] = 0;
+     DTMFSpaceTimer[cntChip] = 0;
+
+     Ring[cntChip] = 0;
+     PreviousRing[cntChip] = 0;
+     RingActive[cntChip] = 0;
+     RingActiveTimer[cntChip] = 0;
+   }
+
+   delay_ms(500);
 
    nSS = 1;
 
@@ -380,12 +414,100 @@ void main(void)
 
          PreviousLEDBlinkMilliSecond = cntMilliSecond;
       }
+
+      Ring[0] = ((!nRING_HYB1) && (!nRING2_HYB1));
+      Ring[1] = ((!nRING_HYB2) && (!nRING2_HYB2));
+      Ring[2] = ((!nRING_HYB3) && (!nRING2_HYB3));
+      Ring[3] = ((!nRING_HYB4) && (!nRING2_HYB4));
+
+      for (cntChip=0; cntChip<4; cntChip++)
+      {
+        if (PreviousRing[cntChip] != Ring[cntChip])
+        {
+          if (Ring[cntChip])
+          {
+            RingActiveTimer[cntChip] = cntMilliSecond;
+            if (!RingActive[cntChip])
+            {
+              RingActive[cntChip] = 1;
+              SendSensorChangeToMambaNet(1147+cntChip, STATE_DATATYPE, 1, &RingActive[cntChip]);
+
+              SetCMX865A(cntChip, 0xE0, 0x8141 | 0x04);
+              SetCMX865A(cntChip, 0xE2, 0x0104);
+            }
+          }
+          PreviousRing[cntChip] = Ring[cntChip];
+        }
+      }
+
+      {
+        unsigned char Int = PINC&0xF0;
+        if (!(PINC&0x10))
+        {
+          unsigned int Status = ReadCMX865A(0, 0xE6);
+          if (Status&0x0400)
+          {
+            unsigned char TransmitBuffer[1] = {1};
+            SendSensorChangeToMambaNet(1151, STATE_DATATYPE, 1, TransmitBuffer);
+          }
+        }
+      }
+
+      for (cntChip=0; cntChip<4; cntChip++)
+      {
+        if (RingActive[cntChip])
+        {
+          if ((cntMilliSecond-RingActiveTimer[cntChip]) > 50)
+          {
+            RingActive[cntChip] = 0;
+            SendSensorChangeToMambaNet(1147+cntChip, STATE_DATATYPE, 1, &RingActive[cntChip]);
+          }
+        }
+      }
+
+      for (cntChip=0; cntChip<4; cntChip++)
+      {
+        CheckOffHook(cntChip);
+      }
+
+      for (cntChip=0; cntChip<4; cntChip++)
+      {
+        unsigned char DoDTMF = 1;
+        if (DTMFTimerDelay[cntChip])
+        {
+          DoDTMF = 0;
+          if (cntMilliSecond-DTMFTimer[cntChip] >= DTMFTimerDelay[cntChip])
+          {
+            SetCMX865A(cntChip, 0xE1, 0x1E00);
+            DTMFTimerDelay[cntChip] = 0;
+            DTMFSpaceTimerDelay[cntChip] = DTMFSpace;
+            DTMFSpaceTimer[cntChip] = cntMilliSecond;
+          }
+        }
+        if (DTMFSpaceTimerDelay[cntChip])
+        {
+          DoDTMF = 0;
+          if (cntMilliSecond-DTMFSpaceTimer[cntChip] >= DTMFSpaceTimerDelay[cntChip])
+          {
+            DTMFSpaceTimerDelay[cntChip] = 0;
+            DoDTMF = 1;
+          }
+        }
+
+        if (DoDTMF)
+        {
+          if (DialPtr[cntChip]<strlen(LastDialedNumber[cntChip]))
+          {
+            DTMFDigit(cntChip, LastDialedNumber[cntChip][DialPtr[cntChip]++]);
+          }
+        }
+      }
    }
 }
 
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
-/*   unsigned char MessageDone;
+   unsigned char MessageDone;
 
    MessageDone = 0;
 
@@ -437,7 +559,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
                   TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 1;
-                  TransmitBuffer[5] = 8;
+                  TransmitBuffer[5] = 4;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
 
@@ -450,13 +572,13 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
                   TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 1;
-                  TransmitBuffer[5] = 8;
+                  TransmitBuffer[5] = 4;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1027) && (ObjectNr<1035))
+/*             else if ((ObjectNr>=1027) && (ObjectNr<1035))
                {  //GPI
                }
                else if ((ObjectNr>=1043) && (ObjectNr<1051))
@@ -508,6 +630,12 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1267) && (ObjectNr<1271))
                {  //Receiver status register
+               }*/
+               else if ((ObjectNr>=1147) && (ObjectNr<1151))
+               {  //Ring
+               }
+               else if ((ObjectNr>=1151) && (ObjectNr<1155))
+               {  //CID
                }
 
                if (!MessageDone)
@@ -544,13 +672,13 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             break;
             case  MAMBANET_OBJECT_ACTION_GET_ACTUATOR_DATA:
             {       //Not yet implemented.
-               unsigned char TransmitBuffer[23];
+               unsigned char TransmitBuffer[48];
 
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                TransmitBuffer[1] = ObjectNr&0xFF;
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
 
-
+/*
                if ((ObjectNr>=1035) && (ObjectNr<1043))
                {  //GPI-Active-state
                }
@@ -768,6 +896,89 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1271) && (ObjectNr<1275))
                {  //Transmitter control register
+               }*/
+
+               if ((ObjectNr>=1155) && (ObjectNr<1159))
+               {  //Off-Hook.
+                  int HybridNr = ObjectNr-1155;
+
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OffHookState[HybridNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1159) && (ObjectNr<1163))
+               {  //Dail number
+                  int HybridNr = ObjectNr-1159;
+                  char cntByte;
+
+                  TransmitBuffer[3] = OCTET_STRING_DATATYPE;
+                  TransmitBuffer[4] = strlen(LastDialedNumber[HybridNr]);
+                  for (cntByte=0; cntByte<TransmitBuffer[4]; cntByte++)
+                  {
+                    TransmitBuffer[5+cntByte] = LastDialedNumber[HybridNr][cntByte];
+                  }
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, TransmitBuffer[4]+5);
+
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1163) && (ObjectNr<1164))
+               {  //Off-hook-loop-delay
+                  TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OffHookLoopDelay;
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1164) && (ObjectNr<1165))
+               {  //DTMF-tone-length
+                  TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
+                  TransmitBuffer[4] = 2;
+                  TransmitBuffer[5] = (DTMFLength>>8)&0xFF;
+                  TransmitBuffer[6] = DTMFLength&0xFF;
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
+
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1165) && (ObjectNr<1166))
+               {  //DTMF-space-length
+                  TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
+                  TransmitBuffer[4] = 2;
+                  TransmitBuffer[5] = (DTMFSpace>>8)&0xFF;
+                  TransmitBuffer[6] = DTMFSpace&0xFF;
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
+
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1166) && (ObjectNr<1167))
+               {  //DTMF-comma-pause
+                  TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
+                  TransmitBuffer[4] = 2;
+                  TransmitBuffer[5] = (DTMFCommaPause>>8)&0xFF;
+                  TransmitBuffer[6] = DTMFCommaPause&0xFF;
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
+
+                  MessageDone = 1;
+               }
+               else if ((ObjectNr>=1167) && (ObjectNr<1168))
+               {  //DTMF-space-pause
+                  TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
+                  TransmitBuffer[4] = 2;
+                  TransmitBuffer[5] = (DTMFSpacePause>>8)&0xFF;
+                  TransmitBuffer[6] = DTMFSpacePause&0xFF;
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
+
+                  MessageDone = 1;
                }
 
                if (!MessageDone)
@@ -815,6 +1026,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                DataType = Data[3];
                DataSize = Data[4];
 
+               /*
                if ((ObjectNr>=1035) && (ObjectNr<1043))
                {  //GPI-Active-state
                   if (DataType == STATE_DATATYPE)
@@ -1147,8 +1359,131 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1271) && (ObjectNr<1275))
                {  //Transmitter control register
+               }*/
+               if ((ObjectNr>=1155) && (ObjectNr<1159))
+               {  //Off-Hook.
+                  int HybridNr = ObjectNr-1155;
+
+                  if (DataType == STATE_DATATYPE)
+                  {
+                    if (DataSize == 1)
+                    {
+                      OffHookState[HybridNr] = Data[5];
+                      if (!Data[5])
+                      {
+                        SetCMX865A(HybridNr, 0xE1, 0x1E00);
+                        DialPtr[HybridNr] = 32;
+                      }
+
+                      FormatError = 0;
+                      MessageDone = 1;
+                    }
+                  }
                }
-               else if (ObjectNr == 1275)
+               else if ((ObjectNr>=1159) && (ObjectNr<1163))
+               {  //Dail number
+                  int HybridNr = ObjectNr-1159;
+
+                  if (DataType == OCTET_STRING_DATATYPE)
+                  {
+                     if (DataSize <= 32)
+                     {
+                        unsigned char cntChar = 0;
+                        unsigned char cntData;
+                        for (cntData=0; cntData<DataSize; cntData++)
+                        {
+                          if (Data[5+cntData] == '+')
+                          {
+                            LastDialedNumber[HybridNr][cntChar++] = '0';
+                            LastDialedNumber[HybridNr][cntChar++] = '0';
+                          }
+                          else
+                          {
+                            LastDialedNumber[HybridNr][cntChar++] = Data[5+cntData];
+                          }
+                        }
+                        LastDialedNumber[HybridNr][DataSize] = 0;
+                        DialPtr[HybridNr] = 0;
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+               else if ((ObjectNr>=1163) && (ObjectNr<1164))
+               {  //Off-hook-loop-delay
+                  if (DataType == UNSIGNED_INTEGER_DATATYPE)
+                  {
+                    if (DataSize == 1)
+                    {
+                      OffHookLoopDelay = Data[5];
+
+                      FormatError = 0;
+                      MessageDone = 1;
+                    }
+                  }
+               }
+               else if ((ObjectNr>=1164) && (ObjectNr<1165))
+               {  //DTMF-tone-length
+                  if (DataType == UNSIGNED_INTEGER_DATATYPE)
+                  {
+                    if (DataSize == 2)
+                    {
+                      DTMFLength = Data[5];
+                      DTMFLength <<= 8;
+                      DTMFLength |= Data[6];
+
+                      FormatError = 0;
+                      MessageDone = 1;
+                    }
+                  }
+               }
+               else if ((ObjectNr>=1165) && (ObjectNr<1166))
+               {  //DTMF-space-length
+                  if (DataType == UNSIGNED_INTEGER_DATATYPE)
+                  {
+                    if (DataSize == 2)
+                    {
+                      DTMFSpace = Data[5];
+                      DTMFSpace <<= 8;
+                      DTMFSpace |= Data[6];
+
+                      FormatError = 0;
+                      MessageDone = 1;
+                    }
+                  }
+               }
+               else if ((ObjectNr>=1166) && (ObjectNr<1167))
+               {  //DTMF-comma-pause
+                  if (DataType == UNSIGNED_INTEGER_DATATYPE)
+                  {
+                    if (DataSize == 2)
+                    {
+                      DTMFCommaPause = Data[5];
+                      DTMFCommaPause <<= 8;
+                      DTMFCommaPause |= Data[6];
+
+                      FormatError = 0;
+                      MessageDone = 1;
+                    }
+                  }
+               }
+               else if ((ObjectNr>=1167) && (ObjectNr<1168))
+               {  //DTMF-space-pause
+                  if (DataType == UNSIGNED_INTEGER_DATATYPE)
+                  {
+                    if (DataSize == 2)
+                    {
+                      DTMFSpacePause = Data[5];
+                      DTMFSpacePause <<= 8;
+                      DTMFSpacePause |= Data[6];
+
+                      FormatError = 0;
+                      MessageDone = 1;
+                    }
+                  }
+               }
+               else if (ObjectNr == 1168)
                {  //Set FPGA
                   if (DataType == OCTET_STRING_DATATYPE)
                   {
@@ -1214,7 +1549,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
          }
       }
       break;
-   }*/
+   }
 }
 
 
@@ -1447,4 +1782,328 @@ void CanBussError()
 {
 //   AddressValidated = 0;
 //   timerReservationInfo = 1;
+}
+
+unsigned int ReadCMX865A(unsigned char ChipNr, unsigned char Register)
+{
+  unsigned char cntBit;
+  unsigned char ByteMSB = 0;
+  unsigned char ByteLSB = 0;
+  unsigned int ReturnValue = 0;
+
+  IO113_AOnCSCMX = ChipNr&0x01;
+  IO112_A1nCSCMX = ChipNr&0x02;
+  IO114_A2nCSCMX = ChipNr&0x04;
+  CLKCMX = 0;
+
+  for (cntBit=0; cntBit<8; cntBit++)
+  {
+    DINCMX = Register&(0x80>>cntBit);
+    CLKCMX = 1;
+    CLKCMX = 0;
+  }
+
+  for (cntBit=0; cntBit<8; cntBit++)
+  {
+    CLKCMX = 1;
+    if (DOUTCMX_3V3)
+    {
+       ByteMSB |= ((unsigned int)0x80>>cntBit);
+    }
+    CLKCMX = 0;
+  }
+
+  for (cntBit=0; cntBit<8; cntBit++)
+  {
+    CLKCMX = 1;
+    if (DOUTCMX_3V3)
+    {
+       ByteLSB |= ((unsigned int)0x80>>cntBit);
+    }
+    CLKCMX = 0;
+  }
+
+  IO113_AOnCSCMX = 1;
+  IO112_A1nCSCMX = 1;
+  IO114_A2nCSCMX = 1;
+
+  ReturnValue = ByteMSB;
+  ReturnValue <<= 8;
+  ReturnValue |= ByteLSB;
+
+  return ReturnValue;
+}
+
+void SetCMX865A(unsigned char ChipNr, unsigned char Register, unsigned int Value)
+{
+  unsigned char cntBit;
+  unsigned char Byte = Value>>8;
+
+  IO113_AOnCSCMX = ChipNr&0x01;
+  IO112_A1nCSCMX = ChipNr&0x02;
+  IO114_A2nCSCMX = ChipNr&0x04;
+
+  CLKCMX = 0;
+
+  for (cntBit=0; cntBit<8; cntBit++)
+  {
+    DINCMX = Register&(0x80>>cntBit);
+    CLKCMX = 1;
+    CLKCMX = 0;
+  }
+
+  for (cntBit=0; cntBit<8; cntBit++)
+  {
+    DINCMX = Byte&(0x80>>cntBit);
+    CLKCMX = 1;
+    CLKCMX = 0;
+  }
+  Byte = Value&0xFF;
+  for (cntBit=0; cntBit<8; cntBit++)
+  {
+    DINCMX = Byte&(0x80>>cntBit);
+    CLKCMX = 1;
+    CLKCMX = 0;
+  }
+
+  IO113_AOnCSCMX = 1;
+  IO112_A1nCSCMX = 1;
+  IO114_A2nCSCMX = 1;
+}
+
+void ResetCMX865A(unsigned char ChipNr)
+{
+  unsigned char cntBit;
+  unsigned char Register = 0x01;
+
+  IO113_AOnCSCMX = ChipNr&0x01;
+  IO112_A1nCSCMX = ChipNr&0x02;
+  IO114_A2nCSCMX = ChipNr&0x04;
+  CLKCMX = 0;
+  for (cntBit=0; cntBit<8; cntBit++)
+  {
+    DINCMX = Register&(0x80>>cntBit);
+    CLKCMX = 1;
+    CLKCMX = 0;
+  }
+
+  IO113_AOnCSCMX = 1;
+  IO112_A1nCSCMX = 1;
+  IO114_A2nCSCMX = 1;
+}
+
+void DTMFDigit(unsigned char ChipNr, char Digit)
+{
+  switch (Digit)
+  {
+    case '0':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E10+10);
+      DTMFTimerDelay[ChipNr] = DTMFLength;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E10+(Digit-'0'));
+      DTMFTimerDelay[ChipNr] = DTMFLength;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case '*':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E10+11);
+      DTMFTimerDelay[ChipNr] = DTMFLength;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case '#':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E10+12);
+      DTMFTimerDelay[ChipNr] = DTMFLength;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case 'A':
+    case 'a':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E10+13);
+      DTMFTimerDelay[ChipNr] = DTMFLength;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case 'B':
+    case 'b':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E10+14);
+      DTMFTimerDelay[ChipNr] = DTMFLength;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case 'C':
+    case 'c':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E10+15);
+      DTMFTimerDelay[ChipNr] = DTMFLength;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case 'D':
+    case 'd':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E10+0);
+      DTMFTimerDelay[ChipNr] = DTMFLength;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case ',':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E00);
+      DTMFTimerDelay[ChipNr] = DTMFCommaPause;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+    case ' ':
+    {
+      SetCMX865A(ChipNr, 0xE1, 0x1E00);
+      DTMFTimerDelay[ChipNr] = DTMFSpacePause;
+      DTMFTimer[ChipNr] = cntMilliSecond;
+    }
+    break;
+  }
+}
+
+void CheckOffHook(unsigned char cntChip)
+{
+  if (PreviousOffHookState[cntChip] != OffHookState[cntChip])
+  {
+    if (OffHookState[cntChip])
+    {
+      switch (cntChip)
+      {
+        case 0:
+        {
+          nOH_HYB1 = 0;
+        }
+        break;
+        case 1:
+        {
+          nOH_HYB2 = 0;
+        }
+        break;
+        case 2:
+        {
+          nOH_HYB3 = 0;
+        }
+        break;
+        case 3:
+        {
+          nOH_HYB4 = 0;
+        }
+        break;
+      }
+      OffHookTimer[cntChip] = cntMilliSecond;
+      OffHookTimerEnabled[cntChip] = 1;
+    }
+    else
+    {
+      switch (cntChip)
+      {
+        case 0:
+        {
+          nLOOP_HYB1 = 0;
+        }
+        break;
+        case 1:
+        {
+          nLOOP_HYB2 = 0;
+        }
+        break;
+        case 2:
+        {
+          nLOOP_HYB3 = 0;
+        }
+        break;
+        case 3:
+        {
+          nLOOP_HYB4 = 0;
+        }
+        break;
+      }
+      OffHookTimer[cntChip] = cntMilliSecond;
+      OffHookTimerEnabled[cntChip] = 1;
+    }
+    PreviousOffHookState[cntChip] = OffHookState[cntChip];
+  }
+  if (OffHookTimerEnabled[cntChip])
+  {
+    if (OffHookState[cntChip])
+    {
+      if ((cntMilliSecond-OffHookTimer[cntChip])>=OffHookLoopDelay)
+      {
+        switch (cntChip)
+        {
+          case 0:
+          {
+            nLOOP_HYB1 = 1;
+          }
+          break;
+          case 1:
+          {
+            nLOOP_HYB2 = 1;
+          }
+          break;
+          case 2:
+          {
+            nLOOP_HYB3 = 1;
+          }
+          break;
+          case 3:
+          {
+            nLOOP_HYB4 = 1;
+          }
+          break;
+        }
+        OffHookTimerEnabled[cntChip] = 0;
+      }
+    }
+    else
+    {
+      if ((cntMilliSecond-OffHookTimer[cntChip])>=OffHookLoopDelay)
+      {
+        switch (cntChip)
+        {
+          case 0:
+          {
+            nOH_HYB1 = 1;
+          }
+          break;
+          case 1:
+          {
+            nOH_HYB2 = 1;
+          }
+          break;
+          case 2:
+          {
+            nOH_HYB3 = 1;
+          }
+          break;
+          case 3:
+          {
+            nOH_HYB4 = 1;
+          }
+          break;
+        }
+        OffHookTimerEnabled[cntChip] = 0;
+      }
+    }
+  }
 }

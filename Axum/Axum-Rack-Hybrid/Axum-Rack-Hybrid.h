@@ -101,10 +101,40 @@ unsigned char OutputTalkbackStereoSelect[8];
 unsigned char OutputTalkbackPhase[8];
 //unsigned char TalkbackFPGAAddress[8] = { 0x38, 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30 };
 
+unsigned char PreviousOffHookState[4];
+unsigned char OffHookTimerEnabled[4];
+unsigned int OffHookTimer[4];
+unsigned char OffHookState[4];
+char LastDialedNumber[4][64];
+char DialPtr[4];
+
+unsigned char Ring[4];
+unsigned char PreviousRing[4];
+unsigned char RingActive[4];
+unsigned int RingActiveTimer[4];
+
+unsigned int DTMFTimerDelay[4];
+unsigned int DTMFTimer[4];
+unsigned int DTMFSpaceTimerDelay[4];
+unsigned int DTMFSpaceTimer[4];
+
+unsigned char OffHookLoopDelay = 10;
+unsigned int DTMFLength = 50;
+unsigned int DTMFSpace = 50;
+unsigned int DTMFCommaPause = 2000;
+unsigned int DTMFSpacePause = 100;
+
 char GetSlotNr();
 void ReadFPGA();
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData);
 void SetRoutingAndLevel(unsigned char ChannelNr);
+
+unsigned int ReadCMX865A(unsigned char ChipNr, unsigned char Register);
+void SetCMX865A(unsigned char ChipNr, unsigned char Register, unsigned int Value);
+void ResetCMX865A(unsigned char ChipNr);
+
+void DTMFDigit(unsigned char ChipNr, char Digit);
+void CheckOffHook(unsigned char cntChip);
 
 //Information required for CANTransportLayer.h
 //#define CAN_ADDRESS_SERVER
