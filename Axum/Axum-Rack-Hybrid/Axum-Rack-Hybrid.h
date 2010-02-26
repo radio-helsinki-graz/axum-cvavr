@@ -84,22 +84,21 @@ unsigned int FPGAFirmwareType;
 
 unsigned char RackSlotNr;
 
-unsigned char InputStereoSelect[8];
-float InputLevel[8];
-unsigned char InputPhase[8];
+unsigned char HybridInputRouting[4];
+float InputLevel[4];
+unsigned char InputPhase[4];
 
-unsigned char OutputStereoSelect[8];
-float OutputLevel[8];
-unsigned char OutputDim[8];
-float OutputDimLevel[8];
-unsigned char OutputMute[8];
-unsigned char OutputPhase[8];
+unsigned char OutputStereoSelect[4];
+float OutputLevel[4];
+unsigned char OutputDim[4];
+float OutputDimLevel[4];
+unsigned char OutputMute[4];
+unsigned char OutputPhase[4];
 
 unsigned char OutputTalkback[4][16];
-float OutputTalkbackLevel[8];
-unsigned char OutputTalkbackStereoSelect[8];
-unsigned char OutputTalkbackPhase[8];
-//unsigned char TalkbackFPGAAddress[8] = { 0x38, 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30 };
+float OutputTalkbackLevel[4];
+unsigned char OutputTalkbackStereoSelect[4];
+unsigned char OutputTalkbackPhase[4];
 
 unsigned char PreviousOffHookState[4];
 unsigned char OffHookTimerEnabled[4];

@@ -32,7 +32,7 @@ Data Stack size     : 512
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               29    //Axum-Rack-Hybrid
 
-#define NR_OF_STATIC_OBJECTS    (1168-1023)
+#define NR_OF_STATIC_OBJECTS    (1180-1023)
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
 
 #if (NR_OF_STATIC_OBJECTS > MAX_NR_OF_OBJECTS)
@@ -89,364 +89,400 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    { "Output channel count"   , 0x00
                               , {UNSIGNED_INTEGER_DATATYPE  ,  1, 0     , 255    }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-in-1-Signal"     , 0x01
-                              , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-in-2-Signal"     , 0x01
-                              , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-in-3-Signal"     , 0x01
-                              , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-in-4-Signal "    , 0x01
-                              , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-in-1-Routing"    , 0x00
+   { "Hybrid-1-to-input-1-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "Hybrid-in-2-Routing"    , 0x00
+   { "Hybrid-2-to-input-1-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
-   { "Hybrid-in-3-Routing"    , 0x00
+   { "Hybrid-3-to-input-1-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "Hybrid-in-4-Routing"    , 0x00
+   { "Hybrid-4-to-input-1-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
-   { "Hybrid-in-1-Level"      , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-in-2-Level"      , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-in-3-Level"      , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-in-4-Level"      , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-in-1-Phase"      , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-in-2-Phase"      , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-in-3-Phase"      , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-in-4-Phase"      , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Signal"    , 0x01
-                              , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-out-2-Signal"    , 0x01
-                              , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-out-3-Signal"    , 0x01
-                              , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-out-4-Signal"    , 0x01
-                              , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Hybrid-out-1-Routing"   , 0x00
+   { "Hybrid-1-to-input-2-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "Hybrid-out-2-Routing"   , 0x00
+   { "Hybrid-2-to-input-2-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
-   { "Hybrid-out-3-Routing"   , 0x00
+   { "Hybrid-3-to-input-2-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "Hybrid-out-4-Routing"   , 0x00
+   { "Hybrid-4-to-input-2-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
-   { "Hybrid-out-1-Level"     , 0x00
+   { "Hybrid-1-to-input-3-Routing"    , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+   { "Hybrid-2-to-input-3-Routing"    , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+   { "Hybrid-3-to-input-3-Routing"    , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+   { "Hybrid-4-to-input-3-Routing"    , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+   { "Hybrid-1-to-input-4-Routing"    , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+   { "Hybrid-2-to-input-4-Routing"    , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+   { "Hybrid-3-to-input-4-Routing"    , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+   { "Hybrid-4-to-input-4-Routing"    , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+   { "Input-1-Signal"         , 0x01
+                              , {STATE_DATATYPE             ,  1, 0     , 1      }
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Input-2-Signal"         , 0x01
+                              , {STATE_DATATYPE             ,  1, 0     , 1      }
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Input-3-Signal"         , 0x01
+                              , {STATE_DATATYPE             ,  1, 0     , 1      }
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Input-4-Signal "        , 0x01
+                              , {STATE_DATATYPE             ,  1, 0     , 1      }
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "Input-1-Level"          , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-out-2-Level"     , 0x00
+   { "Input-2-Level"          , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-out-3-Level"     , 0x00
+   { "Input-3-Level"          , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-out-4-Level"     , 0x00
+   { "Input-4-Level"          , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-out-1-Phase"     , 0x00
+   { "Input-1-Phase"          , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Phase"     , 0x00
+   { "Input-2-Phase"          , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Phase"     , 0x00
+   { "Input-3-Phase"          , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Phase"     , 0x00
+   { "Input-4-Phase"          , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Dim"       , 0x00
+   { "To-hybrid-1-Signal"     , 0x01
+                              , {STATE_DATATYPE             ,  1, 0     , 1      }
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "To-hybrid-2-Signal"     , 0x01
+                              , {STATE_DATATYPE             ,  1, 0     , 1      }
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "To-hybrid-3-Signal"     , 0x01
+                              , {STATE_DATATYPE             ,  1, 0     , 1      }
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "To-hybrid-4-Signal"    , 0x01
+                              , {STATE_DATATYPE             ,  1, 0     , 1      }
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
+   { "To-hybrid-1-Routing"   , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+   { "To-hybrid-2-Routing"   , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+   { "To-hybrid-3-Routing"   , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+   { "To-hybrid-4-Routing"   , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+   { "To-hybrid-1-Level"     , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
+   { "To-hybrid-2-Level"     , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
+   { "To-hybrid-3-Level"     , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
+   { "To-hybrid-4-Level"     , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
+   { "To-hybrid-1-Phase"     , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Dim"       , 0x00
+   { "To-hybrid-2-Phase"     , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Dim"       , 0x00
+   { "To-hybrid-3-Phase"     , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Dim"       , 0x00
+   { "To-hybrid-4-Phase"     , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Dim-level" , 0x00
+   { "To-hybrid-1-Dim"       , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "To-hybrid-2-Dim"       , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "To-hybrid-3-Dim"       , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "To-hybrid-4-Dim"       , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "To-hybrid-1-Dim-level" , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0xCD00 }},
-   { "Hybrid-out-2-Dim-level" , 0x00
+   { "To-hybrid-2-Dim-level" , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0xCD00 }},
-   { "Hybrid-out-3-Dim-level" , 0x00
+   { "To-hybrid-3-Dim-level" , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0xCD00 }},
-   { "Hybrid-out-4-Dim-level" , 0x00
+   { "To-hybrid-4-Dim-level" , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0xCD00 }},
-   { "Hybrid-out-1-Talkback-1"    , 0x00
+   { "To-hybrid-1-Talkback-1"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-2"    , 0x00
+   { "To-hybrid-1-Talkback-2"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-3"    , 0x00
+   { "To-hybrid-1-Talkback-3"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-4"    , 0x00
+   { "To-hybrid-1-Talkback-4"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-5"    , 0x00
+   { "To-hybrid-1-Talkback-5"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-6"    , 0x00
+   { "To-hybrid-1-Talkback-6"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-7"    , 0x00
+   { "To-hybrid-1-Talkback-7"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-8"    , 0x00
+   { "To-hybrid-1-Talkback-8"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-9"    , 0x00
+   { "To-hybrid-1-Talkback-9"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-10"    , 0x00
+   { "To-hybrid-1-Talkback-10"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-11"    , 0x00
+   { "To-hybrid-1-Talkback-11"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-12"    , 0x00
+   { "To-hybrid-1-Talkback-12"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-13"    , 0x00
+   { "To-hybrid-1-Talkback-13"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-14"    , 0x00
+   { "To-hybrid-1-Talkback-14"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-15"    , 0x00
+   { "To-hybrid-1-Talkback-15"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-16"    , 0x00
+   { "To-hybrid-1-Talkback-16"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-1"    , 0x00
+   { "To-hybrid-2-Talkback-1"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-2"    , 0x00
+   { "To-hybrid-2-Talkback-2"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-3"    , 0x00
+   { "To-hybrid-2-Talkback-3"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-4"    , 0x00
+   { "To-hybrid-2-Talkback-4"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-5"    , 0x00
+   { "To-hybrid-2-Talkback-5"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-6"    , 0x00
+   { "To-hybrid-2-Talkback-6"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-7"    , 0x00
+   { "To-hybrid-2-Talkback-7"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-8"    , 0x00
+   { "To-hybrid-2-Talkback-8"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-9"    , 0x00
+   { "To-hybrid-2-Talkback-9"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-10"    , 0x00
+   { "To-hybrid-2-Talkback-10"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-11"    , 0x00
+   { "To-hybrid-2-Talkback-11"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-12"    , 0x00
+   { "To-hybrid-2-Talkback-12"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-13"    , 0x00
+   { "To-hybrid-2-Talkback-13"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-14"    , 0x00
+   { "To-hybrid-2-Talkback-14"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-15"    , 0x00
+   { "To-hybrid-2-Talkback-15"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-16"    , 0x00
+   { "To-hybrid-2-Talkback-16"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-1"    , 0x00
+   { "To-hybrid-3-Talkback-1"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-2"    , 0x00
+   { "To-hybrid-3-Talkback-2"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-3"    , 0x00
+   { "To-hybrid-3-Talkback-3"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-4"    , 0x00
+   { "To-hybrid-3-Talkback-4"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-5"    , 0x00
+   { "To-hybrid-3-Talkback-5"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-6"    , 0x00
+   { "To-hybrid-3-Talkback-6"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-7"    , 0x00
+   { "To-hybrid-3-Talkback-7"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-8"    , 0x00
+   { "To-hybrid-3-Talkback-8"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-9"    , 0x00
+   { "To-hybrid-3-Talkback-9"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-10"    , 0x00
+   { "To-hybrid-3-Talkback-10"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-11"    , 0x00
+   { "To-hybrid-3-Talkback-11"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-12"    , 0x00
+   { "To-hybrid-3-Talkback-12"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-13"    , 0x00
+   { "To-hybrid-3-Talkback-13"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-14"    , 0x00
+   { "To-hybrid-3-Talkback-14"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-15"    , 0x00
+   { "To-hybrid-3-Talkback-15"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-16"    , 0x00
+   { "To-hybrid-3-Talkback-16"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-1"    , 0x00
+   { "To-hybrid-4-Talkback-1"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-2"    , 0x00
+   { "To-hybrid-4-Talkback-2"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-3"    , 0x00
+   { "To-hybrid-4-Talkback-3"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-4"    , 0x00
+   { "To-hybrid-4-Talkback-4"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-5"    , 0x00
+   { "To-hybrid-4-Talkback-5"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-6"    , 0x00
+   { "To-hybrid-4-Talkback-6"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-7"    , 0x00
+   { "To-hybrid-4-Talkback-7"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-8"    , 0x00
+   { "To-hybrid-4-Talkback-8"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-9"    , 0x00
+   { "To-hybrid-4-Talkback-9"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-10"    , 0x00
+   { "To-hybrid-4-Talkback-10"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-11"    , 0x00
+   { "To-hybrid-4-Talkback-11"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-12"    , 0x00
+   { "To-hybrid-4-Talkback-12"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-13"    , 0x00
+   { "To-hybrid-4-Talkback-13"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-14"    , 0x00
+   { "To-hybrid-4-Talkback-14"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-15"    , 0x00
+   { "To-hybrid-4-Talkback-15"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-16"    , 0x00
+   { "To-hybrid-4-Talkback-16"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-1-Talkback-routing"     , 0x00
+   { "To-hybrid-1-Talkback-routing"     , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "Hybrid-out-2-Talkback-routing"     , 0x00
+   { "To-hybrid-2-Talkback-routing"     , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
-   { "Hybrid-out-3-Talkback-routing"     , 0x00
+   { "To-hybrid-3-Talkback-routing"     , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "Hybrid-out-4-Talkback-routing"     , 0x00
+   { "To-hybrid-4-Talkback-routing"     , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
-   { "Hybrid-out-1-Talkback-level" , 0x00
+   { "To-hybrid-1-Talkback-level" , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                     , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-out-2-Talkback-level" , 0x00
+   { "To-hybrid-2-Talkback-level" , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                     , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-out-3-Talkback-level" , 0x00
+   { "To-hybrid-3-Talkback-level" , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                     , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-out-4-Talkback-level" , 0x00
+   { "To-hybrid-4-Talkback-level" , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                     , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Hybrid-out-1-Talkback-phase" , 0x00
+   { "To-hybrid-1-Talkback-phase" , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-2-Talkback-phase" , 0x00
+   { "To-hybrid-2-Talkback-phase" , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-3-Talkback-phase" , 0x00
+   { "To-hybrid-3-Talkback-phase" , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Hybrid-out-4-Talkback-phase" , 0x00
+   { "To-hybrid-4-Talkback-phase" , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Total-hybrid-out-1-Mute"        , 0x00
+   { "Total-to-hybrid-1-Mute"        , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Total-hybrid-out-2-Mute"        , 0x00
+   { "Total-to-hybrid-2-Mute"        , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Total-hybrid-out-3-Mute"        , 0x00
+   { "Total-to-hybrid-3-Mute"        , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Total-hybrid-out-4-Mute"        , 0x00
+   { "Total-to-hybrid-4-Mute"        , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Ring-1"                    , 0x01
