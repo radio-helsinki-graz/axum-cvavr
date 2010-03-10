@@ -104,11 +104,15 @@ unsigned int OffHookTimer[4];
 unsigned char OffHookState[4];
 char LastDialedNumber[4][64];
 char DialPtr[4];
+char ReceivedDTMFData[4][64];
+char ReceivedPtr[4];
 
 unsigned char Ring[4];
 unsigned char PreviousRing[4];
 unsigned char RingActive[4];
+unsigned char RingCount[4];
 unsigned int RingActiveTimer[4];
+unsigned int RingCountTimer[4];
 
 unsigned int DTMFTimerDelay[4];
 unsigned int DTMFTimer[4];
@@ -121,12 +125,39 @@ unsigned int DTMFSpace = 50;
 unsigned int DTMFCommaPause = 2000;
 unsigned int DTMFSpacePause = 100;
 
+unsigned char PreviousIntLines = 0x00;
+unsigned char PreviousDTMFDetect[4] = {0,0,0,0};
+
+flash unsigned char DTMFTable[16] = {'D', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '*', '#', 'A', 'B', 'C'};
+
+char CallerID[4][64];
+unsigned char CallerIDLength[4] = {0,0,0,0};
+unsigned char NewCallerIDSet[4] = {0,0,0,0};
+unsigned char SetStatusCMX865A[4] = {0,0,0,0};
+unsigned int StatusCMX865A[4] = {0,0,0,0};
+
+unsigned char FSKState[4] = {0,0,0,0};
+unsigned int ContinuousMarkTimer[4] = {0,0,0,0};
+unsigned char FSKPtr[4] = {0,0,0,0};
+unsigned char FSKData[4][256];
+unsigned char FSKDataLength[4];
+//unsigned char FSKReceivedData[4][256];
+//unsigned char SetFSKReceivedData[4];
+
+#define IDLE_MODE       0
+#define DTMF_MODE       1
+#define BT_FSK_MODE     2
+#define BELL_FSK_MODE   3
+
+unsigned char DetectMode[4] = { IDLE_MODE, IDLE_MODE, IDLE_MODE, IDLE_MODE};
+
 char GetSlotNr();
 void ReadFPGA();
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData);
 void SetRoutingAndLevel(unsigned char ChannelNr);
 
 unsigned int ReadCMX865A(unsigned char ChipNr, unsigned char Register);
+unsigned char ReadByteCMX865A(unsigned char ChipNr, unsigned char Register);
 void SetCMX865A(unsigned char ChipNr, unsigned char Register, unsigned int Value);
 void ResetCMX865A(unsigned char ChipNr);
 
