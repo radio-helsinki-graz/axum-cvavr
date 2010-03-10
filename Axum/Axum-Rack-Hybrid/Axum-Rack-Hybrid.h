@@ -88,7 +88,6 @@ unsigned char HybridInputRouting[4];
 float InputLevel[4];
 unsigned char InputPhase[4];
 
-unsigned char OutputStereoSelect[4];
 float OutputLevel[4];
 unsigned char OutputDim[4];
 float OutputDimLevel[4];
@@ -97,7 +96,6 @@ unsigned char OutputPhase[4];
 
 unsigned char OutputTalkback[4][16];
 float OutputTalkbackLevel[4];
-unsigned char OutputTalkbackStereoSelect[4];
 unsigned char OutputTalkbackPhase[4];
 
 unsigned char PreviousOffHookState[4];

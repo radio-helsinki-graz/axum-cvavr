@@ -32,7 +32,7 @@ Data Stack size     : 512
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               29    //Axum-Rack-Hybrid
 
-#define NR_OF_STATIC_OBJECTS    (1180-1023)
+#define NR_OF_STATIC_OBJECTS    (1172-1023)
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
 
 #if (NR_OF_STATIC_OBJECTS > MAX_NR_OF_OBJECTS)
@@ -91,52 +91,52 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
    { "Hybrid-1-to-input-1-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 1   }},
    { "Hybrid-2-to-input-1-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-3-to-input-1-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-4-to-input-1-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-1-to-input-2-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-2-to-input-2-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 1   }},
    { "Hybrid-3-to-input-2-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-4-to-input-2-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-1-to-input-3-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-2-to-input-3-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-3-to-input-3-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 1   }},
    { "Hybrid-4-to-input-3-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-1-to-input-4-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-2-to-input-4-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-3-to-input-4-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Hybrid-4-to-input-4-Routing"    , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
+                              , {STATE_DATATYPE             ,  1, 0     , 1      , 1   }},
    { "Input-1-Signal"         , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
@@ -185,18 +185,6 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    { "To-hybrid-4-Signal"    , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "To-hybrid-1-Routing"   , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "To-hybrid-2-Routing"   , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
-   { "To-hybrid-3-Routing"   , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "To-hybrid-4-Routing"   , 0x00
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
    { "To-hybrid-1-Level"     , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
@@ -437,18 +425,6 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    { "To-hybrid-4-Talkback-16"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "To-hybrid-1-Talkback-routing"     , 0x00
-                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "To-hybrid-2-Talkback-routing"     , 0x00
-                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
-   { "To-hybrid-3-Talkback-routing"     , 0x00
-                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 3      , 1   }},
-   { "To-hybrid-4-Talkback-routing"     , 0x00
-                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 3      , 2   }},
    { "To-hybrid-1-Talkback-level" , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                     , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},

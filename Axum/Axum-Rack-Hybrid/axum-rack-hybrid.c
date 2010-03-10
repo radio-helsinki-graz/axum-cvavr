@@ -308,7 +308,6 @@ void main(void)
       InputLevel[cntByte] = 0x00;
       InputPhase[cntByte] = 0x00;
 
-      OutputStereoSelect[cntByte] = 0x01<<(cntByte&0x01);
       OutputLevel[cntByte] = 0x00;
       OutputDim[cntByte] = 0x00;
       OutputDimLevel[cntByte] = -20;
@@ -319,8 +318,8 @@ void main(void)
         OutputTalkback[cntByte][cntTalkback] = 0x00;
       }
       OutputTalkbackLevel[cntByte] = 0x00;
-      OutputTalkbackStereoSelect[cntByte] = 0x01<<(cntByte&0x01);
       OutputTalkbackPhase[cntByte] = 0x00;
+
       SetRoutingAndLevel(cntByte);
    }
 
@@ -521,7 +520,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             break;
             case  MAMBANET_OBJECT_ACTION_GET_SENSOR_DATA:
             {
-               unsigned char TransmitBuffer[21];
+               unsigned char TransmitBuffer[48];
 
                // if (ObjectNr<1024) is handled in the stack
                if ((ObjectNr>=1024) && (ObjectNr<1025))
@@ -557,7 +556,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
                   TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 1;
-                  TransmitBuffer[5] = 4;
+                  TransmitBuffer[5] = 8;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
 
@@ -607,9 +606,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1159) && (ObjectNr<1163))
+               else if ((ObjectNr>=1151) && (ObjectNr<1155))
                {  //Ring
-                  unsigned char HybridNr = ObjectNr-1159;
+                  unsigned char HybridNr = ObjectNr-1151;
 
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
@@ -622,8 +621,23 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1163) && (ObjectNr<1166))
+               else if ((ObjectNr>=1155) && (ObjectNr<1159))
                {  //CID
+                  unsigned char HybridNr = ObjectNr-1155;
+                  char cnt;
+
+                  TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
+                  TransmitBuffer[1] = ObjectNr&0xFF;
+                  TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
+                  TransmitBuffer[3] = OCTET_STRING_DATATYPE;
+                  TransmitBuffer[4] = CallerIDLength[HybridNr];
+                  for (cnt=0; cnt<TransmitBuffer[4]; cnt++)
+                  {
+                    TransmitBuffer[5+cnt] = CallerID[HybridNr][cnt];
+                  }
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 5+TransmitBuffer[4]);
+
+                  MessageDone = 1;
                }
 
                if (!MessageDone)
@@ -672,11 +686,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   unsigned char InputNr;
 
                   HybridNr = (ObjectNr-1027)&0x03;
-                  InputNr = (ObjectNr-1079)>>2;
+                  InputNr = (ObjectNr-1027)>>2;
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
-                  if (InputPhase[InputNr]&(0x01<<HybridNr))
+                  if (HybridInputRouting[InputNr]&(0x01<<HybridNr))
                   {
                     TransmitBuffer[5] = 1;
                   }
@@ -688,7 +702,6 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
 
                   MessageDone = 1;
-
                }
                else if ((ObjectNr>=1047) && (ObjectNr<1051))
                {  //Input-level
@@ -722,24 +735,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1059) && (ObjectNr<1063))
-               {  //To-hybrid-routing
-                  unsigned char ChannelNr;
-                  ChannelNr = ObjectNr-1059;
-
-                  TransmitBuffer[3] = STATE_DATATYPE;
-                  TransmitBuffer[4] = 1;
-                  TransmitBuffer[5] = OutputStereoSelect[ChannelNr];
-
-                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-
-                  MessageDone = 1;
-               }
-               else if ((ObjectNr>=1063) && (ObjectNr<1067))
                {  //To-hybrid-level
                   unsigned char ChannelNr;
                   unsigned char VariableFloat[2];
 
-                  ChannelNr = ObjectNr-1063;
+                  ChannelNr = ObjectNr-1059;
 
                   if (Float2VariableFloat(OutputLevel[ChannelNr], 2, VariableFloat) == 0)
                   {
@@ -753,10 +753,10 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      MessageDone = 1;
                   }
                }
-               else if ((ObjectNr>=1067) && (ObjectNr<1071))
+               else if ((ObjectNr>=1063) && (ObjectNr<1067))
                {  //To-hybrid-phase
                   unsigned char ChannelNr;
-                  ChannelNr = ObjectNr-1067;
+                  ChannelNr = ObjectNr-1063;
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -766,10 +766,10 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1071) && (ObjectNr<1075))
+               else if ((ObjectNr>=1067) && (ObjectNr<1071))
                {  //To-hybrid-dim
                   unsigned char ChannelNr;
-                  ChannelNr = ObjectNr-1071;
+                  ChannelNr = ObjectNr-1067;
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -779,12 +779,12 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1075) && (ObjectNr<1079))
+               else if ((ObjectNr>=1071) && (ObjectNr<1075))
                {  //To-hybrid-Dim-level
                   unsigned char ChannelNr;
                   unsigned char VariableFloat[2];
 
-                  ChannelNr = ObjectNr-1075;
+                  ChannelNr = ObjectNr-1071;
 
                   if (Float2VariableFloat(OutputDimLevel[ChannelNr], 2, VariableFloat) == 0)
                   {
@@ -798,13 +798,13 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      MessageDone = 1;
                   }
                }
-               else if ((ObjectNr>=1079) && (ObjectNr<1143))
+               else if ((ObjectNr>=1075) && (ObjectNr<1139))
                {  //To-hybrid-Talkback
                   unsigned char TalkbackNr;
                   unsigned char OutputNr;
 
-                  TalkbackNr = (ObjectNr-1079)&0x0F;
-                  OutputNr = (ObjectNr-1079)>>4;
+                  TalkbackNr = (ObjectNr-1075)&0x0F;
+                  OutputNr = (ObjectNr-1075)>>4;
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -814,25 +814,12 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1143) && (ObjectNr<1147))
-               {  //To-hybrid-Talkback-routing
-                  unsigned char ChannelNr;
-                  ChannelNr = ObjectNr-1143;
-
-                  TransmitBuffer[3] = STATE_DATATYPE;
-                  TransmitBuffer[4] = 1;
-                  TransmitBuffer[5] = OutputTalkbackStereoSelect[ChannelNr];
-
-                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-
-                  MessageDone = 1;
-               }
-               else if ((ObjectNr>=1147) && (ObjectNr<1151))
+               else if ((ObjectNr>=1139) && (ObjectNr<1143))
                {  //To-hybrid-Talkback-level
                   unsigned char ChannelNr;
                   unsigned char VariableFloat[2];
 
-                  ChannelNr = ObjectNr-1147;
+                  ChannelNr = ObjectNr-1139;
 
                   if (Float2VariableFloat(OutputTalkbackLevel[ChannelNr], 2, VariableFloat) == 0)
                   {
@@ -846,11 +833,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      MessageDone = 1;
                   }
                }
-               else if ((ObjectNr>=1151) && (ObjectNr<1155))
+               else if ((ObjectNr>=1143) && (ObjectNr<1147))
                {  //To-hybrid-Talkback-phase
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1151;
+                  ChannelNr = ObjectNr-1143;
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = OutputTalkbackPhase[ChannelNr];
@@ -859,11 +846,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1155) && (ObjectNr<1159))
+               else if ((ObjectNr>=1147) && (ObjectNr<1151))
                {  //Total-to-hybrid-Mute
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1155;
+                  ChannelNr = ObjectNr-1147;
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -873,9 +860,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1167) && (ObjectNr<1171))
+               else if ((ObjectNr>=1159) && (ObjectNr<1163))
                {  //Off-Hook.
-                  int HybridNr = ObjectNr-1167;
+                  int HybridNr = ObjectNr-1159;
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -885,13 +872,17 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1171) && (ObjectNr<1175))
+               else if ((ObjectNr>=1163) && (ObjectNr<1167))
                {  //Dail number
-                  int HybridNr = ObjectNr-1171;
+                  int HybridNr = ObjectNr-1163;
                   char cntByte;
 
                   TransmitBuffer[3] = OCTET_STRING_DATATYPE;
                   TransmitBuffer[4] = strlen(LastDialedNumber[HybridNr]);
+                  if (TransmitBuffer[4]>32)
+                  {
+                    TransmitBuffer[4] = 32;
+                  }
                   for (cntByte=0; cntByte<TransmitBuffer[4]; cntByte++)
                   {
                     TransmitBuffer[5+cntByte] = LastDialedNumber[HybridNr][cntByte];
@@ -901,7 +892,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1175) && (ObjectNr<1176))
+               else if ((ObjectNr>=1167) && (ObjectNr<1168))
                {  //Off-hook-loop-delay
                   TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -911,7 +902,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1176) && (ObjectNr<1177))
+               else if ((ObjectNr>=1168) && (ObjectNr<1169))
                {  //DTMF-tone-length
                   TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 2;
@@ -922,7 +913,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1177) && (ObjectNr<1178))
+               else if ((ObjectNr>=1169) && (ObjectNr<1170))
                {  //DTMF-space-length
                   TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 2;
@@ -933,7 +924,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1178) && (ObjectNr<1179))
+               else if ((ObjectNr>=1170) && (ObjectNr<1171))
                {  //DTMF-comma-pause
                   TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 2;
@@ -944,7 +935,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1179) && (ObjectNr<1180))
+               else if ((ObjectNr>=1171) && (ObjectNr<1172))
                {  //DTMF-space-pause
                   TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
                   TransmitBuffer[4] = 2;
@@ -1007,7 +998,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   unsigned char InputNr;
 
                   HybridNr = (ObjectNr-1027)&0x03;
-                  InputNr = (ObjectNr-1079)>>2;
+                  InputNr = (ObjectNr-1027)>>2;
 
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1078,27 +1069,10 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   }
                }
                else if ((ObjectNr>=1059) && (ObjectNr<1063))
-               {  //To-hybrid-routing
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1059;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputStereoSelect[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-
-                        FormatError = 0;
-                        MessageDone = 1;
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1063) && (ObjectNr<1067))
                {  //To-hybrid-level
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1063;
+                  ChannelNr = ObjectNr-1059;
                   if (DataType == FLOAT_DATATYPE)
                   {
                      if (DataSize == 2)
@@ -1123,11 +1097,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-               else if ((ObjectNr>=1067) && (ObjectNr<1071))
+               else if ((ObjectNr>=1063) && (ObjectNr<1067))
                {  //Digital-out phase
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1067;
+                  ChannelNr = ObjectNr-1063;
                   if (DataType == STATE_DATATYPE)
                   {
                      if (DataSize == 1)
@@ -1140,11 +1114,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-               else if ((ObjectNr>=1071) && (ObjectNr<1075))
+               else if ((ObjectNr>=1067) && (ObjectNr<1071))
                {  //To-hybrid-dim
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1071;
+                  ChannelNr = ObjectNr-1067;
 
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1158,11 +1132,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-               else if ((ObjectNr>=1075) && (ObjectNr<1079))
+               else if ((ObjectNr>=1071) && (ObjectNr<1075))
                {  //To-hybrid-dim-level
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1075;
+                  ChannelNr = ObjectNr-1071;
 
                   if (DataType == FLOAT_DATATYPE)
                   {
@@ -1188,13 +1162,13 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-               else if ((ObjectNr>=1079) && (ObjectNr<1143))
+               else if ((ObjectNr>=1075) && (ObjectNr<1139))
                {  //To-hybrid-talkback
                   unsigned char TalkbackNr;
                   unsigned char OutputNr;
 
-                  TalkbackNr = (ObjectNr-1079)&0x0F;
-                  OutputNr = (ObjectNr-1079)>>4;
+                  TalkbackNr = (ObjectNr-1075)&0x0F;
+                  OutputNr = (ObjectNr-1075)>>4;
 
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1208,28 +1182,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-               else if ((ObjectNr>=1143) && (ObjectNr<1147))
-               {  //To-hybrid-talkback-routing
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1143;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputTalkbackStereoSelect[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-
-                        FormatError = 0;
-                        MessageDone = 1;
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1147) && (ObjectNr<1151))
+               else if ((ObjectNr>=1139) && (ObjectNr<1143))
                {  //To-hybrid-talkback-level
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1147;
+                  ChannelNr = ObjectNr-1139;
 
                   if (DataType == FLOAT_DATATYPE)
                   {
@@ -1255,11 +1212,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-               else if ((ObjectNr>=1151) && (ObjectNr<1159))
+               else if ((ObjectNr>=1143) && (ObjectNr<1147))
                {  //To-hybrid-talkback-phase
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1151;
+                  ChannelNr = ObjectNr-1143;
                   if (DataType == STATE_DATATYPE)
                   {
                      if (DataSize == 1)
@@ -1272,11 +1229,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-               else if ((ObjectNr>=1155) && (ObjectNr<1159))
+               else if ((ObjectNr>=1147) && (ObjectNr<1151))
                {  //Total-to-hybrid-mute
                   unsigned char ChannelNr;
 
-                  ChannelNr = ObjectNr-1155;
+                  ChannelNr = ObjectNr-1147;
                   if (DataType == STATE_DATATYPE)
                   {
                      if (DataSize == 1)
@@ -1289,9 +1246,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-               if ((ObjectNr>=1167) && (ObjectNr<1171))
+               if ((ObjectNr>=1159) && (ObjectNr<1163))
                {  //Off-Hook.
-                  int HybridNr = ObjectNr-1167;
+                  int HybridNr = ObjectNr-1159;
 
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1300,7 +1257,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                       OffHookState[HybridNr] = Data[5];
                       if (!Data[5])
                       {
-                        SetCMX865A(HybridNr, 0xE1, 0x1E00);
+                        SetCMX865A(HybridNr, 0xE1, 0x1000);
                         DialPtr[HybridNr] = 32;
                       }
 
@@ -1309,9 +1266,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                     }
                   }
                }
-               else if ((ObjectNr>=1171) && (ObjectNr<1175))
+               else if ((ObjectNr>=1163) && (ObjectNr<1167))
                {  //Dail number
-                  int HybridNr = ObjectNr-1171;
+                  int HybridNr = ObjectNr-1163;
 
                   if (DataType == OCTET_STRING_DATATYPE)
                   {
@@ -1334,12 +1291,15 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         LastDialedNumber[HybridNr][DataSize] = 0;
                         DialPtr[HybridNr] = 0;
 
+                        OutputMute[HybridNr] = 1;
+                        SetRoutingAndLevel(HybridNr);
+
                         FormatError = 0;
                         MessageDone = 1;
                      }
                   }
                }
-               else if ((ObjectNr>=1175) && (ObjectNr<1176))
+               else if ((ObjectNr>=1167) && (ObjectNr<1168))
                {  //Off-hook-loop-delay
                   if (DataType == UNSIGNED_INTEGER_DATATYPE)
                   {
@@ -1352,7 +1312,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                     }
                   }
                }
-               else if ((ObjectNr>=1176) && (ObjectNr<1177))
+               else if ((ObjectNr>=1168) && (ObjectNr<1169))
                {  //DTMF-tone-length
                   if (DataType == UNSIGNED_INTEGER_DATATYPE)
                   {
@@ -1367,7 +1327,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                     }
                   }
                }
-               else if ((ObjectNr>=1177) && (ObjectNr<1178))
+               else if ((ObjectNr>=1169) && (ObjectNr<1170))
                {  //DTMF-space-length
                   if (DataType == UNSIGNED_INTEGER_DATATYPE)
                   {
@@ -1382,7 +1342,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                     }
                   }
                }
-               else if ((ObjectNr>=1178) && (ObjectNr<1179))
+               else if ((ObjectNr>=1170) && (ObjectNr<1171))
                {  //DTMF-comma-pause
                   if (DataType == UNSIGNED_INTEGER_DATATYPE)
                   {
@@ -1397,7 +1357,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                     }
                   }
                }
-               else if ((ObjectNr>=1179) && (ObjectNr<1180))
+               else if ((ObjectNr>=1171) && (ObjectNr<1172))
                {  //DTMF-space-pause
                   if (DataType == UNSIGNED_INTEGER_DATATYPE)
                   {
@@ -1412,7 +1372,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                     }
                   }
                }
-               else if (ObjectNr == 1180)
+               else if (ObjectNr == 1172)
                {  //Set FPGA
                   if (DataType == OCTET_STRING_DATATYPE)
                   {
@@ -1598,8 +1558,8 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 void SetRoutingAndLevel(unsigned char ChannelNr)
 {
    unsigned char FPGABlockAddress;
-   unsigned int InputRouting;
-   unsigned int StereoSelect;
+   unsigned int InputRouting=0;
+   unsigned int StereoSelect=0;
    float Level;
    unsigned int IntegerLevel;
    char cntNrOfSummation;
@@ -1610,7 +1570,7 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
 
    InputRouting = HybridInputRouting[(ChannelNr&0xFE)];
-   InputRouting |= HybridInputRouting[(ChannelNr&0xFE)+1]<<6;
+   InputRouting |= HybridInputRouting[(ChannelNr&0xFE)+1]<<4;
    SetFPGA(FPGABlockAddress+2, InputRouting);
 
    Level = InputLevel[ChannelNr];
@@ -1622,6 +1582,7 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    SetFPGA(FPGABlockAddress+(ChannelNr&0x01), IntegerLevel);
 
    //Output
+//--LETOP 0x10, 0x20, 0x30, 0x40 for channels
    FPGABlockAddress += 0x10;
 
    Level = OutputLevel[ChannelNr];
@@ -1652,8 +1613,6 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    }
    SetFPGA(FPGABlockAddress+5+(ChannelNr&0x01), IntegerLevel);
 
-   StereoSelect = (OutputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (OutputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
    if (OutputMute[(ChannelNr&0xFE)])
    {
       StereoSelect |= 0x0100;
@@ -1662,8 +1621,6 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    {
       StereoSelect |= 0x0200;
    }
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<6;
    SetFPGA(FPGABlockAddress+7, StereoSelect);
 
    //Talkback
@@ -1741,6 +1698,8 @@ unsigned int ReadCMX865A(unsigned char ChipNr, unsigned char Register)
     }
     CLKCMX = 0;
   }
+
+  delay_ms(1);
 
   for (cntBit=0; cntBit<8; cntBit++)
   {
@@ -1827,7 +1786,7 @@ void DTMFDigit(unsigned char ChipNr, char Digit)
   {
     case '0':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E10+10);
+      SetCMX865A(ChipNr, 0xE1, 0x1010+10);
       DTMFTimerDelay[ChipNr] = DTMFLength;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
@@ -1842,21 +1801,21 @@ void DTMFDigit(unsigned char ChipNr, char Digit)
     case '8':
     case '9':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E10+(Digit-'0'));
+      SetCMX865A(ChipNr, 0xE1, 0x1010+(Digit-'0'));
       DTMFTimerDelay[ChipNr] = DTMFLength;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
     break;
     case '*':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E10+11);
+      SetCMX865A(ChipNr, 0xE1, 0x1010+11);
       DTMFTimerDelay[ChipNr] = DTMFLength;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
     break;
     case '#':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E10+12);
+      SetCMX865A(ChipNr, 0xE1, 0x1010+12);
       DTMFTimerDelay[ChipNr] = DTMFLength;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
@@ -1864,7 +1823,7 @@ void DTMFDigit(unsigned char ChipNr, char Digit)
     case 'A':
     case 'a':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E10+13);
+      SetCMX865A(ChipNr, 0xE1, 0x1010+13);
       DTMFTimerDelay[ChipNr] = DTMFLength;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
@@ -1872,7 +1831,7 @@ void DTMFDigit(unsigned char ChipNr, char Digit)
     case 'B':
     case 'b':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E10+14);
+      SetCMX865A(ChipNr, 0xE1, 0x1010+14);
       DTMFTimerDelay[ChipNr] = DTMFLength;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
@@ -1880,7 +1839,7 @@ void DTMFDigit(unsigned char ChipNr, char Digit)
     case 'C':
     case 'c':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E10+15);
+      SetCMX865A(ChipNr, 0xE1, 0x1010+15);
       DTMFTimerDelay[ChipNr] = DTMFLength;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
@@ -1888,21 +1847,21 @@ void DTMFDigit(unsigned char ChipNr, char Digit)
     case 'D':
     case 'd':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E10+0);
+      SetCMX865A(ChipNr, 0xE1, 0x1010+0);
       DTMFTimerDelay[ChipNr] = DTMFLength;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
     break;
     case ',':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E00);
+      SetCMX865A(ChipNr, 0xE1, 0x1000);
       DTMFTimerDelay[ChipNr] = DTMFCommaPause;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
     break;
     case ' ':
     {
-      SetCMX865A(ChipNr, 0xE1, 0x1E00);
+      SetCMX865A(ChipNr, 0xE1, 0x1000);
       DTMFTimerDelay[ChipNr] = DTMFSpacePause;
       DTMFTimer[ChipNr] = cntMilliSecond;
     }
