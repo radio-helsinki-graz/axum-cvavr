@@ -307,7 +307,7 @@ void main(void)
    // Func7=In Func6=In Func5=Out Func4=Out Func3=In Func2=In Func1=Out Func0=Out
    // State7=T State6=T State5=1 State4=1 State3=T State2=T State1=1 State0=1
    PORTA=0x22;
-   DDRA=0x33;
+   DDRA=0x3B;//0x33 for CPC5622
 
    // Port B initialization
    // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=Out Func1=Out Func0=Out
@@ -337,7 +337,7 @@ void main(void)
    // Func7=In Func6=In Func5=Out Func4=Out Func3=In Func2=In Func1=Out Func0=Out
    // State7=T State6=T State5=1 State4=1 State3=T State2=T State1=1 State0=1
    PORTF=0x22;
-   DDRF=0x33;
+   DDRF=0xBB;//0x33 for CPC5622
 
    // Port G initialization
    // Func4=In Func3=Out Func2=Out Func1=Out Func0=Out
