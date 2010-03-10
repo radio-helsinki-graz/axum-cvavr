@@ -478,7 +478,6 @@ void main(void)
 
    for (cntChip=0; cntChip<4; cntChip++)
    {
-     unsigned int Test;
      SetCMX865A(cntChip, 0xE0, 0x81C0);
      SetCMX865A(cntChip, 0xE0, 0x8140);//0x8141
 
@@ -749,8 +748,6 @@ void main(void)
           {
             if (!RingActive[cntChip]++)
             {
-              unsigned char Text[5];
-              //RingActive[cntChip] = 1;
               RingCountTimer[cntChip] = cntMilliSecond;
               RingCount[cntChip]++;
 
@@ -758,8 +755,6 @@ void main(void)
               //SendSensorChangeToMambaNet(1210+cntChip, UNSIGNED_INTEGER_DATATYPE, 1, &RingCount[cntChip]);
 
               ReceivedPtr[cntChip] = 0;
-              //SetCMX865A(cntChip, 0xE2, 0x1E01);//first set DTMF detect
-              //SetCMX865A(cntChip, 0xE0, 0x8141);//interrupt on DTMF tone
               DetectMode[cntChip] = IDLE_MODE;
               SetCMX865A(cntChip, 0xE2, 0x1E04);//detect programmed tones
               SetCMX865A(cntChip, 0xE0, 0x8143);//interrupt on programmed tones

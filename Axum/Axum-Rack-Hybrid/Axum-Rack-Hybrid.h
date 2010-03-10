@@ -125,9 +125,6 @@ unsigned int DTMFSpace = 50;
 unsigned int DTMFCommaPause = 2000;
 unsigned int DTMFSpacePause = 100;
 
-unsigned char PreviousIntLines = 0x00;
-unsigned char PreviousDTMFDetect[4] = {0,0,0,0};
-
 flash unsigned char DTMFTable[16] = {'D', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '*', '#', 'A', 'B', 'C'};
 
 char CallerID[4][64];
