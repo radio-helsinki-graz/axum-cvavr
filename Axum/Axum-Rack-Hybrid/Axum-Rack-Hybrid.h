@@ -84,6 +84,7 @@ unsigned int FPGAFirmwareType;
 
 unsigned char RackSlotNr;
 
+unsigned char InputMute[4];
 unsigned char HybridInputRouting[4];
 float InputLevel[4];
 unsigned char InputPhase[4];
@@ -119,6 +120,9 @@ unsigned int DTMFTimer[4];
 unsigned int DTMFSpaceTimerDelay[4];
 unsigned int DTMFSpaceTimer[4];
 
+unsigned char OffHookMuteTimerEnabled[4];
+unsigned int OffHookMuteTimer[4];
+unsigned int OffHookMuteDelay = 300;
 unsigned char OffHookLoopDelay = 10;
 unsigned int DTMFLength = 50;
 unsigned int DTMFSpace = 50;
@@ -160,6 +164,9 @@ void ResetCMX865A(unsigned char ChipNr);
 
 void DTMFDigit(unsigned char ChipNr, char Digit);
 void CheckOffHook(unsigned char cntChip);
+
+void StopCMX865A(unsigned char ChipNr);
+void StartCMX865A(unsigned char ChipNr);
 
 //Information required for CANTransportLayer.h
 //#define CAN_ADDRESS_SERVER

@@ -38,6 +38,8 @@ Data Stack size     : 512
 #endasm
 #include <i2c.h>
 
+#define nTXA_TXA_CMX865A 0x0000
+
 unsigned char cntDebug;
 
 /**********************************/
@@ -88,14 +90,16 @@ void CMX865AInterrupt(unsigned char cntChip)
       { //Go to DTMF
         DetectMode[cntChip] = DTMF_MODE;
         SetCMX865A(cntChip, 0xE2, 0x1E01);//first set DTMF detect
-        SetCMX865A(cntChip, 0xE0, 0x8141);//interrupt on DTMF tone
+        //SetCMX865A(cntChip, 0xE0, 0x8141);//interrupt on DTMF tone
+        SetCMX865A(cntChip, 0xE0, nTXA_TXA_CMX865A | 0x0141);//interrupt on DTMF tone
       }
       else if (Test&0x0080)
       {
         DetectMode[cntChip] = BT_FSK_MODE;
         FSKState[cntChip] = 1;
         SetCMX865A(cntChip, 0xE2, 0x1E04);//detect programmed tones
-        SetCMX865A(cntChip, 0xE0, 0x8142);//only second programmed tone
+        //SetCMX865A(cntChip, 0xE0, 0x8142);//only second programmed tone
+        SetCMX865A(cntChip, 0xE0, nTXA_TXA_CMX865A | 0x0142);//only second programmed tone
       }
     }
     break;
@@ -209,7 +213,8 @@ void CMX865AInterrupt(unsigned char cntChip)
           { //channel seizure ends + continuous mark found
             FSKState[cntChip] = 4;
             SetCMX865A(cntChip, 0xE2, 0x5E36);//set progammed tone detect
-            SetCMX865A(cntChip, 0xE0, 0x8141);//interrupt on Rx Data
+            //SetCMX865A(cntChip, 0xE0, 0x8141);//interrupt on Rx Data
+            SetCMX865A(cntChip, 0xE0, nTXA_TXA_CMX865A | 0x0141);//interrupt on Rx Data
             FSKPtr[cntChip] = 0;
           }
         }
@@ -307,7 +312,7 @@ void main(void)
    // Func7=In Func6=In Func5=Out Func4=Out Func3=In Func2=In Func1=Out Func0=Out
    // State7=T State6=T State5=1 State4=1 State3=T State2=T State1=1 State0=1
    PORTA=0x22;
-   DDRA=0x3B;//0x33 for CPC5622
+   DDRA=0x33;//0x33 for CPC5622
 
    // Port B initialization
    // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=Out Func1=Out Func0=Out
@@ -337,7 +342,7 @@ void main(void)
    // Func7=In Func6=In Func5=Out Func4=Out Func3=In Func2=In Func1=Out Func0=Out
    // State7=T State6=T State5=1 State4=1 State3=T State2=T State1=1 State0=1
    PORTF=0x22;
-   DDRF=0xBB;//0x33 for CPC5622
+   DDRF=0x33;//0x33 for CPC5622
 
    // Port G initialization
    // Func4=In Func3=Out Func2=Out Func1=Out Func0=Out
@@ -470,112 +475,9 @@ void main(void)
 
    for (cntChip=0; cntChip<4; cntChip++)
    {
-     ResetCMX865A(cntChip);
-     delay_ms(200);
-     SetCMX865A(cntChip, 0xE0, 0x81C0);
-   }
-   delay_ms(200);
-
-   for (cntChip=0; cntChip<4; cntChip++)
-   {
-     SetCMX865A(cntChip, 0xE0, 0x81C0);
-     SetCMX865A(cntChip, 0xE0, 0x8140);//0x8141
-
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 32769);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 0);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 400);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 32368);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 7726);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 25108);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 0);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 400);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 32368);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 7726);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 25108);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 35);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 195);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 216);
-     CheckPF(cntChip);
-
-     SetCMX865A(cntChip, 0xE8, 0);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 320);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 32448);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 7676);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 3603);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 0);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 320);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 32448);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 7676);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 3603);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 55);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 182);
-     CheckPF(cntChip);
-     SetCMX865A(cntChip, 0xE8, 202);
-     CheckPF(cntChip);
-
-/*
-1633Hz
- Register Word 2 or 15 = 0
- Register Word 3 or 16 = 400
- Register Word 4 or 17 = 32368
- Register Word 5 or 18 = 7726
- Register Word 6 or 19 = 25108
- Register Word 7 or 20 = 0
- Register Word 8 or 21 = 400
- Register Word 9 or 22 = 32368
- Register Word 10 or 23 = 7726
- Register Word 11 or 24 = 25108
- Register Word 12 or 25 = 35
- Register Word 13 or 26 = 195
- Register Word 14 or 27 = 216
-
-
-2750Hz
- Register Word 2 or 15 = 0
- Register Word 3 or 16 = 320
- Register Word 4 or 17 = 32448
- Register Word 5 or 18 = 7676
- Register Word 6 or 19 = 3603
- Register Word 7 or 20 = 0
- Register Word 8 or 21 = 320
- Register Word 9 or 22 = 32448
- Register Word 10 or 23 = 7676
- Register Word 11 or 24 = 3603
- Register Word 12 or 25 = 55
- Register Word 13 or 26 = 182
- Register Word 14 or 27 = 202
-*/
-
      DetectMode[cntChip] = IDLE_MODE;
-     SetCMX865A(cntChip, 0xE0, 0x8143);//interrupt on programmed tones
-     SetCMX865A(cntChip, 0xE1, 0x1000);
-     SetCMX865A(cntChip, 0xE2, 0x1E04);//detect programmed tones
-
+     OffHookMuteTimerEnabled[cntChip] = 0;
+     OffHookMuteTimer[cntChip] = 0;
      OffHookTimerEnabled[cntChip] = 0;
      OffHookTimer[cntChip] = 0;
      PreviousOffHookState[cntChip] = 0;
@@ -601,6 +503,14 @@ void main(void)
      FSKDataLength[cntChip] = 0;
    }
 
+   delay_ms(100);
+
+   for (cntChip=0; cntChip<4; cntChip++)
+   {
+     ResetCMX865A(cntChip);
+     StartCMX865A(cntChip);
+   }
+
    delay_ms(500);
 
    nSS = 1;
@@ -622,6 +532,7 @@ void main(void)
    {
       char cntTalkback;
 
+      InputMute[cntByte] = 1;
       HybridInputRouting[cntByte] = 0x01<<cntByte;
       InputLevel[cntByte] = 0x00;
       InputPhase[cntByte] = 0x00;
@@ -757,8 +668,8 @@ void main(void)
               ReceivedPtr[cntChip] = 0;
               DetectMode[cntChip] = IDLE_MODE;
               SetCMX865A(cntChip, 0xE2, 0x1E04);//detect programmed tones
-              SetCMX865A(cntChip, 0xE0, 0x8143);//interrupt on programmed tones
-
+              //SetCMX865A(cntChip, 0xE0, 0x8143);//interrupt on programmed tones
+              SetCMX865A(cntChip, 0xE0, nTXA_TXA_CMX865A | 0x0143);//interrupt on programmed tones
             }
           }
           else if (RingActive[cntChip] == 2)
@@ -768,7 +679,8 @@ void main(void)
 
             DetectMode[cntChip] = BELL_FSK_MODE;
             SetCMX865A(cntChip, 0xE2, 0x3E00);//set progammed tone detect
-            SetCMX865A(cntChip, 0xE0, 0x8142);//interrupt on pattern 1010 detect
+            //SetCMX865A(cntChip, 0xE0, 0x8142);//interrupt on pattern 1010 detect
+            SetCMX865A(cntChip, 0xE0, nTXA_TXA_CMX865A | 0x0142);//interrupt on pattern 1010 detect
           }
           PreviousRing[cntChip] = Ring[cntChip];
         }
@@ -795,7 +707,8 @@ void main(void)
             //SetCMX865A(cntChip, 0xE0, 0x8141);//interrupt on DTMF tone
             DetectMode[cntChip] = IDLE_MODE;
             SetCMX865A(cntChip, 0xE2, 0x1E04);//detect programmed tones
-            SetCMX865A(cntChip, 0xE0, 0x8143);//interrupt on programmed tones
+            //SetCMX865A(cntChip, 0xE0, 0x8143);//interrupt on programmed tones
+            SetCMX865A(cntChip, 0xE0, nTXA_TXA_CMX865A | 0x0143);//interrupt on programmed tones
           }
         }
       }
@@ -807,13 +720,6 @@ void main(void)
           SendSensorChangeToMambaNet(1155+cntChip, OCTET_STRING_DATATYPE, CallerIDLength[cntChip], CallerID[cntChip]);
           NewCallerIDSet[cntChip] = 0;
         }
-/*        if (SetStatusCMX865A[cntChip])
-        {
-          char Text[5];
-          sprintf(Text,"%04X", StatusCMX865A[cntChip]);
-          SendSensorChangeToMambaNet(1220+cntChip, OCTET_STRING_DATATYPE, 4, Text);
-          SetStatusCMX865A[cntChip] = 0;
-        }*/
 
         if ((DetectMode[cntChip] == BELL_FSK_MODE) && (FSKState[cntChip] == 4))
         {
@@ -823,7 +729,8 @@ void main(void)
             if ((cntMilliSecond-ContinuousMarkTimer[cntChip]) >= 100)
             {
               SetCMX865A(cntChip, 0xE2, 0x3E36);//set progammed tone detect
-              SetCMX865A(cntChip, 0xE0, 0x8141);//interrupt on Rx Data
+              //SetCMX865A(cntChip, 0xE0, 0x8141);//interrupt on Rx Data
+              SetCMX865A(cntChip, 0xE0, nTXA_TXA_CMX865A | 0x0141);//interrupt on Rx Data
               FSKPtr[cntChip] = 0;
               FSKState[cntChip] = 5;
             }
@@ -838,7 +745,8 @@ void main(void)
             {
               FSKState[cntChip] = 2;
               SetCMX865A(cntChip, 0xE2, 0x5E00);//set FSK, V23
-              SetCMX865A(cntChip, 0xE0, 0x8142);//interrupt on 1010 Pattern detect
+              //SetCMX865A(cntChip, 0xE0, 0x8142);//interrupt on 1010 Pattern detect
+              SetCMX865A(cntChip, 0xE0, nTXA_TXA_CMX865A | 0x0142);//interrupt on 1010 Pattern detect
             }
           }
         }
@@ -870,6 +778,16 @@ void main(void)
           {
             DTMFSpaceTimerDelay[cntChip] = 0;
             DoDTMF = 1;
+
+            if (DialPtr[cntChip]>=strlen(LastDialedNumber[cntChip]))
+            {
+              //stop DTMF generation chip
+              //StopCMX865A(cntChip);
+
+              //unmute audio-output
+              OutputMute[cntChip] = 0;
+              SetRoutingAndLevel(cntChip);
+            }
           }
         }
 
@@ -877,12 +795,13 @@ void main(void)
         {
           if (DialPtr[cntChip]<strlen(LastDialedNumber[cntChip]))
           {
+            if (DialPtr[cntChip] == 0)
+            {
+              //Powerup DTMF generation chip
+              //StartCMX865A(cntChip);
+            }
+
             DTMFDigit(cntChip, LastDialedNumber[cntChip][DialPtr[cntChip]++]);
-          }
-          if (DialPtr[cntChip]>=strlen(LastDialedNumber[cntChip]))
-          {
-            OutputMute[cntChip] = 0;
-            SetRoutingAndLevel(cntChip);
           }
         }
       }
@@ -1691,6 +1610,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         LastDialedNumber[HybridNr][DataSize] = 0;
                         DialPtr[HybridNr] = 0;
 
+                        //Mute the audio-output
                         OutputMute[HybridNr] = 1;
                         SetRoutingAndLevel(HybridNr);
 
@@ -1953,6 +1873,8 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
    }
 
    nSS=1;
+   nSS=0;
+   nSS=1;
 }
 
 void SetRoutingAndLevel(unsigned char ChannelNr)
@@ -1971,6 +1893,14 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
 
    InputRouting = HybridInputRouting[(ChannelNr&0xFE)];
    InputRouting |= HybridInputRouting[(ChannelNr&0xFE)+1]<<4;
+   if (InputMute[(ChannelNr&0xFE)])
+   {
+      InputRouting |= 0x0100;
+   }
+   if (InputMute[(ChannelNr&0xFE)+1])
+   {
+      InputRouting |= 0x0200;
+   }
    SetFPGA(FPGABlockAddress+2, InputRouting);
 
    Level = InputLevel[ChannelNr];
@@ -1982,8 +1912,7 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    SetFPGA(FPGABlockAddress+(ChannelNr&0x01), IntegerLevel);
 
    //Output
-//--LETOP 0x10, 0x20, 0x30, 0x40 for channels
-   FPGABlockAddress += 0x10;
+   FPGABlockAddress = (ChannelNr+1)<<4;
 
    Level = OutputLevel[ChannelNr];
    if (OutputDim[ChannelNr])
@@ -2004,27 +1933,23 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    {
       IntegerLevel *= -1;
    }
-   SetFPGA(FPGABlockAddress+3+(ChannelNr&0x01), IntegerLevel);
+   SetFPGA(FPGABlockAddress+3, IntegerLevel);
 
    IntegerLevel = ((float)32)/pow(10, (float)OutputTalkbackLevel[ChannelNr]/20);
    if (OutputTalkbackPhase[ChannelNr])
    {
       IntegerLevel *= -1;
    }
-   SetFPGA(FPGABlockAddress+5+(ChannelNr&0x01), IntegerLevel);
+   SetFPGA(FPGABlockAddress+5, IntegerLevel);
 
-   if (OutputMute[(ChannelNr&0xFE)])
+   if (OutputMute[ChannelNr])
    {
-      StereoSelect |= 0x0100;
-   }
-   if (OutputMute[(ChannelNr&0xFE)+1])
-   {
-      StereoSelect |= 0x0200;
+      StereoSelect |= 0x0300;
    }
    SetFPGA(FPGABlockAddress+7, StereoSelect);
 
    //Talkback
-   FPGABlockAddress = ((ChannelNr&0xFE)<<3);
+   FPGABlockAddress = ChannelNr<<4;
 
    cntNrOfSummation = 0;
    TalkbackData[0] = 0;
@@ -2313,6 +2238,7 @@ void CheckOffHook(unsigned char cntChip)
   {
     if (OffHookState[cntChip])
     {
+//      StopCMX865A(cntChip);
       switch (cntChip)
       {
         case 0:
@@ -2341,6 +2267,9 @@ void CheckOffHook(unsigned char cntChip)
     }
     else
     {
+      InputMute[cntChip] = 1;
+      SetRoutingAndLevel(cntChip);
+
       switch (cntChip)
       {
         case 0:
@@ -2364,6 +2293,7 @@ void CheckOffHook(unsigned char cntChip)
         }
         break;
       }
+
       OffHookTimer[cntChip] = cntMilliSecond;
       OffHookTimerEnabled[cntChip] = 1;
     }
@@ -2398,6 +2328,9 @@ void CheckOffHook(unsigned char cntChip)
           }
           break;
         }
+
+        OffHookMuteTimer[cntChip] = cntMilliSecond;
+        OffHookMuteTimerEnabled[cntChip] = 1;
         OffHookTimerEnabled[cntChip] = 0;
       }
     }
@@ -2428,8 +2361,129 @@ void CheckOffHook(unsigned char cntChip)
           }
           break;
         }
+//        StartCMX865A(cntChip);
         OffHookTimerEnabled[cntChip] = 0;
       }
     }
   }
+  if (OffHookMuteTimerEnabled[cntChip])
+  {
+    if ((cntMilliSecond-OffHookMuteTimer[cntChip])>=OffHookMuteDelay)
+    {
+      InputMute[cntChip] = 0;
+      SetRoutingAndLevel(cntChip);
+      OffHookMuteTimerEnabled[cntChip] = 0;
+    }
+  }
+}
+
+void StopCMX865A(unsigned char ChipNr)
+{
+  ResetCMX865A(ChipNr);
+  delay_ms(50);
+//  SetCMX865A(ChipNr, 0xE0, 0x81C0);
+  SetCMX865A(ChipNr, 0xE0, nTXA_TXA_CMX865A | 0x01C0);
+}
+
+void StartCMX865A(unsigned char ChipNr)
+{
+  delay_ms(200);
+  //SetCMX865A(ChipNr, 0xE0, 0x8140);//0x8141
+  SetCMX865A(ChipNr, 0xE0, nTXA_TXA_CMX865A | 0x0140);//0x8141
+
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 32769);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 0);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 400);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 32368);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 7726);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 25108);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 0);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 400);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 32368);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 7726);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 25108);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 35);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 195);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 216);
+  CheckPF(ChipNr);
+
+  SetCMX865A(ChipNr, 0xE8, 0);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 320);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 32448);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 7676);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 3603);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 0);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 320);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 32448);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 7676);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 3603);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 55);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 182);
+  CheckPF(ChipNr);
+  SetCMX865A(ChipNr, 0xE8, 202);
+  CheckPF(ChipNr);
+
+/*
+1633Hz
+ Register Word 2 or 15 = 0
+ Register Word 3 or 16 = 400
+ Register Word 4 or 17 = 32368
+ Register Word 5 or 18 = 7726
+ Register Word 6 or 19 = 25108
+ Register Word 7 or 20 = 0
+ Register Word 8 or 21 = 400
+ Register Word 9 or 22 = 32368
+ Register Word 10 or 23 = 7726
+ Register Word 11 or 24 = 25108
+ Register Word 12 or 25 = 35
+ Register Word 13 or 26 = 195
+ Register Word 14 or 27 = 216
+
+
+2750Hz
+ Register Word 2 or 15 = 0
+ Register Word 3 or 16 = 320
+ Register Word 4 or 17 = 32448
+ Register Word 5 or 18 = 7676
+ Register Word 6 or 19 = 3603
+ Register Word 7 or 20 = 0
+ Register Word 8 or 21 = 320
+ Register Word 9 or 22 = 32448
+ Register Word 10 or 23 = 7676
+ Register Word 11 or 24 = 3603
+ Register Word 12 or 25 = 55
+ Register Word 13 or 26 = 182
+ Register Word 14 or 27 = 202
+*/
+
+  DetectMode[ChipNr] = IDLE_MODE;
+  //SetCMX865A(ChipNr, 0xE0, 0x8143);//interrupt on programmed tones
+  SetCMX865A(ChipNr, 0xE0, nTXA_TXA_CMX865A | 0x0143);//interrupt on programmed tones
+  SetCMX865A(ChipNr, 0xE1, 0x1000);
+  SetCMX865A(ChipNr, 0xE2, 0x1E04);//detect programmed tones
 }
