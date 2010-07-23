@@ -23,10 +23,10 @@ Data Stack size     : 512
 #define PCB_MAJOR_VERSION        1
 #define PCB_MINOR_VERSION        0
 
-#define FIRMWARE_MAJOR_VERSION   1
+#define FIRMWARE_MAJOR_VERSION   2
 
-#define TRANSPORTLAYER_MINOR_CORRECTION 0
-#define FIRMWARE_MINOR_VERSION   3+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+#define TRANSPORTLAYER_MINOR_CORRECTION 2
+#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
 //Local FIRMWARE_MINOR_VERSION
 // 1: On/Off color set direct
 // 2: Optimized setting of LEDs
@@ -131,196 +131,196 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    { "Encoder 4 Switch"       , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Switch 1.1 (INPUT A)"   , 0x01
+   { "Switch 1.1"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2.1 (INPUT A)"   , 0x01
+   { "Switch 2.1"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3.1 (INPUT A)"   , 0x01
+   { "Switch 3.1"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4.1 (INPUT A)"   , 0x01
+   { "Switch 4.1"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 1.2 (INPUT B)"   , 0x01
+   { "Switch 1.2"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2.2 (INPUT B)"   , 0x01
+   { "Switch 2.2"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3.2 (INPUT B)"   , 0x01
+   { "Switch 3.2"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4.2 (INPUT B)"   , 0x01
+   { "Switch 4.2"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 1.3 (PROG)"      , 0x01
+   { "Switch 1.3"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2.3 (PROG)"      , 0x01
+   { "Switch 2.3"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3.3 (PROG)"      , 0x01
+   { "Switch 3.3"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4.3 (PROG)"      , 0x01
+   { "Switch 4.3"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 1.4 (SUB)"       , 0x01
+   { "Switch 1.4"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2.4 (SUB)"       , 0x01
+   { "Switch 2.4"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3.4 (SUB)"       , 0x01
+   { "Switch 3.4"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4.4 (SUB)"       , 0x01
+   { "Switch 4.4"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 1.5 (CUE)"       , 0x01
+   { "Switch 1.5"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2.5 (CUE)"       , 0x01
+   { "Switch 2.5"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3.5 (CUE)"       , 0x01
+   { "Switch 3.5"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4.5 (CUE)"       , 0x01
+   { "Switch 4.5"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 1.6 (ON)"        , 0x01
+   { "Switch 1.6"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2.6 (ON)"        , 0x01
+   { "Switch 2.6"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3.6 (ON)"        , 0x01
+   { "Switch 3.6"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4.6 (ON)"        , 0x01
+   { "Switch 4.6"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 1.7 (START)"     , 0x01
+   { "Switch 1.7"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2.7 (START)"     , 0x01
+   { "Switch 2.7"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3.7 (START)"     , 0x01
+   { "Switch 3.7"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4.7 (START)"     , 0x01
+   { "Switch 4.7"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 1.8 (STOP)"      , 0x01
+   { "Switch 1.8"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2.8 (STOP)"      , 0x01
+   { "Switch 2.8"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3.8 (STOP)"      , 0x01
+   { "Switch 3.8"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4.8 (STOP)"      , 0x01
+   { "Switch 4.8"             , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 1.1 (Peak)"         , 0x00
+   { "LED 1.1"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 2.1 (Peak)"         , 0x00
+   { "LED 2.1"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 3.1 (Peak)"         , 0x00
+   { "LED 3.1"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 4.1 (Peak)"         , 0x00
+   { "LED 4.1"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 1.2 (Signal)"       , 0x00
+   { "LED 1.2"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 2.2 (Signal)"       , 0x00
+   { "LED 2.2"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 3.2 (Signal)"       , 0x00
+   { "LED 3.2"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 4.2 (Signal)"       , 0x00
+   { "LED 4.2"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 1.3 (EQ)"           , 0x00
+   { "LED 1.3"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 2.3 (EQ)"           , 0x00
+   { "LED 2.3"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 3.3 (EQ)"           , 0x00
+   { "LED 3.3"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 4.3 (EQ)"           , 0x00
+   { "LED 4.3"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 1.4 (DYN)"          , 0x00
+   { "LED 1.4"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 2.4 (DYN)"          , 0x00
+   { "LED 2.4"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 3.4 (DYN)"          , 0x00
+   { "LED 3.4"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 4.4 (DYN)"          , 0x00
+   { "LED 4.4"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 1.5 (AUX1)"         , 0x00
+   { "LED 1.5"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 2.5 (AUX1)"         , 0x00
+   { "LED 2.5"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 3.5 (AUX1)"         , 0x00
+   { "LED 3.5"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 4.5 (AUX1)"         , 0x00
+   { "LED 4.5"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 1.6 (AUX2)"         , 0x00
+   { "LED 1.6"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 2.6 (AUX2)"         , 0x00
+   { "LED 2.6"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 3.6 (AUX2)"         , 0x00
+   { "LED 3.6"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 4.6 (AUX2)"         , 0x00
+   { "LED 4.6"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 1.7 (AUX3)"         , 0x00
+   { "LED 1.7"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 2.7 (AUX3)"         , 0x00
+   { "LED 2.7"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 3.7 (AUX3)"         , 0x00
+   { "LED 3.7"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 4.7 (AUX3)"         , 0x00
+   { "LED 4.7"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 1.8 (AUX4)"         , 0x00
+   { "LED 1.8"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 2.8 (AUX4)"         , 0x00
+   { "LED 2.8"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 3.8 (AUX4)"         , 0x00
+   { "LED 3.8"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "LED 4.8 (AUX4)"         , 0x00
+   { "LED 4.8"                , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Fader 1"                , 0x03
