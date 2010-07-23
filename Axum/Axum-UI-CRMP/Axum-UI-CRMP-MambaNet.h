@@ -23,9 +23,9 @@ Data Stack size     : 512
 #define PCB_MAJOR_VERSION        1
 #define PCB_MINOR_VERSION        0
 
-#define FIRMWARE_MAJOR_VERSION   1
-#define TRANSPORTLAYER_MINOR_CORRECTION 0
-#define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+#define FIRMWARE_MAJOR_VERSION   2
+#define TRANSPORTLAYER_MINOR_CORRECTION 2
+#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
 //Local FIRMWARE_MINOR_VERSION
 //0:  Initial release
 //1:  Changed name/description with 'Axum' word
@@ -81,166 +81,166 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    // Description             , Services,
    //                         , sensor {type, size, min, max}
    //                         , actuator {type, size, min, max, default}
-   { "Switch 1 (SRC)"         , 0x01
+   { "Switch 1"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 2 (EQ HF)"       , 0x01
+   { "Switch 2"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 3 (DYN)"         , 0x01
+   { "Switch 3"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 4 (AUX1)"        , 0x01
+   { "Switch 4"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 5 (GAIN)"        , 0x01
+   { "Switch 5"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 6 (EQ HMF)"      , 0x01
+   { "Switch 6"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 7 (DUCK)"        , 0x01
+   { "Switch 7"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 8 (AUX2)"        , 0x01
+   { "Switch 8"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 9 (PHASE)"       , 0x01
+   { "Switch 9"               , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 10 (EQ LMF)"     , 0x01
+   { "Switch 10"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 11 (MONO)"       , 0x01
+   { "Switch 11"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 12 (AUX3)"       , 0x01
+   { "Switch 12"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 13 (LC)"         , 0x01
+   { "Switch 13"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 14 (EQ LF)"      , 0x01
+   { "Switch 14"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 15 (PAN)"        , 0x01
+   { "Switch 15"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 16 (AUX4)"       , 0x01
+   { "Switch 16"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 17 (PROG)"       , 0x01
+   { "Switch 17"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 18 (AUX1)"       , 0x01
+   { "Switch 18"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 19 (AUX3)"       , 0x01
+   { "Switch 19"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 20 (SUB)"        , 0x01
+   { "Switch 20"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 21 (AUX2)"       , 0x01
+   { "Switch 21"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 22 (AUX4)"       , 0x01
+   { "Switch 22"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 23 (PROG)"       , 0x01
+   { "Switch 23"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 24 (SUB)"        , 0x01
+   { "Switch 24"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 25 (AUX1)"       , 0x01
+   { "Switch 25"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 26 (AUX2)"       , 0x01
+   { "Switch 26"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 27 (AUX3)"       , 0x01
+   { "Switch 27"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 28 (AUX4)"       , 0x01
+   { "Switch 28"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 29 (CUE)"        , 0x01
+   { "Switch 29"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 30 (COM)"        , 0x01
+   { "Switch 30"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 31 (EXT1)"       , 0x01
+   { "Switch 31"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 32 (EXT2)"       , 0x01
+   { "Switch 32"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 33 (EXT3)"       , 0x01
+   { "Switch 33"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 34 (EXT4)"       , 0x01
+   { "Switch 34"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 35 (DIM CRM)"    , 0x01
+   { "Switch 35"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 36 (MUTE CRM)"   , 0x01
+   { "Switch 36"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 37 (PROG)"       , 0x01
+   { "Switch 37"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 38 (SUB)"        , 0x01
+   { "Switch 38"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 39 (AUX1)"       , 0x01
+   { "Switch 39"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 40 (AUX2)"       , 0x01
+   { "Switch 40"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 41 (AUX3)"       , 0x01
+   { "Switch 41"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 42 (AUX4)"       , 0x01
+   { "Switch 42"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 43 (CUE)"        , 0x01
+   { "Switch 43"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 44 (COM)"        , 0x01
+   { "Switch 44"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 45 (EXT1)"       , 0x01
+   { "Switch 45"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 46 (EXT2)"       , 0x01
+   { "Switch 46"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 47 (EXT3)"       , 0x01
+   { "Switch 47"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 48 (EXT4)"       , 0x01
+   { "Switch 48"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 49 (DIM STD)"    , 0x01
+   { "Switch 49"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 50 (MUTE STD)"   , 0x01
+   { "Switch 50"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 51 (CUE RESET)"  , 0x01
+   { "Switch 51"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 52 (TB ANN)"     , 0x01
+   { "Switch 52"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 53 (TB GUEST)"   , 0x01
+   { "Switch 53"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
-   { "Switch 54 (TB STUDIO)"  , 0x01
+   { "Switch 54"              , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Encoder 1"              , 0x03
