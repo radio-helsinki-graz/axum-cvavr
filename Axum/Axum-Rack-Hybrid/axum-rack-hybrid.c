@@ -1494,7 +1494,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      if (DataSize == 1)
                      {
                         OutputTalkback[OutputNr][TalkbackNr] = Data[5];
-                        SetRoutingAndLevel(OutputNr<<1);
+                        SetRoutingAndLevel(OutputNr);
 
                         FormatError = 0;
                         MessageDone = 1;
@@ -1956,7 +1956,7 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    TalkbackData[1] = 0;
    for (cntTalkback = 0; cntTalkback<16; cntTalkback++)
    {
-      if (OutputTalkback[(ChannelNr>>1)][cntTalkback])
+      if (OutputTalkback[ChannelNr][cntTalkback])
       {
          switch (cntNrOfSummation)
          {
