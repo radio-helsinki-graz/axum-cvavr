@@ -24,7 +24,7 @@ Data Stack size     : 512
 #define PCB_MINOR_VERSION        0
 
 #define FIRMWARE_MAJOR_VERSION   1
-#define TRANSPORTLAYER_MINOR_CORRECTION 0 
+#define TRANSPORTLAYER_MINOR_CORRECTION 0
 #define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
 //Local FIRMWARE_MINOR_VERSION
 //0:  Initial release
@@ -48,8 +48,7 @@ Data Stack size     : 512
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
 eeprom unsigned int UniqueIDPerProduct    = 10;//0x0002;
-unsigned char CANServices                 = 0x00;
-flash unsigned char NodeServices          = 0x00;        
+flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 

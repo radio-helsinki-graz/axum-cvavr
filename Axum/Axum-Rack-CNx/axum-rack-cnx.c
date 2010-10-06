@@ -340,7 +340,6 @@ void main(void)
 
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
-/*
    unsigned char MessageDone;
 
    MessageDone = 0;
@@ -412,7 +411,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1027) && (ObjectNr<1029))
+/*             else if ((ObjectNr>=1027) && (ObjectNr<1029))
                {  //FPGA Firmware version
                }
                else if ((ObjectNr>=1037) && (ObjectNr<1039))
@@ -420,7 +419,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1039) && (ObjectNr<1055))
                {  //Digital in peak hold
-               }
+               }*/
 
                if (!MessageDone)
                {
@@ -461,7 +460,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                DataType = Data[3];
                DataSize = Data[4];
 
-               if ((ObjectNr>=1029) && (ObjectNr<1033))
+/*             if ((ObjectNr>=1029) && (ObjectNr<1033))
                {  //LED
                   if (DataType == STATE_DATATYPE)
                   {
@@ -741,13 +740,13 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }
+               }*/
             }
             break;
          }
       }
       break;
-   }*/
+   }
 }
 
 

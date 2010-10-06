@@ -44,8 +44,7 @@ Data Stack size     : 512
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
 eeprom unsigned int UniqueIDPerProduct    = 0x0001;
-unsigned char CANServices                 = 0x00;
-flash unsigned char NodeServices          = 0x00;        
+flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 

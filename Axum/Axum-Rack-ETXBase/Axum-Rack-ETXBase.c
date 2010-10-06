@@ -41,7 +41,7 @@ unsigned int cntDebug;
 //  unsigned int ManufacturerID;
 //  unsigned int ProductID;
 //  eeprom unsigned int UniqueIDPerProduct;
-//  extern unsigned char CANServices;
+//  extern unsigned char s;
 //#include "Axum-Rack-ETXBase-MambaNet.h"
 
 unsigned long int cntUSART1DataOverrun;
@@ -417,7 +417,7 @@ void main(void)
    TWBR=0x02;
    TWAR=0x01;
    TWCR=0x45;
-   
+
    //HardwareMinorRevision = (PORTF&0x0F);
 
    InitializeCAN();
@@ -442,7 +442,7 @@ void main(void)
    while (1)
    {
       //ProcessCAN();
-      
+
 
       // Place your code here
       if ((cntMilliSecond-PreviousMilliSecond)>1000)
@@ -451,7 +451,7 @@ void main(void)
       }
 
       if (cntMilliSecond - PreviousLEDBlinkMilliSecond > 250)
-      {  //LED Blink 4 times per second.       
+      {  //LED Blink 4 times per second.
          if (!BusError)
          {
             LEDGRN = cntDebug++&0x04;
@@ -470,9 +470,9 @@ void main(void)
       {
          unsigned char ReceivedByte;
          char cnt;
-         
+
          ReceivedByte = getchar1();
-         
+
          switch (ReceivedByte)
          {
             case 0xE0:
@@ -491,12 +491,12 @@ void main(void)
                   {
                      if (ReceivedByte&0x40)
                      {
-                        SerialReceiveMambaNetMessage = 0;               
+                        SerialReceiveMambaNetMessage = 0;
                      }
                      else
                      {
-                        SerialReceiveMambaNetMessage = 1;               
-                     }                  
+                        SerialReceiveMambaNetMessage = 1;
+                     }
                      ToCANAddress = (ReceivedByte<<7)&0x1F;
                      SequenceNumber = 0;
                   }
@@ -506,13 +506,13 @@ void main(void)
                      ToCANAddress |= ReceivedByte&0x7F;
                      SequenceNumber = 0;
                   }
-                  break; 
+                  break;
                   case 2:
                   {
-                     SequenceNumber = ReceivedByte&0x0F; 
+                     SequenceNumber = ReceivedByte&0x0F;
                   }
                   break;
-                  default: 
+                  default:
                   {
                      if (SerialReceiveMambaNetMessage)
                      {
@@ -536,11 +536,11 @@ void main(void)
                      else
                      { //CAN Control message
                         ReceivedSerialMessageBuffer[cntReceivedSerialMessageBuffer-3] = ReceivedByte;
-                     } 
+                     }
                   }
-                  break; 
+                  break;
                }
-               cntReceivedSerialMessageBuffer++; 
+               cntReceivedSerialMessageBuffer++;
             }
             break;
             case 0xE1:
@@ -548,22 +548,22 @@ void main(void)
                if (!SerialReceiveMambaNetMessage)
                {  //Parent control message received
                   if (cntReceivedSerialMessageBuffer == 11)
-                  {     
+                  {
                      SendCANParentControlMessage(ReceivedSerialMessageBuffer);
                   }
                }
             }
             break;
-         }       
+         }
       }
 
       //while (UARTTransmitBufferBottom != UARTTransmitBufferTop)
       if (UARTTransmitBufferBottom != UARTTransmitBufferTop)
       {
          char cntTransmitByte;
-                 
+
          for (cntTransmitByte=0; cntTransmitByte<13; cntTransmitByte++)
-         {         
+         {
             putchar1(UARTTransmitBuffer[UARTTransmitBufferBottom][cntTransmitByte]);
          }
          UARTTransmitBufferBottom++;
@@ -571,7 +571,7 @@ void main(void)
          {
             UARTTransmitBufferBottom = 0;
          }
-      }      
+      }
    }
 }
 

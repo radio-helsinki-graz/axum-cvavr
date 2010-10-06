@@ -16,11 +16,11 @@
 #define  nDTR2          PINB.6
 #define  nRTS2          PINB.7
 
-#define 	READ_SLOTADR   PORTC.0
-#define 	SLOTADR0  		PINC.1
-#define 	SLOTADR1  		PINC.2
-#define 	SLOTADR2  		PINC.3
-#define 	SLOTADR3  		PINC.4
+#define     READ_SLOTADR   PORTC.0
+#define     SLOTADR0        PINC.1
+#define     SLOTADR1        PINC.2
+#define     SLOTADR2        PINC.3
+#define     SLOTADR3        PINC.4
 
 #define  LEDGRN         PORTC.6
 #define  nFCLK_SINK_LED PORTC.7

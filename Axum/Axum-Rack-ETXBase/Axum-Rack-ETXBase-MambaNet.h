@@ -43,8 +43,8 @@ Data Stack size     : 512
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
 eeprom unsigned int UniqueIDPerProduct    = 0x0002;
-unsigned char CANServices                 = 0x01;        //Gateway/CAN Address server
-                
+//unsigned char CANServices                 = 0x01;        //Gateway/CAN Address server
+
 unsigned char Parent[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 unsigned char HardwareMinorRevision = 0x00;
 

@@ -49,7 +49,6 @@ Data Stack size     : 512
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
 eeprom unsigned int UniqueIDPerProduct    = 9;//0x0004;
-unsigned char CANServices                 = 0x00;
 flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
@@ -78,7 +77,7 @@ flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
    NR_OF_OBJECTS                          //NumberOfObjects
 };
 
-#if (NR_OF_STATIC_OBJECTS != 0)                                                           
+#if (NR_OF_STATIC_OBJECTS != 0)
 flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_OBJECTS] =
 {
    // Description             , Services

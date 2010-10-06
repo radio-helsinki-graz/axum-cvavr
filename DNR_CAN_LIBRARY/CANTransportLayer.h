@@ -43,7 +43,7 @@
 #define PROTOCOL_MAJOR_VERSION   1
 #define PROTOCOL_MINOR_VERSION   0
 
-#define TRANSPORTLAYER_MINOR     1
+#define TRANSPORTLAYER_MINOR     2
 
 #define PROTOCOL_OVERHEAD        16 //16 bytes of defined overhead in the protcol
 
@@ -105,7 +105,7 @@ extern flash unsigned int NumberOfStaticObjects;
 
 extern unsigned int ManufacturerID;
 extern unsigned int ProductID;
-extern unsigned char CANServices;
+//extern unsigned char CANServices;
 
 unsigned char AddressValidated;
 unsigned char BusError;
@@ -483,13 +483,13 @@ interrupt [CAN_IT] void can_isr(void)
    unsigned char CANControlMessageType;
 
    OldCANPAGE = CANPAGE;
-   
+
 if ((CANSIT1 & 0x40) == 0x40 ) /* MOb14 interrupt (SIT14=1) */
 {
 CANPAGE = (0x0E << 4); /* select MOb14 */
 CANSTMOB = 0x00; /* reset MOb14 status */
 CANCDMOB = 0x88; /* reception enable */
-}                                                         
+}
 
    /******** MOb0 ********/
    /* local receive A    */
@@ -512,36 +512,36 @@ CANCDMOB = 0x88; /* reception enable */
       if(CANSTMOB & 0x20)
       {  // RXOK
          CANSTMOB &= 0xdf;       // reset RXOK bit
-         
+
          BusError = 0;
 
 
          MessageComplete = 0;
          SequenceNumber = (CANIDT4>>3)&0xF;
-         
+
          if (SequenceNumber == ReceiveSequenceNumber)
          {
             unsigned char ProcessData = 0;
             FromCANAddress  = (CANIDT4>>7)&0x001;
             FromCANAddress |= (((unsigned int)CANIDT3)<<1)&0x1FE;
             FromCANAddress |= (((unsigned int)CANIDT2)<<9)&0xE00;
-            
+
             if (SequenceNumber == 0)
             {
                ReceiveCANAddress = FromCANAddress;
                ProcessData = 1;
             }
-            else if (ReceiveCANAddress == FromCANAddress)            
+            else if (ReceiveCANAddress == FromCANAddress)
             {
                ProcessData = 1;
             }
-            
+
             if (ProcessData)
-            {                   
+            {
                for (cntByte=0; cntByte<8; cntByte++)
                {
                   ReceivedByte = CANMSG;
-   
+
                   if (!MessageComplete)
                   {
                      if ((ReceivedByte & 0xC0) == 0x80)
@@ -565,7 +565,7 @@ CANCDMOB = 0x88; /* reception enable */
                      }
                   }
                }
-            
+
                if (MessageComplete)
                {
                   ReceiveSequenceNumber = 0;
@@ -633,9 +633,9 @@ CANCDMOB = 0x88; /* reception enable */
 
          MessageComplete = 0;
          SequenceNumber = (CANIDT4>>3)&0xF;
-         
+
          if (SequenceNumber == GlobalReceiveSequenceNumber)
-         { 
+         {
             unsigned char ProcessData = 0;
 
             FromCANAddress  = (CANIDT4>>7)&0x001;
@@ -651,9 +651,9 @@ CANCDMOB = 0x88; /* reception enable */
             {
                ProcessData = 1;
             }
-            
+
             if (ProcessData)
-            {       
+            {
                for (cntByte=0; cntByte<8; cntByte++)
                {
                   ReceivedByte = CANMSG;
@@ -774,7 +774,7 @@ CANCDMOB = 0x88; /* reception enable */
 
       if(CANSTMOB & 0x10)
       {  // BERR: Bit Error (The bit value monitored is different from the bit value sent
-         CANSTMOB &= 0xef; // reset BERR bit       
+         CANSTMOB &= 0xef; // reset BERR bit
          cntCANBitErrorMob1++;
          //BusError = 1;
       }
@@ -843,7 +843,7 @@ CANCDMOB = 0x88; /* reception enable */
          CANCDMOB |= 0x10; // IDE = 1 CAN rev.2.0B (Indentifier 29bit)
          CANCDMOB |= 0x08; // DLC = 1 Data Length Code
          CANCDMOB |= 0x80; // CONMOB1:0: Configuration of Massage Object = Reception
-                 
+
          ProcessCANControlMessage(CANControlMessageType);
       }
 
@@ -989,19 +989,19 @@ CANCDMOB = 0x88; /* reception enable */
       {   // AERG: Acknowledgment Error General
          cntCANAcknowledgementErrorGeneral++;
          CANGIT |= 0x01;
-         
+
          BusError = 1;
       }
    }
-   
+
    if (BusError)
    {
       CanBussError();
           //AddressValidated = 0;
        //timerReservationInfo = 1;
    }
-   
-   
+
+
 
    cntCANInterrupt++;
 
@@ -1082,7 +1082,7 @@ void InitializeCAN()
 
       CANGIE |= 0x80;
    }
-   
+
    ObjectNrInformationCount = 0;
    LastObjectInformationRequested = 0;
 
@@ -1091,7 +1091,7 @@ void InitializeCAN()
    LocalCANAddress                  = 0x00000000;
    ReceivedLocalCANAddress          = 0x00000000;
    ReceivedGatewayCANAddress        = 0x00000000;
-   
+
    ReceiveSequenceNumber            = 0;
    GlobalReceiveSequenceNumber      = 0;
    ReceiveCANAddress                = 0x000;
@@ -1143,7 +1143,7 @@ void InitializeCAN()
    CANCDMOB |= 0x08; //DLC = 1
    CANCDMOB |= 0x80; //Enable Reception
    CANGIT = 0x7F;
-   
+
    //SPY Mob14
    CANPAGE = (0x0E << 4); /* select MOb14 */
    CANSTMOB = 0x00; /* reset MOb14 status */
@@ -1154,8 +1154,8 @@ void InitializeCAN()
    CANIDM1  = 0x00;
 
    CANCDMOB = 0x88; /* reception enable */
-                                                         
-   
+
+
 
    CANGIE |= 0x80;
 
@@ -1202,7 +1202,7 @@ void SendMambaNetReservationInfo()
    unsigned char Data[16];
    unsigned char Buffer7Bit[MAX_MAMBANET_CAN_BUFFER_SIZE];
    unsigned char Buffer7BitLength;
-   
+
    if(--timerReservationInfo != 0)
    {
       return;
@@ -1228,7 +1228,7 @@ void SendMambaNetReservationInfo()
    {
       Data[15] |= 0x80;
    }
-   
+
    timerReservationInfo = AddressValidated ? 30 : 1;
 
    Buffer7BitLength = Encode8to7bits(Data, 16, Buffer7Bit, 0);
@@ -1247,7 +1247,7 @@ void DecodeRawMambaNetMessageFromCAN(unsigned char *Buffer, unsigned char Buffer
       unsigned int MessageType;
       unsigned char cntBuffer;
       unsigned char cnt;
-         
+
       cntBuffer = BufferPosition;
 
       Ack = 0;
@@ -1277,7 +1277,7 @@ void DecodeRawMambaNetMessageFromCAN(unsigned char *Buffer, unsigned char Buffer
          MessageID <<= 7;
          MessageID |= Buffer[cntBuffer++]&0x7F;
       }
-      
+
       MessageType  = ((unsigned int)Buffer[cntBuffer++]<<7)&0x3F80;
       MessageType |= ((unsigned int)Buffer[cntBuffer++]   )&0x007F;
 
@@ -1328,7 +1328,7 @@ void SendMambaNetMessage7BitsDataToCAN(unsigned long int ToAddress, unsigned lon
          while (cntTransmitCANMessageBuffer < TransmitCANMessageBufferLength)
          {
          }
-                  
+
          if (cntTransmitCANMessageBuffer >= TransmitCANMessageBufferLength)
          {
    //#asm("cli");
@@ -1342,7 +1342,7 @@ void SendMambaNetMessage7BitsDataToCAN(unsigned long int ToAddress, unsigned lon
             {
                TransmitCANMessageBuffer[cntBuffer++] = 0x80 | ((ToAddress>>28)&0x01);
             }
-            
+
             //ToAddress
             TransmitCANMessageBuffer[cntBuffer++] = (ToAddress>>21)&0x7F;   //7 bits
             TransmitCANMessageBuffer[cntBuffer++] = (ToAddress>>14)&0x7F;   //7 bits
@@ -1452,7 +1452,7 @@ void SendMambaNetMessage7BitsDataToCAN_DedicatedAddress(unsigned long int CANAdd
          }
 
          if (cntTransmitCANMessageBuffer >= TransmitCANMessageBufferLength)
-         {            
+         {
 
    //#asm("cli");
             cntBuffer = 0;
@@ -1623,7 +1623,7 @@ inline unsigned char Decode7to8bits(unsigned char *Buffer, unsigned char BufferP
 void SetLocalCANAddress(unsigned long int NewLocalAddress)
 {
    unsigned long int ReceiveSequenceCANAddress;
-   
+
    //Initialize MOB0 for local receive
    CANGIE &= 0x7F;
 
@@ -1698,12 +1698,12 @@ void SendCANParentControlMessage()
       CANIDT3  = (BROADCAST_PARENT_CONTROL_ADDRESS>>5)&0xFF;
       CANIDT2  = (BROADCAST_PARENT_CONTROL_ADDRESS>>13)&0xFF;
       CANIDT1  = (BROADCAST_PARENT_CONTROL_ADDRESS>>21)&0xFF;
-      
+
       CANIDM4  = 0xFF;
       CANIDM3  = 0xFF;
       CANIDM2  = 0xFF;
       CANIDM1  = 0xFF;
-   
+
       CANCDMOB |= 0x10; //IDE = 1
       CANCDMOB |= 0x08; //DLC = 1
 
@@ -2001,7 +2001,7 @@ void SendSensorChangeToMambaNet(unsigned int ObjectNr, unsigned char DataType, u
       {
          TransmitBuffer[(unsigned char)(5+cntByte)] = Data[cntByte];
       }
-   
+
       EngineMambaNetAddress = 0x10000000;
       if (DefaultEngineMambaNetAddress)
       {
@@ -2019,7 +2019,7 @@ void SendSensorChangeToMambaNet(unsigned int ObjectNr, unsigned char DataType, u
 unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
    unsigned char MessageProcessed;
-   
+
    if (MessageID)
    {
       Ack = 1;
@@ -2076,7 +2076,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                   else
                   {
                      AddressValidated = 0;
-                  } 
+                  }
                }
                BusError = 0;
             }
@@ -2108,7 +2108,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                case  MAMBANET_OBJECT_ACTION_GET_INFORMATION:
                {
                  if ((ObjectNr>=1024) && (ObjectNr<(1024+NumberOfStaticObjects)))
-                 {  //Only for the non-standard objects                      
+                 {  //Only for the non-standard objects
                       unsigned char TransmitBuffer[96];
                       char cntSize;
                       int TableNr;
@@ -2279,19 +2279,19 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                            if (MessageID)
                            {
                               unsigned char TransmitBuffer[16];
-                           
+
                               TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                               TransmitBuffer[1] = ObjectNr&0xFF;
                               TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ENGINE_ADDRESS_RESPONSE;
                               TransmitBuffer[3] = NO_DATA_DATATYPE;
-      
+
                               SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
-                           }                 
+                           }
 
                            MessageProcessed = 1;
                         }
                      }
-                     
+
                   }
                   else if ((ObjectNr>=(1024+NumberOfStaticObjects)) && (ObjectNr<(1024+DefaultNodeObjects.NumberOfObjects)))
                   {   //dynamic generated objects, so not processed
@@ -2311,7 +2311,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                       SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                       MessageProcessed = 1;
                   }
-                  
+
                }
                break;
                case  MAMBANET_OBJECT_ACTION_GET_OBJECT_FREQUENCY:
@@ -2384,14 +2384,14 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                            if (MessageID)
                            {
                               unsigned char TransmitBuffer[16];
-                           
+
                               TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                               TransmitBuffer[1] = ObjectNr&0xFF;
                               TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_OBJECT_FREQUENCY_RESPONSE;
                               TransmitBuffer[3] = NO_DATA_DATATYPE;
-   
+
                               SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
-                           }                                           
+                           }
                         }
                      }
                   }
@@ -2472,7 +2472,7 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                            TransmitBuffer[1] = ObjectNr&0xFF;
                            TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
                            TransmitBuffer[3] = UNSIGNED_INTEGER_DATATYPE;
-                           TransmitBuffer[4] = 2;                           
+                           TransmitBuffer[4] = 2;
                            TransmitBuffer[5] = (UniqueIDPerProduct>>8)&0xFF;
                            TransmitBuffer[6] = UniqueIDPerProduct&0xFF;
                            //TransmitBuffer[5] = (DefaultNodeObjects.UniqueMediaAccessID>>8)&0xFF;
@@ -2793,22 +2793,22 @@ unsigned char PreProcessMambaNetMessageFromCAN(unsigned long int ToAddress, unsi
                         }
                      }
                   }
-                  
+
                   if (MessageProcessed)
                   {
                      if (MessageID)
                      {
                         unsigned char TransmitBuffer[16];
-                        
+
                         Ack = 1;
-                  
+
                         TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                         TransmitBuffer[1] = ObjectNr&0xFF;
                         TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
                         TransmitBuffer[3] = NO_DATA_DATATYPE;
-   
+
                         SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
-                     }                 
+                     }
                   }
                }
                break;

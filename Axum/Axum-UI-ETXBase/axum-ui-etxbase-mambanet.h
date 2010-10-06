@@ -21,12 +21,12 @@ Data Stack size     : 512
 #define MANUFACTERER_ID          0x001    //max 0x3FF
 #define PCB_TYPE                 0x0000
 
-#define PCB_MAJOR_VERSION        1        
+#define PCB_MAJOR_VERSION        1
 #define PCB_MINOR_VERSION        0
 
 #define FIRMWARE_MAJOR_VERSION   1
 #define FIRMWARE_MINOR_VERSION   0+TRASPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
-                         
+
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               9     //Axum-UI-ETXBase
 
@@ -37,14 +37,14 @@ Data Stack size     : 512
    #error You have defined more objects than can be stored in the EEPROM
 #endif
 
-/********************************/ 
+/********************************/
 /* global declarations          */
-/********************************/ 
-unsigned int ManufacturerID               = MANUFACTURER_ID;   
-unsigned int ProductID                    = PRODUCT_ID;   
-eeprom unsigned int UniqueIDPerProduct    = 0x0002;   
-unsigned char CANServices                 = 0x01;        //Gateway/CAN Address server?
-flash unsigned char NodeServices          = 0x00;        
+/********************************/
+unsigned int ManufacturerID               = MANUFACTURER_ID;
+unsigned int ProductID                    = PRODUCT_ID;
+eeprom unsigned int UniqueIDPerProduct    = 0x0002;
+//unsigned char CANServices                 = 0x01;        //Gateway/CAN Address server?
+flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 
@@ -72,12 +72,12 @@ flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
 #if (NR_OF_STATIC_OBJECTS != 0)
 flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_OBJECTS] =
 {
-   // Description             , sensor {type, size, min, max}           
-   //                         , actuator {type, size, min, max, default} 
+   // Description             , sensor {type, size, min, max}
+   //                         , actuator {type, size, min, max, default}
    { "Switch 1"               , {STATE_DATATYPE             ,  1, 0     , 1      },
                                 {STATE_DATATYPE             ,  1, 0     , 1      , 0   }}    //,
 
-};    
+};
 #else
 flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[1];
 #endif

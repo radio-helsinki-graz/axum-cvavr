@@ -1,6 +1,6 @@
 #ifndef Axum_UI_ETXBaseH
 #define Axum_UI_ETXBaseH
- 
+
 /********************************/
 /* Define Ports                 */
 /********************************/
@@ -12,12 +12,12 @@
 #define  SCK_SPI        PINB.1
 #define  SERIRQ         PORTB.7
 
-#define 	nDTR2  		   PINC.0
-#define 	nRTS2  			PINC.1
-#define 	nRI2  			PORTC.2
-#define 	nCTS2  			PORTC.3
-#define	nDSR2 			PORTC.4
-#define	nDCD2				PORTC.5
+#define     nDTR2          PINC.0
+#define     nRTS2           PINC.1
+#define     nRI2            PORTC.2
+#define     nCTS2           PORTC.3
+#define nDSR2           PORTC.4
+#define nDCD2               PORTC.5
 
 #define  TXD2           PIND.2
 #define  RXD2           PORTD.3
@@ -48,5 +48,5 @@ unsigned int PreviousMilliSecond;
 #define CAN_ADDRESS_SERVER
 
 unsigned char CANServices                 = 0x01;        //Gateway/CAN Address server?
-                             
+
 #endif

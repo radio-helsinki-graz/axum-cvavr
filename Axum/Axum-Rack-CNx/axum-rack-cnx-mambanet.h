@@ -37,10 +37,10 @@ Data Stack size     : 512
 #else
   #define PRODUCT_ID               28    //Axum-Rack-CN16x16
 #endif
-  
+
 #ifndef COBRANET_16X16
   #define NR_OF_STATIC_OBJECTS    (1142-1023)
-#else  
+#else
   #define NR_OF_STATIC_OBJECTS    (1258-1023)
 #endif
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
@@ -55,7 +55,6 @@ Data Stack size     : 512
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
 eeprom unsigned int UniqueIDPerProduct    = 0x0001;
-unsigned char CANServices                 = 0x00;
 flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
@@ -74,9 +73,9 @@ unsigned char FPGAFirmwareMinorRevision = 0;
 
 flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
 {
-#ifndef COBRANET_16X16 
+#ifndef COBRANET_16X16
    "Rack CobraNet 8x8 in/out board",      //Description
-#else 
+#else
    "Rack CobraNet 16x16 in/out board",    //Description
 #endif                                          //Name is stored in EEPROM, see above
    MANUFACTURER_ID,                       //ManufacturerID
@@ -126,7 +125,7 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
    { "CobraNet-in-7-Signal"   , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},                            
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
    { "CobraNet-in-8-Signal"   , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
@@ -151,7 +150,7 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
    { "CobraNet-in-15-Signal"  , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
-                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},                            
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
    { "CobraNet-in-16-Signal"  , 0x01
                               , {STATE_DATATYPE             ,  1, 0     , 1      }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},

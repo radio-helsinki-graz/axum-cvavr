@@ -47,8 +47,7 @@ Data Stack size     : 512
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
 eeprom unsigned int UniqueIDPerProduct    = 11;//0x0007;
-unsigned char CANServices                 = 0x00;
-flash unsigned char NodeServices          = 0x00;        
+flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 
@@ -58,7 +57,7 @@ unsigned char Parent[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 unsigned char HardwareMinorRevision = 0x00;
 unsigned char FPGAFirmwareMajorRevision = 0;
 unsigned char FPGAFirmwareMinorRevision = 0;
-                                                                                      
+
 flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
 {
    "Rack 4x MIC preamp board",            //Description

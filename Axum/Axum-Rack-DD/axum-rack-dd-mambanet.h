@@ -24,6 +24,7 @@ Data Stack size     : 512
 #define PCB_MINOR_VERSION        0
 
 #define FIRMWARE_MAJOR_VERSION   1
+#define TRANSPORTLAYER_MINOR_CORRECTION 0
 #define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
 //Local FIRMWARE_MINOR_VERSION
 //0:  Initial release
@@ -46,8 +47,7 @@ Data Stack size     : 512
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
 eeprom unsigned int UniqueIDPerProduct    = 0x0002;
-unsigned char CANServices                 = 0x00;
-flash unsigned char NodeServices          = 0x00;        
+flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
 
@@ -758,7 +758,7 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    { "Digital-out-7-Talkback-level" , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                     , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
-   { "Digital-out-8-Talkback-level" , 0x00                                 
+   { "Digital-out-8-Talkback-level" , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                     , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0x0000 }},
    { "Digital-out-1-Talkback-phase" , 0x00
