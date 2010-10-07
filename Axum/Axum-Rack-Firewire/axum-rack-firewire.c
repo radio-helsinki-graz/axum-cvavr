@@ -244,7 +244,7 @@ void main(void)
       OutputTalkback[6][cntByte] = 0x00;
       OutputTalkback[7][cntByte] = 0x00;
       OutputTalkbackLevel[cntByte] = 0x00;
-      OutputTalkbackStereoSelect[cntByte] = 0x00;
+      OutputTalkbackStereoSelect[cntByte] = 0x01<<(cntByte&0x01);
       OutputTalkbackPhase[cntByte] = 0x00;
    }
 
