@@ -1270,7 +1270,7 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
    Mask = 0x80;
    for (cntBit=0; cntBit<8; cntBit++)
    {
-      MOSI = (FunctionNr&0x7F)&Mask;
+      MOSI = FunctionNr&Mask;
       Mask >>= 1;
       SCK_PSCK = 1;
       SCK_PSCK = 0;
