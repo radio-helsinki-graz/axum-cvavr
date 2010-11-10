@@ -333,10 +333,15 @@ void main(void)
    PreviousFaderPosition[2] = 0;
    PreviousFaderPosition[3] = 0;
 
-   MotorActive[0] = 1;
-   MotorActive[1] = 1;
-   MotorActive[2] = 1;
-   MotorActive[3] = 1;
+   MotorActive[0] = 20;
+   MotorActive[1] = 20;
+   MotorActive[2] = 20;
+   MotorActive[3] = 20;
+
+   MoveByFader[0] = 0;
+   MoveByFader[1] = 0;
+   MoveByFader[2] = 0;
+   MoveByFader[3] = 0;
 
    PWM_M1_A = 0;
    PWM_M1_B = 0;
@@ -413,13 +418,15 @@ void main(void)
                PreviousEncoderPosition[cntModule] = EncoderPosition[cntModule];
             }
 
-//            if ((!MotorActive[cntModule]) || (CurrentTouch[cntModule]))
-            if (CurrentTouch[cntModule])
+            if ((!MotorActive[cntModule]) || (CurrentTouch[cntModule]))
             {
                if (PreviousFaderPosition[cntModule] != FaderPosition[cntModule])
                {
                   unsigned char TransmitBuffer[2];
                   unsigned int ObjectNr;
+
+                  MoveByFader[cntModule] = 25;
+                  MotorPosition[cntModule] = FaderPosition[cntModule];
 
                   ObjectNr = 1104+cntModule;
 
@@ -427,9 +434,23 @@ void main(void)
                   TransmitBuffer[1] = FaderPosition[cntModule]&0xFF;
 
                   SendSensorChangeToMambaNet(ObjectNr, UNSIGNED_INTEGER_DATATYPE, 2, TransmitBuffer);
-
                   PreviousFaderPosition[cntModule] = FaderPosition[cntModule];
                }
+               else
+               {
+                  if (MoveByFader[cntModule])
+                  {
+                    MoveByFader[cntModule]--;
+                  }
+               }
+            }
+            else
+            {
+              if (MotorActive[cntModule])
+              {
+                MotorActive[cntModule]--;
+              }
+              MoveByFader[cntModule] = 0;
             }
          }
 
@@ -1083,8 +1104,7 @@ void ControlMotors()
          }
          else
          {  //Motor off
-            MotorActive[0] = 0;
-
+            //MotorActive[0] = 0;
             if (PWM_M1_B)
             {
                OCR3AH=0xFF;
@@ -1095,6 +1115,8 @@ void ControlMotors()
                OCR3AH=0x00;
                OCR3AL=0x00;
             }
+            //Also make fader positions equal, so its not going to transmit if motor is active
+            PreviousFaderPosition[0] = FaderPosition[0];
          }
       }
       else
@@ -1150,7 +1172,7 @@ void ControlMotors()
          }
          else
          {  //motor off
-            MotorActive[1] = 0;
+            //MotorActive[1] = 0;
             if (PWM_M2_B)
             {
                OCR3BH=0xFF;
@@ -1161,6 +1183,8 @@ void ControlMotors()
                OCR3BH=0x00;
                OCR3BL=0x00;
             }
+            //Also make fader positions equal, so its not going to transmit if motor is active
+            PreviousFaderPosition[1] = FaderPosition[1];
          }
       }
       else
@@ -1217,7 +1241,7 @@ void ControlMotors()
          }
          else
          {  //Motor off
-            MotorActive[2] = 0;
+            //MotorActive[2] = 0;
             if (PWM_M3_B)
             {
                OCR1AH=0xFF;
@@ -1228,11 +1252,12 @@ void ControlMotors()
                OCR1AH=0x00;
                OCR1AL=0x00;
             }
+            //Also make fader positions equal, so its not going to transmit if motor is active
+            PreviousFaderPosition[2] = FaderPosition[2];
          }
       }
       else
       {  //Motor off
-         MotorActive[2] = 0;
          if (PWM_M3_B)
          {
             OCR1AH=0xFF;
@@ -1285,7 +1310,7 @@ void ControlMotors()
          }
          else
          {  //Motor off
-            MotorActive[3] = 0;
+            //MotorActive[3] = 0;
             if (PWM_M4_B)
             {
                OCR1BH=0xFF;
@@ -1296,6 +1321,8 @@ void ControlMotors()
                OCR1BH=0x00;
                OCR1BL=0x00;
             }
+            //Also make fader positions equal, so its not going to transmit if motor is active
+            PreviousFaderPosition[3] = FaderPosition[3];
          }
       }
       else
@@ -1738,7 +1765,10 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                         PreviousMotorPosition[ModuleNr] = FaderPosition[ModuleNr];
                         MotorPosition[ModuleNr] = ((unsigned int)Data[5]<<8) | Data[6];
-                        MotorActive[ModuleNr] = 1;
+                        if (!MoveByFader[ModuleNr])
+                        {
+                          MotorActive[ModuleNr] = 20;
+                        }
 
                         FormatError = 0;
                         MessageDone = 1;

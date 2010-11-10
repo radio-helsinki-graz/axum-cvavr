@@ -26,12 +26,14 @@ Data Stack size     : 512
 #define FIRMWARE_MAJOR_VERSION   2
 
 #define TRANSPORTLAYER_MINOR_CORRECTION 2
-#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+#define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
 //Local FIRMWARE_MINOR_VERSION
-// 1: On/Off color set direct
-// 2: Optimized setting of LEDs
-// 3: Changed name/description with 'Axum' word
+//1.1: On/Off color set direct
+//1.2: Optimized setting of LEDs
+//1.3: Changed name/description with 'Axum' word
 //    Acknowlegde only on processed messages
+//2.0: node names changed
+//2.1: Faders working without touch
 
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               7     //Axum-UI-4FBP

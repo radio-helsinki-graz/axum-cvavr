@@ -59,7 +59,7 @@
 #define  JUMPER2        PINF.5
 #define  JUMPER3        PINF.6
 #define  JUMPER4        PINF.7
-                              
+
 #define  SIN            PORTG.0
 #define  SCLK           PORTG.1
 #define  XLAT           PORTG.2
@@ -76,7 +76,7 @@
 
 #define FADER_WIBBLE             4
 #define MOTOR_POSITION_DEADZONE  6
-             
+
 /********************************/
 /* global declarations          */
 /********************************/
@@ -101,10 +101,10 @@ const unsigned char SwitchNr2LogicSwitchNr[40] =
 
 const unsigned char LogicLEDNr2LEDNr[80] =
 {
-   33, 32, 35, 34, 37, 36, 39, 38, 
+   33, 32, 35, 34, 37, 36, 39, 38,
    48, 49, 50, 51, 52, 53, 54, 55,
    67, 66, 68, 69,
-   46, 47, 44, 45, 42, 43, 40, 41,   
+   46, 47, 44, 45, 42, 43, 40, 41,
    56, 57, 58, 59, 60, 61, 62, 63,
    65, 64, 70, 71,
    17, 16, 19, 18, 21, 20, 23, 22,
@@ -144,6 +144,7 @@ unsigned char CurrentTouch[4];
 unsigned char PreviousTouch[4];
 
 char MotorActive[4];
+char MoveByFader[4];
 unsigned int MotorPosition[4];
 unsigned int PreviousMotorPosition[4];
 int MotorSpeed[4];
@@ -152,7 +153,7 @@ int StepSizeDown = 4;
 int MinPWMSpeed = 300;
 int MaxPWMSpeed = 600;
 int PreviousDifference[4];
-char Direction[4];  
+char Direction[4];
 
 unsigned char SwitchColorOn[4][4];
 unsigned char SwitchColorOff[4][4];
