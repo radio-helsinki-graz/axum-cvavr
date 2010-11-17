@@ -33,6 +33,10 @@ Data Stack size     : 512
 
 #include "lcd.h"
 
+
+#define MOTOR_ACTIVE_COUNT  40    //40x20mS = 800mS
+#define MOVE_BY_FADER_COUNT  25   //25x20mS = 500mS
+
 unsigned char TextString[9];
 
 extern unsigned long int ObjectNrInformationCount;
@@ -333,10 +337,10 @@ void main(void)
    PreviousFaderPosition[2] = 0;
    PreviousFaderPosition[3] = 0;
 
-   MotorActive[0] = 20;
-   MotorActive[1] = 20;
-   MotorActive[2] = 20;
-   MotorActive[3] = 20;
+   MotorActive[0] = MOTOR_ACTIVE_COUNT;
+   MotorActive[1] = MOTOR_ACTIVE_COUNT;
+   MotorActive[2] = MOTOR_ACTIVE_COUNT;
+   MotorActive[3] = MOTOR_ACTIVE_COUNT;
 
    MoveByFader[0] = 0;
    MoveByFader[1] = 0;
@@ -425,7 +429,7 @@ void main(void)
                   unsigned char TransmitBuffer[2];
                   unsigned int ObjectNr;
 
-                  MoveByFader[cntModule] = 25;
+                  MoveByFader[cntModule] = MOVE_BY_FADER_COUNT;
                   MotorPosition[cntModule] = FaderPosition[cntModule];
 
                   ObjectNr = 1104+cntModule;
@@ -1767,7 +1771,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         MotorPosition[ModuleNr] = ((unsigned int)Data[5]<<8) | Data[6];
                         if (!MoveByFader[ModuleNr])
                         {
-                          MotorActive[ModuleNr] = 20;
+                          MotorActive[ModuleNr] = MOTOR_ACTIVE_COUNT;
                         }
 
                         FormatError = 0;
