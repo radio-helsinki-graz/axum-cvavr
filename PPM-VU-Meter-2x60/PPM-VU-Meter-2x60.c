@@ -33,6 +33,9 @@ Data Stack size     : 512
 
 unsigned char cntDebug;
 
+char pos_to_db_lo[1024];
+char pos_to_db_hi[1024];
+
 int NewLeftPos;
 int NewRightPos;
 
@@ -42,13 +45,14 @@ unsigned char MambaNetRightData[2];
 unsigned char LeftNrOfLEDs;
 unsigned char RightNrOfLEDs;
 unsigned char LeftHoldLEDNr;
-unsigned char RightHoldLEDNr;     
+unsigned char RightHoldLEDNr;
 unsigned char cntLeftHoldTime;
 unsigned char cntRightHoldTime;
 
 unsigned char cntBlock;
 unsigned int LEDDataLeft[4];
 unsigned int LEDDataRight[4];
+unsigned char LeftPeak, RightPeak;
 
 
 /**********************************/
@@ -290,42 +294,287 @@ OCR3CL=0x00;
    DIDR0=0x00;
    ADMUX=FIRST_ADC_INPUT | (ADC_VREF_TYPE & 0xff);
    ADCSRA=0xCC;
-   
+
    HardwareMinorRevision = 0;
    FPGAFirmwareMajorRevision = 0;
    FPGAFirmwareMinorRevision = 0;
 
+   LeftPeak = 0;
+   RightPeak = 0;
+
+   {
+      unsigned int cntPos;
+
+      for (cntPos=0; cntPos<44; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 0;
+      }
+      for (cntPos=44; cntPos<60; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 1;
+      }
+      for (cntPos=60; cntPos<80; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 2;
+      }
+      for (cntPos=80; cntPos<108; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 3;
+      }
+      for (cntPos=108; cntPos<134; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 4;
+      }
+      for (cntPos=134; cntPos<179; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 5;
+      }
+      for (cntPos=179; cntPos<217; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 6;
+      }
+      for (cntPos=217; cntPos<270; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 7;
+      }
+      for (cntPos=270; cntPos<334; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 8;
+      }
+      for (cntPos=334; cntPos<409; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 9;
+      }
+      for (cntPos=409; cntPos<470; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 10;
+      }
+      for (cntPos=470; cntPos<578; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 11;
+      }
+      for (cntPos=578; cntPos<711; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 12;
+      }
+      for (cntPos=711; cntPos<820; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 13;
+      }
+      for (cntPos=820; cntPos<947; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 14;
+      }
+      for (cntPos=947; cntPos<1024; cntPos++)
+      {
+        pos_to_db_lo[cntPos] = 15;
+      }
+
+      for (cntPos=0; cntPos<24; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 15;
+      }
+      for (cntPos=24; cntPos<25; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 16;
+      }
+      for (cntPos=25; cntPos<26; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 18;
+      }
+      for (cntPos=26; cntPos<28; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 19;
+      }
+      for (cntPos=28; cntPos<30; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 20;
+      }
+      for (cntPos=30; cntPos<32; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 21;
+      }
+      for (cntPos=32; cntPos<34; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 22;
+      }
+      for (cntPos=34; cntPos<37; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 23;
+      }
+      for (cntPos=37; cntPos<38; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 24;
+      }
+      for (cntPos=38; cntPos<41; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 25;
+      }
+      for (cntPos=41; cntPos<47; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 26;
+      }
+      for (cntPos=47; cntPos<50; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 27;
+      }
+      for (cntPos=50; cntPos<55; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 28;
+      }
+      for (cntPos=55; cntPos<62; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 29;
+      }
+      for (cntPos=62; cntPos<65; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 30;
+      }
+      for (cntPos=65; cntPos<72; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 31;
+      }
+      for (cntPos=72; cntPos<78; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 32;
+      }
+      for (cntPos=78; cntPos<82; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 33;
+      }
+      for (cntPos=82; cntPos<92; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 34;
+      }
+      for (cntPos=92; cntPos<100; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 35;
+      }
+      for (cntPos=100; cntPos<111; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 36;
+      }
+      for (cntPos=111; cntPos<117; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 37;
+      }
+      for (cntPos=117; cntPos<126; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 38;
+      }
+      for (cntPos=126; cntPos<132; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 39;
+      }
+      for (cntPos=132; cntPos<149; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 40;
+      }
+      for (cntPos=149; cntPos<159; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 41;
+      }
+      for (cntPos=159; cntPos<168; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 42;
+      }
+      for (cntPos=168; cntPos<178; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 43;
+      }
+      for (cntPos=178; cntPos<200; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 44;
+      }
+      for (cntPos=200; cntPos<216; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 45;
+      }
+      for (cntPos=216; cntPos<227; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 46;
+      }
+      for (cntPos=227; cntPos<241; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 47;
+      }
+      for (cntPos=241; cntPos<255; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 48;
+      }
+      for (cntPos=255; cntPos<272; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 49;
+      }
+      for (cntPos=272; cntPos<287; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 50;
+      }
+      for (cntPos=287; cntPos<307; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 51;
+      }
+      for (cntPos=307; cntPos<325; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 52;
+      }
+      for (cntPos=325; cntPos<347; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 53;
+      }
+      for (cntPos=347; cntPos<367; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 54;
+      }
+      for (cntPos=367; cntPos<388; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 55;
+      }
+      for (cntPos=388; cntPos<413; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 56;
+      }
+      for (cntPos=413; cntPos<444; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 57;
+      }
+      for (cntPos=444; cntPos<467; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 58;
+      }
+      for (cntPos=467; cntPos<494; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 59;
+      }
+      for (cntPos=494; cntPos<1024; cntPos++)
+      {
+        pos_to_db_hi[cntPos] = 60;
+      }
+   }
 
    // CAN Controller initialization
    InitializeCAN();
-   
-   
+
    BLANK = 0;
-    
+
    TransmitCANMessageBufferLength = 0;
    cntTransmitCANMessageBuffer = 0;
 
    PreviousMilliSecond = 0;
 
-//               SendMambaNetMessageToCAN(0x10000000, LocalMambaNetAddress, 0, 1, TransmitBuffer, 4);
-   LocalMambaNetAddress = 0x00000110;
-
    cntBlock = 0;
    LeftNrOfLEDs = 0;
    RightNrOfLEDs = 0;
    LeftHoldLEDNr = 0;
-   RightHoldLEDNr = 0;       
+   RightHoldLEDNr = 0;
    NewLeftPos = 0;
    NewRightPos = 0;
-   
+
    // Global enable interrupts
    #asm("sei")
-
    while (1)
    {
       ProcessCAN();
-      
-//      SetTLC5920(cntBlock++&0x03);     
 
       if (cntMilliSecond - PreviousMilliSecondReservation > 1000)
       {
@@ -339,6 +588,19 @@ OCR3CL=0x00;
          {
             SendMambaNetReservationInfo();
          }
+
+/* ADC data debug output via MambaNet
+         {
+            unsigned char mData[2];
+            mData[0] = (((int)adc_data[0])>>8)&0xFF;
+            mData[1] = ((int)adc_data[0])&0xFF;
+            SendSensorChangeToMambaNet(1100, UNSIGNED_INTEGER_DATATYPE, 2, mData);
+
+            mData[0] = (((int)adc_data[1])>>8)&0xFF;
+            mData[1] = ((int)adc_data[1])&0xFF;
+            SendSensorChangeToMambaNet(1101, UNSIGNED_INTEGER_DATATYPE, 2, mData);
+         }
+*/
       }
 
       if (cntMilliSecond - PreviousMilliSecond > 40)
@@ -360,46 +622,45 @@ OCR3CL=0x00;
                RightNrOfLEDs--;
             }
          }
-         
-         
-         if (LocalMambaNetAddress == 0x00000000)
+
+
+         if (!AddressValidated)
          {
-            float dB = (20*log10((float)adc_data[0]/1023));
-            dB += 60;
-            if (dB<0)
+            if (adc_data[0]<1023)
             {
-               NewLeftPos = 0;
+              LeftPeak = 0;
+              NewLeftPos = pos_to_db_lo[adc_data[0]];
             }
-            else if (dB>60)
+            else if (adc_data[1]<1023)
             {
-               NewLeftPos = 60;
+              LeftPeak = 0;
+              NewLeftPos = pos_to_db_hi[adc_data[1]];
             }
             else
             {
-               NewLeftPos = dB;
+              LeftPeak = 1;
+              NewLeftPos = pos_to_db_hi[1023];
             }
 
             if (NewLeftPos>LeftNrOfLEDs)
             {
                LeftNrOfLEDs = NewLeftPos;
             }
-         }
-         
-         if (LocalMambaNetAddress == 0x00000000)
-         {
-            float dB = (20*log10((float)adc_data[3]/1023));
-            dB += 60;
-            if (dB<0)
+
+            if (adc_data[2]<1023)
             {
-               NewRightPos = 0;
+              RightPeak = 0;
+              NewRightPos = pos_to_db_lo[adc_data[2]];
             }
-            else if (dB>60)
+            else if (adc_data[3]<1023)
             {
-               NewRightPos = 60;
+              RightPeak = 0;
+              NewRightPos = pos_to_db_hi[adc_data[3]];
             }
             else
             {
-               NewRightPos = dB;
+              RightPeak = 1;
+              NewRightPos = pos_to_db_hi[1023];
             }
 
             if (NewRightPos>RightNrOfLEDs)
@@ -408,7 +669,6 @@ OCR3CL=0x00;
             }
          }
 
-        
          SetLeftLEDNr(LeftHoldLEDNr, 0);
          SetRightLEDNr(RightHoldLEDNr, 0);
          if (NewLeftPos>LeftHoldLEDNr)
@@ -421,218 +681,80 @@ OCR3CL=0x00;
             RightHoldLEDNr = NewRightPos;
             cntRightHoldTime = 20;
          }
-         
-         if (PPM_VU)
+
+         //Peak hold
+         if (cntLeftHoldTime)
          {
-            if (cntLeftHoldTime)
+            cntLeftHoldTime--;
+         }
+         else
+         {
+            if (LeftHoldLEDNr)
             {
-               cntLeftHoldTime--;
-            }
-            else
-            {
-               if (LeftHoldLEDNr)
-               {
-                  LeftHoldLEDNr--;
-                  cntLeftHoldTime++;
-               }
-            }
-            if (cntRightHoldTime)
-            {
-               cntRightHoldTime--;
-            }
-            else
-            {
-               if (RightHoldLEDNr)
-               {
-                  RightHoldLEDNr--;
-                  cntRightHoldTime++;
-               }
+              LeftHoldLEDNr--;
+              cntLeftHoldTime++;
             }
          }
-         
+         if (cntRightHoldTime)
+         {
+            cntRightHoldTime--;
+         }
+         else
+         {
+            if (RightHoldLEDNr)
+            {
+               RightHoldLEDNr--;
+               cntRightHoldTime++;
+            }
+         }
+
          SetLeftNrOfLEDs(LeftNrOfLEDs);
          SetRightNrOfLEDs(RightNrOfLEDs);
          SetLeftLEDNr(LeftHoldLEDNr, 1);
          SetRightLEDNr(RightHoldLEDNr, 1);
       }
 
-      if (cntMilliSecond - PreviousLEDBlinkMilliSecond > 250)
-      {  //LED Blink 4 times per second.
-         PreviousLEDBlinkMilliSecond = cntMilliSecond;
-
-         cntDebug++;
-         if (cntDebug>4)
-         {
-            cntDebug=0;
-         }
-
-         LEDDataLeft[0] &= 0x7FFF;
-         LEDDataLeft[1] &= 0x7FFF;
-         LEDDataLeft[2] &= 0x7FFF;
-         LEDDataLeft[3] &= 0x7FFF;
-         
-         switch (cntDebug)
-         {
-            case 1:
-            {
-               LEDDataLeft[0] |= 0x8000;
-            }
-            break;
-            case 2:
-            {
-               LEDDataLeft[0] |= 0x8000;
-               LEDDataLeft[1] |= 0x8000;
-            }
-            break;
-            case 3:
-            {
-               LEDDataLeft[0] |= 0x8000;
-               LEDDataLeft[1] |= 0x8000;
-               LEDDataLeft[2] |= 0x8000;
-            }
-            break;
-            case 4:
-            {
-               LEDDataLeft[0] |= 0x8000;
-               LEDDataLeft[1] |= 0x8000;
-               LEDDataLeft[2] |= 0x8000;
-               LEDDataLeft[3] |= 0x8000;
-            }
-            break;
-         }            
-      }      
-
-      //ReadSwitches();
-   }
-}
-
-/*
-char SwitchCheck(unsigned char cntRow, unsigned char SwitchNr, char SwitchReturn)
-{
-	char ReturnValue;
-	ReturnValue = 0;
-
-	if (SwitchReturn)
-	{
-		if (SwitchData[cntRow][SwitchNr] != SWITCHDELAY)
-		{
-			SwitchData[cntRow][SwitchNr]++;
-			if (SwitchData[cntRow][SwitchNr]==SWITCHDELAY)
-			{  //Unpressed
-				ReturnValue = -1;
-			}
-		}
-	}
-	else
-	{
-		if (SwitchData[cntRow][SwitchNr])
-		{
-			SwitchData[cntRow][SwitchNr]--;
-			if (SwitchData[cntRow][SwitchNr]==0)
-			{  //Pressed
-				ReturnValue = 1;
-			}
-		}
-	}
-	return ReturnValue;
-}
-
-void ReadSwitches()
-{
-   //Switch Rows
-   char ReturnValue;
-   unsigned char Overload;
-   unsigned char Mask;
-   unsigned char cntBit;
-
-	ReturnValue = SwitchCheck(0, 0, nGPI1);
-   DoSwitch(0, ReturnValue);
-
-	ReturnValue = SwitchCheck(0, 1, nGPI2);
-   DoSwitch(1, ReturnValue);
-
-	ReturnValue = SwitchCheck(0, 2, nGPI3);
-   DoSwitch(2, ReturnValue);
-
-	ReturnValue = SwitchCheck(0, 3, nGPI4);
-   DoSwitch(3, ReturnValue);
-
-	ReturnValue = SwitchCheck(0, 4, nGPI5);
-   DoSwitch(4, ReturnValue);
-
-	ReturnValue = SwitchCheck(0, 5, nGPI6);
-   DoSwitch(5, ReturnValue);
-
-	ReturnValue = SwitchCheck(0, 6, nGPI7);
-   DoSwitch(6, ReturnValue);
-
-	ReturnValue = SwitchCheck(0, 7, nGPI8);
-   DoSwitch(7, ReturnValue);
-
-   Overload = PORTA;
-
-   for (cntBit=0; cntBit<8; cntBit++)
-   {
-      Mask = 0x80>>cntBit;
-
-      if (SwitchData[1][cntBit] !=  (Overload&Mask))
+      LEDDataLeft[0] |= 0x8000;
+      if (AddressValidated)
       {
-         if (Overload&Mask)
-         {
-            DoSwitch(8+cntBit, 1);
-         }
-         else
-         {
-            DoSwitch(8+cntBit, -1);
-         }
-         SwitchData[1][cntBit] = Overload&Mask;
+        LEDDataRight[0] |= 0x8000;
+      }
+      else
+      {
+         LEDDataRight[0] &= 0x7FFF;
+      }
+
+      if (LeftPeak)
+      {
+        LEDDataLeft[3] |= 0x8000;
+      }
+      else
+      {
+        LEDDataLeft[3] &= 0x7FFF;
+      }
+
+      if (RightPeak)
+      {
+        LEDDataRight[3] |= 0x8000;
+      }
+      else
+      {
+        LEDDataRight[3] &= 0x7FFF;
       }
    }
 }
 
-void DoSwitch(unsigned char LogicSwitchNr, int Event)
-{
-    if ((Event == 1) || (Event == -1))
-    {
-        unsigned char TransmitBuffer[6];
-        unsigned int ObjectNr;
-
-        if ((LogicSwitchNr>=0) && (LogicSwitchNr<8))
-        {
-            ObjectNr = LogicSwitchNr + 1027;
-        }
-        else if ((LogicSwitchNr>=8) && (LogicSwitchNr<16))
-        {
-            ObjectNr = LogicSwitchNr + 1059 - 8;
-        }
-
-        TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
-        TransmitBuffer[1] = ObjectNr&0xFF;
-        TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_CHANGED;
-        TransmitBuffer[3] = STATE_DATATYPE;
-        TransmitBuffer[4] = 1;
-        TransmitBuffer[5] = 0;
-        if (Event == 1)
-        {
-           TransmitBuffer[5] = 1;
-        }
-
-        SendMambaNetMessageToCAN(0x10000000, LocalMambaNetAddress, 0, 1, TransmitBuffer, 6);
-    }
-}
-*/
-
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
    unsigned char MessageDone;
-   
+
    MessageDone = 0;
-   
+
    if (MessageID)
    {
       Ack = 1;
    }
-   
+
    switch (MessageType)
    {
       //MessageType = 0, handled in the stack
@@ -650,9 +772,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             {  // static objects are handled in the stack
                if ((ObjectNr>=(1024+NumberOfStaticObjects)) && (ObjectNr<(1024+DefaultNodeObjects.NumberOfObjects)))
                {  //Only for the non-standard objects
-               }   
+               }
             }
-            break;            
+            break;
             case  MAMBANET_OBJECT_ACTION_INFORMATION_RESPONSE:
             {       //Not yet implemented
             }
@@ -675,12 +797,12 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             break;
             case  MAMBANET_OBJECT_ACTION_SET_ACTUATOR_DATA:
             {
-               switch (ObjectNr)               
+               switch (ObjectNr)
                {
                   case 1024:
                   {
                      if ((Data[3] == FLOAT_DATATYPE) && (Data[4]==2))
-                     {                   
+                     {
                         float Value;
                         if (VariableFloat2Float(&Data[5], Data[4], &Value) == 0)
                         {
@@ -737,6 +859,22 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                   break;
+                  case 1026:
+                  {
+                     if (Data[3] == STATE_DATATYPE)
+                     {
+                        LeftPeak = Data[5];
+                     }
+                  }
+                  break;
+                  case 1027:
+                  {
+                     if (Data[3] == STATE_DATATYPE)
+                     {
+                        RightPeak = Data[5];
+                     }
+                  }
+                  break;
                }
             }
             break;
@@ -747,17 +885,17 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 }
 
 void SetTLC5920(char cntBlock)
-{  
+{
    char cntBit;
    unsigned int Mask;
-    
-   SCLK = 0;     
+
+   SCLK = 0;
    for (cntBit=0; cntBit<16; cntBit++)
    {
       Mask = 0x8000>>cntBit;
-      
+
       if (LEDDataLeft[cntBlock]&Mask)
-      {   
+      {
          SINL = 1;
       }
       else
@@ -766,36 +904,36 @@ void SetTLC5920(char cntBlock)
       }
 
       if (LEDDataRight[cntBlock]&Mask)
-      {   
+      {
          SINR = 1;
       }
       else
       {
          SINR = 0;
       }
- 
+
       SCLK = 1;
       SCLK = 0;
    }
-   
+
    BLANK = 1;
    nLATCH = 1;
    nLATCH = 0;
    CSEL0 = cntBlock&0x01;
-   CSEL1 = cntBlock&0x02; 
+   CSEL1 = cntBlock&0x02;
    BLANK = 0;
 }
 
 void SetLeftNrOfLEDs(int NrOfLEDs)
-{     
-   char cntBlock; 
+{
+   char cntBlock;
    char NrOfFullBlocks;
    char NrOfLEDsInBlock;
    char cntLEDs;
    unsigned int MSB;
-   
+
    NrOfFullBlocks = NrOfLEDs/15;
-   
+
    for (cntBlock=0; cntBlock<4; cntBlock++)
    {
       if (cntBlock<NrOfFullBlocks)
@@ -811,26 +949,26 @@ void SetLeftNrOfLEDs(int NrOfLEDs)
             MSB = LEDDataLeft[cntBlock]&0x8000;
             LEDDataLeft[cntBlock] = 0x0000;
             for (cntLEDs=0; cntLEDs<NrOfLEDsInBlock; cntLEDs++)
-            {             
+            {
                LEDDataLeft[cntBlock] <<= 1;
                LEDDataLeft[cntBlock] |= 0x0001;
             }
             LEDDataLeft[cntBlock] |= MSB;
-         }     
+         }
       }
    }
 }
 
 void SetRightNrOfLEDs(int NrOfLEDs)
 {
-   char cntBlock; 
+   char cntBlock;
    char NrOfFullBlocks;
    char NrOfLEDsInBlock;
    char cntLEDs;
    unsigned int MSB;
-   
+
    NrOfFullBlocks = NrOfLEDs/15;
-   
+
    for (cntBlock=0; cntBlock<4; cntBlock++)
    {
       if (cntBlock<NrOfFullBlocks)
@@ -846,31 +984,31 @@ void SetRightNrOfLEDs(int NrOfLEDs)
             MSB = LEDDataRight[cntBlock]&0x8000;
             LEDDataRight[cntBlock] = 0x0000;
             for (cntLEDs=0; cntLEDs<NrOfLEDsInBlock; cntLEDs++)
-            {             
+            {
                LEDDataRight[cntBlock] <<= 1;
                LEDDataRight[cntBlock] |= 0x0001;
             }
             LEDDataRight[cntBlock] |= MSB;
-         }     
+         }
       }
    }
 }
 
 void SetLeftLEDNr(int LEDNr, char State)
-{     
-   char Block; 
+{
+   char Block;
    char LEDNrInBlock;
    char cntLEDs;
    unsigned int Mask;
-    
+
    if (LEDNr>0)
-   {         
-      Block = (LEDNr-1)/15; 
+   {
+      Block = (LEDNr-1)/15;
       LEDNrInBlock = (LEDNr-1)-((int)Block*15);
-   
+
       Mask = 0x0001;
       Mask <<= LEDNrInBlock;
-                                   
+
       if (State)
       {
          LEDDataLeft[Block] |= Mask;
@@ -884,25 +1022,25 @@ void SetLeftLEDNr(int LEDNr, char State)
 
 void SetRightLEDNr(int LEDNr, char State)
 {
-   char Block; 
+   char Block;
    char LEDNrInBlock;
    char cntLEDs;
    unsigned int Mask;
-   
+
    if (LEDNr>0)
-   {         
-      Block = (LEDNr-1)/15; 
+   {
+      Block = (LEDNr-1)/15;
       LEDNrInBlock = (LEDNr-1)-((int)Block*15);
-   
+
       Mask = 0x0001;
       Mask <<= LEDNrInBlock;
-                                    
+
       if (State)
       {
          LEDDataRight[Block] |= Mask;
       }
       else
-      {     
+      {
          LEDDataRight[Block] &= Mask^0xFFFF;
       }
    }

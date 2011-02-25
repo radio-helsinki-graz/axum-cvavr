@@ -5,10 +5,10 @@
 /* Define Ports                 */
 /********************************/
 #define  PSCK           PINB.1
-#define  nRST_USB       PORTB.4
-#define  PPM_VU         PINB.5
-#define  J18            PINB.6
-#define  J19            PINB.7
+//#define  nRST_USB       PORTB.4
+//#define  PPM_VU         PINB.5
+//#define  J18            PINB.6
+//#define  J19            PINB.7
 
 #define 	CSEL1          PORTC.0
 #define 	CSEL0          PORTC.1
@@ -18,8 +18,8 @@
 #define	SINL  			PORTC.5
 #define	SINR  			PORTC.6
 
-#define  RXD_USB        PIND.2
-#define  TXD_USB        PORTD.3
+//#define  RXD_USB        PIND.2
+//#define  TXD_USB        PORTD.3
 
 #define  TXD_CAN        PORTD.5
 #define  RXD_CAN        PIND.6
@@ -28,10 +28,10 @@
 #define  PDI            PINE.0
 #define  PDO            PORTE.1
 
-#define  PEAK_LEFT      PORTF.0
-#define  RMS_LEFT       PORTF.1
-#define  RMS_RIGHT      PORTF.2
-#define  PEAK_RIGHT     PORTF.3
+#define  LEFT_LO        PORTF.0
+#define  LEFT_HI        PORTF.1
+#define  RIGHT_LO       PORTF.2
+#define  RIGHT_HI       PORTF.3
 
 /********************************/
 /* Specific defines             */

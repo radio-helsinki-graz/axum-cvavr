@@ -30,9 +30,8 @@ Data Stack size     : 512
 #define PRODUCT_ID               19    //PPM-VU-Meter-2x60
 
 
-#define NR_OF_STATIC_OBJECTS    (1025-1023)
-#define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS+(57*32) // adding the software generated objects
-
+#define NR_OF_STATIC_OBJECTS    (1027-1023)
+#define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
 
 #if (NR_OF_STATIC_OBJECTS > MAX_NR_OF_OBJECTS)
    #error You have defined more objects than can be stored in the EEPROM
@@ -73,7 +72,7 @@ flash DEFAULT_NODE_OBJECT_STRUCT DefaultNodeObjects =
    NR_OF_OBJECTS                          //NumberOfObjects
 };
 
-#if (NR_OF_STATIC_OBJECTS != 0)                                                           
+#if (NR_OF_STATIC_OBJECTS != 0)
 flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_OBJECTS] =
 {
    // Description             , Services
@@ -84,7 +83,13 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
                               , {FLOAT_DATATYPE             ,  2, 0xD240, 0x4900, 0xD240 }},
    { "Right Meter dB"         , 0x00
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                              , {FLOAT_DATATYPE             ,  2, 0xD240, 0x4900, 0xD240 }}
+                              , {FLOAT_DATATYPE             ,  2, 0xD240, 0x4900, 0xD240 }},
+   { "Left Meter Peak"        , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 1     , 0      }},
+   { "Right Meter Peak"       , 0x00
+                              , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                              , {STATE_DATATYPE             ,  1, 0     , 1     , 0      }},
 };
 #else
 flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[1];
