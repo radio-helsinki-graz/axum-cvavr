@@ -441,8 +441,9 @@ void main(void)
 
    while (1)
    {
+      E_RCLK = nRTS2;//High = enable word clock
+      nFCLK_SINK_LED = !nRTS2;
       //ProcessCAN();
-
 
       // Place your code here
       if ((cntMilliSecond-PreviousMilliSecond)>1000)
