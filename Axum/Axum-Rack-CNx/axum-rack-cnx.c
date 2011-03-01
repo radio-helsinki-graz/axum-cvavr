@@ -84,7 +84,7 @@ void main(void)
    // Func7=In Func6=In Func5=Out Func4=Out Func3=Out Func2=In Func1=In Func0=In
    // State7=T State6=T State5=0 State4=1 State3=0 State2=T State1=T State0=T
    PORTD=0x10;
-   DDRD=0x38;
+   DDRD=0x3C;
 
    // Port E initialization
    // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=Out Func1=Out Func0=Out
@@ -459,6 +459,17 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                DataType = Data[3];
                DataSize = Data[4];
+
+               if (ObjectNr == 1259)
+               {
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        DE_RCLK = Data[5];
+                     }
+                  }
+               }
 
 /*             if ((ObjectNr>=1029) && (ObjectNr<1033))
                {  //LED

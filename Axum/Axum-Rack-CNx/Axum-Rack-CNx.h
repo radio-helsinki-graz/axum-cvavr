@@ -30,7 +30,8 @@
 #define HWREV3 PINC.3
 
 #define  WD             PIND.1
-#define  nACT_LED       PORTD.3
+#define  nACT_LED       PORTD.2
+#define  DE_RCLK        PORTD.3
 #define  RS_CAN         PORTD.4
 #define  TXD_CAN        PORTD.5
 #define  RXD_CAN        PIND.6

@@ -39,9 +39,9 @@ Data Stack size     : 512
 #endif
 
 #ifndef COBRANET_16X16
-  #define NR_OF_STATIC_OBJECTS    (1142-1023)
+  #define NR_OF_STATIC_OBJECTS    (1143-1023)
 #else
-  #define NR_OF_STATIC_OBJECTS    (1258-1023)
+  #define NR_OF_STATIC_OBJECTS    (1259-1023)
 #endif
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
 
@@ -830,8 +830,11 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
                                     , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Total-CobraNet-out-16-Mute"      , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                    , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }}
+                                    , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
 #endif
+   { "Enable word clock"            , 0x00
+                                    , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                    , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
 };
 #else
 flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[1];
