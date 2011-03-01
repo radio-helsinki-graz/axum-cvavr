@@ -23,7 +23,7 @@ Data Stack size     : 512
 #define PCB_MAJOR_VERSION        1
 #define PCB_MINOR_VERSION        0
 
-#define FIRMWARE_MAJOR_VERSION   1
+#define FIRMWARE_MAJOR_VERSION   2
 #define TRANSPORTLAYER_MINOR_CORRECTION 0
 #define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
 //Local FIRMWARE_MINOR_VERSION
@@ -34,7 +34,7 @@ Data Stack size     : 512
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               6     //Axum-Rack-DD
 
-#define NR_OF_STATIC_OBJECTS    (1275-1023)
+#define NR_OF_STATIC_OBJECTS    (1277-1023)
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
 
 #if (NR_OF_STATIC_OBJECTS > MAX_NR_OF_OBJECTS)
@@ -833,6 +833,12 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    { "Transmitter-4-Control-register"  , 0x00
                                        , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                        , {BIT_STRING_DATATYPE        ,  3, 24    , 24     , 0   }},
+   { "Enable word clock"               , 0x00
+                                       , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                       , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "Word clock input"                , 0x00
+                                       , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                       , {STATE_DATATYPE             ,  1, 0     , 3      , 0   }},
    { "FPGA function"             , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {OCTET_STRING_DATATYPE      ,  3, 0     , 255    , 0   }}
