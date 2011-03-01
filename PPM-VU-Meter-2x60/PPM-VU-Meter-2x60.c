@@ -35,6 +35,7 @@ unsigned char cntDebug;
 
 char pos_to_db_lo[1024];
 char pos_to_db_hi[1024];
+char db_to_led[120];
 
 int NewLeftPos;
 int NewRightPos;
@@ -66,7 +67,7 @@ interrupt [TIM0_COMP] void timer0_comp_isr(void)
       cntTimer0 = 0;
       cntMilliSecond++;
 
-      //SetTLC5920(cntBlock++&0x03);     
+      //SetTLC5920(cntBlock++&0x03);
    }
 }
 
@@ -75,7 +76,7 @@ interrupt [TIM0_COMP] void timer0_comp_isr(void)
 interrupt [TIM3_COMPA] void timer3_compa_isr(void)
 {
    #asm("sei") //Nested interrupt required for CAN/MambaNet SetTLC5920 blocks to long!
-   SetTLC5920(cntBlock++&0x03);     
+   SetTLC5920(cntBlock++&0x03);
 }
 
 
@@ -550,8 +551,252 @@ OCR3CL=0x00;
       {
         pos_to_db_hi[cntPos] = 60;
       }
-   }
 
+      for (cntPos=0; cntPos<3; cntPos++)
+      {
+        db_to_led[cntPos] = 0;
+      }
+      for (cntPos=3; cntPos<7; cntPos++)
+      {
+        db_to_led[cntPos] = 1;
+      }
+      for (cntPos=7; cntPos<11; cntPos++)
+      {
+        db_to_led[cntPos] = 2;
+      }
+      for (cntPos=11; cntPos<15; cntPos++)
+      {
+        db_to_led[cntPos] = 3;
+      }
+      for (cntPos=15; cntPos<18; cntPos++)
+      {
+        db_to_led[cntPos] = 4;
+      }
+      for (cntPos=18; cntPos<22; cntPos++)
+      {
+        db_to_led[cntPos] = 5;
+      }
+      for (cntPos=22; cntPos<25; cntPos++)
+      {
+        db_to_led[cntPos] = 6;
+      }
+      for (cntPos=25; cntPos<28; cntPos++)
+      {
+        db_to_led[cntPos] = 7;
+      }
+      for (cntPos=28; cntPos<31; cntPos++)
+      {
+        db_to_led[cntPos] = 8;
+      }
+      for (cntPos=31; cntPos<34; cntPos++)
+      {
+        db_to_led[cntPos] = 9;
+      }
+      for (cntPos=34; cntPos<36; cntPos++)
+      {
+        db_to_led[cntPos] = 10;
+      }
+      for (cntPos=36; cntPos<39; cntPos++)
+      {
+        db_to_led[cntPos] = 11;
+      }
+      for (cntPos=39; cntPos<42; cntPos++)
+      {
+        db_to_led[cntPos] = 12;
+      }
+      for (cntPos=42; cntPos<44; cntPos++)
+      {
+        db_to_led[cntPos] = 13;
+      }
+      for (cntPos=44; cntPos<46; cntPos++)
+      {
+        db_to_led[cntPos] = 14;
+      }
+      for (cntPos=46; cntPos<49; cntPos++)
+      {
+        db_to_led[cntPos] = 15;
+      }
+      for (cntPos=49; cntPos<51; cntPos++)
+      {
+        db_to_led[cntPos] = 16;
+      }
+      for (cntPos=51; cntPos<53; cntPos++)
+      {
+        db_to_led[cntPos] = 17;
+      }
+      for (cntPos=53; cntPos<55; cntPos++)
+      {
+        db_to_led[cntPos] = 18;
+      }
+      for (cntPos=55; cntPos<57; cntPos++)
+      {
+        db_to_led[cntPos] = 19;
+      }
+      for (cntPos=57; cntPos<59; cntPos++)
+      {
+        db_to_led[cntPos] = 20;
+      }
+      for (cntPos=59; cntPos<61; cntPos++)
+      {
+        db_to_led[cntPos] = 21;
+      }
+      for (cntPos=61; cntPos<63; cntPos++)
+      {
+        db_to_led[cntPos] = 22;
+      }
+      for (cntPos=63; cntPos<65; cntPos++)
+      {
+        db_to_led[cntPos] = 23;
+      }
+      for (cntPos=65; cntPos<66; cntPos++)
+      {
+        db_to_led[cntPos] = 24;
+      }
+      for (cntPos=66; cntPos<68; cntPos++)
+      {
+        db_to_led[cntPos] = 25;
+      }
+      for (cntPos=68; cntPos<70; cntPos++)
+      {
+        db_to_led[cntPos] = 26;
+      }
+      for (cntPos=70; cntPos<71; cntPos++)
+      {
+        db_to_led[cntPos] = 27;
+      }
+      for (cntPos=71; cntPos<73; cntPos++)
+      {
+        db_to_led[cntPos] = 28;
+      }
+      for (cntPos=73; cntPos<75; cntPos++)
+      {
+        db_to_led[cntPos] = 29;
+      }
+      for (cntPos=75; cntPos<76; cntPos++)
+      {
+        db_to_led[cntPos] = 30;
+      }
+      for (cntPos=76; cntPos<78; cntPos++)
+      {
+        db_to_led[cntPos] = 31;
+      }
+      for (cntPos=78; cntPos<79; cntPos++)
+      {
+        db_to_led[cntPos] = 32;
+      }
+      for (cntPos=79; cntPos<80; cntPos++)
+      {
+        db_to_led[cntPos] = 33;
+      }
+      for (cntPos=80; cntPos<82; cntPos++)
+      {
+        db_to_led[cntPos] = 34;
+      }
+      for (cntPos=82; cntPos<83; cntPos++)
+      {
+        db_to_led[cntPos] = 35;
+      }
+      for (cntPos=83; cntPos<85; cntPos++)
+      {
+        db_to_led[cntPos] = 36;
+      }
+      for (cntPos=85; cntPos<86; cntPos++)
+      {
+        db_to_led[cntPos] = 37;
+      }
+      for (cntPos=86; cntPos<87; cntPos++)
+      {
+        db_to_led[cntPos] = 38;
+      }
+      for (cntPos=87; cntPos<88; cntPos++)
+      {
+        db_to_led[cntPos] = 39;
+      }
+      for (cntPos=88; cntPos<90; cntPos++)
+      {
+        db_to_led[cntPos] = 40;
+      }
+      for (cntPos=90; cntPos<91; cntPos++)
+      {
+        db_to_led[cntPos] = 41;
+      }
+      for (cntPos=91; cntPos<92; cntPos++)
+      {
+        db_to_led[cntPos] = 42;
+      }
+      for (cntPos=92; cntPos<93; cntPos++)
+      {
+        db_to_led[cntPos] = 43;
+      }
+      for (cntPos=93; cntPos<95; cntPos++)
+      {
+        db_to_led[cntPos] = 44;
+      }
+      for (cntPos=95; cntPos<96; cntPos++)
+      {
+        db_to_led[cntPos] = 45;
+      }
+      for (cntPos=96; cntPos<97; cntPos++)
+      {
+        db_to_led[cntPos] = 46;
+      }
+      for (cntPos=97; cntPos<98; cntPos++)
+      {
+        db_to_led[cntPos] = 47;
+      }
+      for (cntPos=98; cntPos<99; cntPos++)
+      {
+        db_to_led[cntPos] = 48;
+      }
+      for (cntPos=99; cntPos<100; cntPos++)
+      {
+        db_to_led[cntPos] = 49;
+      }
+      for (cntPos=100; cntPos<101; cntPos++)
+      {
+        db_to_led[cntPos] = 50;
+      }
+      for (cntPos=101; cntPos<102; cntPos++)
+      {
+        db_to_led[cntPos] = 51;
+      }
+      for (cntPos=102; cntPos<103; cntPos++)
+      {
+        db_to_led[cntPos] = 52;
+      }
+      for (cntPos=103; cntPos<104; cntPos++)
+      {
+        db_to_led[cntPos] = 53;
+      }
+      for (cntPos=104; cntPos<105; cntPos++)
+      {
+        db_to_led[cntPos] = 54;
+      }
+      for (cntPos=105; cntPos<106; cntPos++)
+      {
+        db_to_led[cntPos] = 55;
+      }
+      for (cntPos=106; cntPos<107; cntPos++)
+      {
+        db_to_led[cntPos] = 56;
+      }
+      for (cntPos=107; cntPos<108; cntPos++)
+      {
+        db_to_led[cntPos] = 57;
+      }
+      for (cntPos=108; cntPos<109; cntPos++)
+      {
+        db_to_led[cntPos] = 58;
+      }
+      for (cntPos=109; cntPos<110; cntPos++)
+      {
+        db_to_led[cntPos] = 59;
+      }
+      for (cntPos=110; cntPos<120; cntPos++)
+      {
+        db_to_led[cntPos] = 60;
+      }
+   }
    // CAN Controller initialization
    InitializeCAN();
 
@@ -818,7 +1063,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                            }
                            else
                            {
-                              NewLeftPos = dB;
+                              int Pos = (dB*2);
+                              NewLeftPos = db_to_led[Pos];
                            }
 
                            if (NewLeftPos>LeftNrOfLEDs)
@@ -848,7 +1094,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                            }
                            else
                            {
-                              NewRightPos = dB;
+                              int Pos = (dB*2);
+                              NewRightPos = db_to_led[Pos];
                            }
 
                            if (NewRightPos>RightNrOfLEDs)
