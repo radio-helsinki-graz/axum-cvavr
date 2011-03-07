@@ -53,8 +53,8 @@
 #define  nGPI2           PINF.6
 #define  nGPI1           PINF.7
 
-#define  IO113          PING.0
-#define  IO112          PING.1
+#define  IO113          PORTG.0
+#define  IO112          PORTG.1
 #define  IO114          PING.2
 #define  READ_SLOTADR   PORTG.3
 #define  CAN_INT        PING.4
@@ -81,7 +81,7 @@ unsigned char LEDData[8];
 unsigned char NewInputSignalState;
 unsigned char InputSignalState;
 unsigned char NewOutputSignalState;
-unsigned char OutputSignalState; 
+unsigned char OutputSignalState;
 
 unsigned char GPIState[8];
 unsigned char GPIActiveState[8];
@@ -116,7 +116,7 @@ unsigned char OutputPhase[8];
 unsigned char OutputTalkback[4][16];
 float OutputTalkbackLevel[8];
 unsigned char OutputTalkbackStereoSelect[8];
-unsigned char OutputTalkbackPhase[8];   
+unsigned char OutputTalkbackPhase[8];
 //unsigned char TalkbackFPGAAddress[8] = { 0x38, 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30 };
 
 char SwitchCheck(unsigned char cntRow, unsigned char SwitchNr, char SwitchReturn);

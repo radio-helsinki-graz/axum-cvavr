@@ -1270,7 +1270,7 @@ void I2CWrite(unsigned char I2CAddress, unsigned int StartAddress, unsigned char
 
    I2CStopCondition();
 
-   delay_ms(400);
+   delay_ms(100);
 }
 
 void I2CRead(unsigned char I2CAddress, unsigned int StartAddress, unsigned char *Buffer, unsigned char Length)

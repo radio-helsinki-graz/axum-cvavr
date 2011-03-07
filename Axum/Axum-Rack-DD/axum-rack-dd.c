@@ -129,7 +129,7 @@ void main(void)
    // Func4=In Func3=Out Func2=In Func1=In Func0=In
    // State4=T State3=0 State2=T State1=T State0=T
    PORTG=0x00;
-   DDRG=0x08;
+   DDRG=0x0B;
 
    // Timer/Counter 0 initialization
    // Clock source: System Clock
