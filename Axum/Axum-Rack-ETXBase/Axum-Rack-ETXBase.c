@@ -63,12 +63,12 @@ unsigned char FragmentFilled[16];
 interrupt [TIM0_COMP] void timer0_comp_isr(void)
 {
    //every 100 useconds a pulse.
-//   cntTimer0++;
-//   if (cntTimer0 == 10)
-//   {  //1mS
-//      cntTimer0 = 0;
+   cntTimer0++;
+   if (cntTimer0 == 10)
+   {  //1mS
+      cntTimer0 = 0;
       cntMilliSecond++;
-//   }
+   }
 }
 
 #define FIRST_ADC_INPUT 0
