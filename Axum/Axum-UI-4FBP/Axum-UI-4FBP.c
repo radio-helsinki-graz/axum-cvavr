@@ -28,10 +28,9 @@ Data Stack size     : 512
 #include <stdlib.h>
 
 #include "Axum-UI-4FBP.h"
+#include "lcd.h"
 #include "CANTransportLayer.h"
 #include "Axum-UI-4FBP-MambaNet.h"
-
-#include "lcd.h"
 
 
 #define MOTOR_ACTIVE_COUNT  40    //40x20mS = 800mS
@@ -362,6 +361,8 @@ void main(void)
    // Global enable interrupts
    #asm("sei")
 
+   CheckUniqueIDPerProduct();
+
    while (1)
    {
       ProcessCAN();
@@ -682,31 +683,31 @@ void ReadSwitches()
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 1, nSW2);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+1];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)(SwitchOffset+1)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 2, nSW3);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+2];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)(SwitchOffset+2)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 3, nSW4);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+3];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)(SwitchOffset+3)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 4, nSW5);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+4];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)(SwitchOffset+4)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 5, nSW6);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+5];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)(SwitchOffset+5)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 6, nSW7);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+6];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)(SwitchOffset+6)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 7, nSW8);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[SwitchOffset+7];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)(SwitchOffset+7)];
       DoSwitch(LogicSwitchNr, ReturnValue);
    }
 
@@ -1498,17 +1499,12 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   char TemporySwitchNr = ObjectNr-1056;
                   char ModuleNr = TemporySwitchNr&0x03;
                   char LEDNr = (4+((TemporySwitchNr>>1)&0xFE)) + (ModuleNr*20);
-                  char ByteNr;
-                  char Mask;
                   char TransmitLength;
 
                   if (ObjectNr >= 1064)
                   {
                      LEDNr+=8;
                   }
-                  ByteNr = LEDNr>>3;
-
-                  Mask = (0x03<<(LEDNr&0x7));
 
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
@@ -1640,7 +1636,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         }
                         for (cntChar=(8-DataSize); cntChar<8; cntChar++)
                         {
-                           LCDTextString[DisplayNr][cntChar] = Data[5+cntChar-(8-DataSize)];
+                           LCDTextString[DisplayNr][cntChar] = Data[(unsigned char)(5+cntChar-(8-DataSize))];
                            if ((LCDTextString[DisplayNr][cntChar]<0x20) || (LCDTextString[DisplayNr][cntChar] > 0x7E))
                            {
                               LCDTextString[DisplayNr][cntChar] = ' ';
@@ -1919,6 +1915,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 void CanBussError()

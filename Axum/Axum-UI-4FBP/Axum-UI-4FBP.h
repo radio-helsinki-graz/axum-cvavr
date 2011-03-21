@@ -15,6 +15,7 @@
 
 #define  nROW1          PORTB.0
 #define  SCK_SPI        PINB.1
+#define  PSCK           PINB.1
 #define  TOUCH1         PINB.2
 #define  TOUCH2         PINB.3
 #define  PWM_M3_B       PORTB.4
@@ -69,6 +70,8 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define UNIQUE_ID_LCD(a) SetLCDModule(0, 0, a);
+
 #define OSCILLATOR_FREQUENCY     16000000
 
 #define NR_OF_TLC5921DAP_ICS     10
@@ -80,7 +83,6 @@
 /********************************/
 /* global declarations          */
 /********************************/
-unsigned char cntLEDDebug;
 
 /*const unsigned char LogicSwitchNr2SwitchNr[36] =
 {
@@ -125,7 +127,6 @@ unsigned char LogicLEDData[NR_OF_LEDS/8];
 unsigned char TLC5921DAPData[NR_OF_TLC5921DAP_ICS];
 
 unsigned char SwitchData[5][8];
-unsigned int SwitchPressedTime[5][8];
 
 unsigned char EncoderABStatus;
 unsigned char PreviousEncoderABStatus;
