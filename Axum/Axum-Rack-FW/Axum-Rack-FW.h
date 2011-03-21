@@ -6,6 +6,7 @@
 /********************************/
 #define  nSS            PORTB.0
 #define  SCK_PSCK       PORTB.1
+#define  PSCK           PINB.1
 #define  MOSI           PORTB.2
 #define  MISO           PINB.3
 #define  SLOTADR0       PINB.4
@@ -32,6 +33,7 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define LOGIC_LEDS(a)            nACT_LED = a;
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -74,7 +76,7 @@ unsigned char OutputTalkbackPhase[16];
 //void ReadSwitches();
 //void DoSwitch(unsigned char LogicSwitchNr, int Event);
 char GetSlotNr();
-void ReadFPGA();
+//void ReadFPGA();
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData);
 void SetRoutingAndLevel(unsigned char ChannelNr);
 

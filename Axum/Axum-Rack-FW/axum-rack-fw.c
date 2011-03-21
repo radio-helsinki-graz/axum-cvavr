@@ -5,7 +5,7 @@ Automatic Program Generator
 © Copyright 1998-2007 Pavel Haiduc, HP InfoTech s.r.l.
 http://www.hpinfotech.com
 
-Project : Axum-Rack-Firewire
+Project : Axum-Rack-FW
 Version :
 Date    : 04-05-2010
 Author  : Anton Prins
@@ -26,9 +26,9 @@ Data Stack size     : 512
 #include <delay.h>
 #include <math.h>
 
-#include "Axum-Rack-Firewire.h"
+#include "Axum-Rack-FW.h"
 #include "CANTransportLayer.h"
-#include "Axum-Rack-Firewire-MambaNet.h"
+#include "Axum-Rack-FW-MambaNet.h"
 
 unsigned char cntDebug;
 
@@ -263,6 +263,8 @@ void main(void)
 
    // Global enable interrupts
    #asm("sei")
+
+   CheckUniqueIDPerProduct();
 
    while (1)
    {
@@ -1180,6 +1182,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 
@@ -1222,6 +1226,7 @@ char GetSlotNr()
    return SlotNr;
 }
 
+/*
 void ReadFPGA()
 {
    unsigned char cntBit;
@@ -1254,6 +1259,7 @@ void ReadFPGA()
 
    nSS=1;
 }
+*/
 
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 {
@@ -1312,7 +1318,7 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
 
    StereoSelect = (InputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (InputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
+   StereoSelect |= (unsigned int)(InputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
 
    SetFPGA(FPGABlockAddress+2, StereoSelect);
 
@@ -1355,17 +1361,17 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    SetFPGA(FPGABlockAddress+5+(ChannelNr&0x01), IntegerLevel);
 
    StereoSelect = (OutputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (OutputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
+   StereoSelect |= (unsigned int)(OutputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
    if (OutputMute[(ChannelNr&0xFE)])
    {
       StereoSelect |= 0x0100;
    }
-   if (OutputMute[(ChannelNr&0xFE)+1])
+   if (OutputMute[(unsigned char)((ChannelNr&0xFE)+1)])
    {
       StereoSelect |= 0x0200;
    }
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<6;
+   StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
+   StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<6;
    SetFPGA(FPGABlockAddress+7, StereoSelect);
 
    //Talkback
