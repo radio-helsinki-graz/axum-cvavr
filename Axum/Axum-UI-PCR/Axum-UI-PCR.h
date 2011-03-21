@@ -1,8 +1,6 @@
 #ifndef Axum_UI_PCRH
 #define Axum_UI_PCRH
 
-#define TRANSPORTLAYER_MINOR_CORRECTION 1
-
 /********************************/
 /* Define Ports                 */
 /********************************/
@@ -17,6 +15,7 @@
 
 #define  nROW2          PORTB.0
 #define  SCK_SPI        PINB.1
+#define  PSCK           PINB.1
 #define  nROW3          PORTB.2
 #define  nROW4          PORTB.3
 #define  nROW5          PORTB.4
@@ -56,6 +55,16 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define LOGIC_LEDS(a) if (a)                      \
+                      {                           \
+                        LogicLEDData[0] |= 0x01;  \
+                      }                           \
+                      else                        \
+                      {                           \
+                        LogicLEDData[0] &= 0xFE;  \
+                      }                           \
+                      SetLEDs();
+
 #define SWITCHDELAY              10
 
 #define OSCILLATOR_FREQUENCY     16000000

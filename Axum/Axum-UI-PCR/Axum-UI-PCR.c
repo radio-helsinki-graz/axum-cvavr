@@ -261,6 +261,8 @@ void main(void)
    // Global enable interrupts
    #asm("sei")
 
+   CheckUniqueIDPerProduct();
+
    while (1)
    {      // Place your code here
       ProcessCAN();
