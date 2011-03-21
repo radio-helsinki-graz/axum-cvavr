@@ -6,11 +6,11 @@ Automatic Program Generator
 http://www.hpinfotech.com
 
 Project : Axum-UI-ETXBase
-Version : 
+Version :
 Date    : 5-10-2007
-Author  : Anton Prins        
-Company : DR Electronica Weesp b.v.       
-Comments: 
+Author  : Anton Prins
+Company : DR Electronica Weesp b.v.
+Comments:
 
 
 Chip type           : AT90CAN32
@@ -44,7 +44,7 @@ Data Stack size     : 512
 //#include "Axum-UI-ETXBase-MambaNet.h"
 
 
-#ifdef LCD_CONNECTED            
+#ifdef LCD_CONNECTED
    #define 	D4LCD  		   PORTA.7
    #define 	D5LCD  			PORTA.6
    #define 	D6LCD  			PORTA.5
@@ -59,8 +59,8 @@ Data Stack size     : 512
    #include "lcd.h"
 #else
    #define	DEBUG_LED		PORTA.3
-   
-   unsigned char LEDDebug;
+
+   //unsigned char LEDDebug;
 #endif
 
 extern unsigned char AddressValidated;
@@ -68,13 +68,13 @@ extern unsigned char AddressValidated;
 unsigned char FragmentFilled[16];
 
 unsigned long int cntAlive;
-#ifdef LCD_CONNECTED            
-unsigned char DebugString[64];  
+#ifdef LCD_CONNECTED
+unsigned char DebugString[64];
 #endif
 unsigned long int cntUSART1DataOverrun;
 unsigned long int cntUSART1FramingError;
 unsigned long int cntUSART1ParityError;
-                                          
+
 unsigned long int cntMambaNetFormatErrorFromSerial;
 unsigned long int cntTransmitOverrunToUART;
 
@@ -93,7 +93,7 @@ unsigned char SerialReceiveMambaNetMessage;
 // Timer 0 output compare interrupt service routine
 interrupt [TIM0_COMP] void timer0_comp_isr(void)
 {
-  cntMilliSecond++;     
+  cntMilliSecond++;
 }
 
 #define FIRST_ADC_INPUT 0
@@ -163,7 +163,7 @@ interrupt [USART1_RXC] void usart1_rx_isr(void)
    if ((status & (FRAMING_ERROR | PARITY_ERROR | DATA_OVERRUN))==0)
    {
       rx_buffer1[rx_wr_index1]=data;
-      if (++rx_wr_index1 == RX_BUFFER_SIZE1) 
+      if (++rx_wr_index1 == RX_BUFFER_SIZE1)
       {
          rx_wr_index1=0;
       }
@@ -212,9 +212,9 @@ char getchar1(void)
 // USART1 Transmitter buffer
 #ifdef _CHIP_AT90CAN32_
    #define TX_BUFFER_SIZE1 256
-#else   
+#else
    #define TX_BUFFER_SIZE1 256
-#endif   
+#endif
 char tx_buffer1[TX_BUFFER_SIZE1];
 
 #if TX_BUFFER_SIZE1<256
@@ -230,7 +230,7 @@ interrupt [USART1_TXC] void usart1_tx_isr(void)
    {
       --tx_counter1;
       UDR1=tx_buffer1[tx_rd_index1];
-      if (++tx_rd_index1 == TX_BUFFER_SIZE1) 
+      if (++tx_rd_index1 == TX_BUFFER_SIZE1)
       {
          tx_rd_index1=0;
       }
@@ -246,7 +246,7 @@ void putchar1(char c)
    if (tx_counter1 || ((UCSR1A & DATA_REGISTER_EMPTY)==0))
    {
       tx_buffer1[tx_wr_index1]=c;
-      if (++tx_wr_index1 == TX_BUFFER_SIZE1) 
+      if (++tx_wr_index1 == TX_BUFFER_SIZE1)
       {
          tx_wr_index1=0;
       }
@@ -265,7 +265,7 @@ void putchar1(char c)
 void main(void)
 {
    // Declare your local variables here
-   
+
    // Crystal Oscillator division factor: 1
    #pragma optsize-
    CLKPR=0x80;
@@ -273,50 +273,50 @@ void main(void)
    #ifdef _OPTIMIZE_SIZE_
    #pragma optsize+
    #endif
-   
+
    // Input/Output Ports initialization
    // Port A initialization
-   // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
-   // State7=T State6=T State5=T State4=T State3=P State2=P State1=P State0=P 
+   // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+   // State7=T State6=T State5=T State4=T State3=P State2=P State1=P State0=P
    PORTA=0x0F;
    DDRA=0x00;
-   
+
    // Port B initialization
-   // Func7=Out Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
-   // State7=0 State6=T State5=T State4=T State3=T State2=T State1=T State0=T 
+   // Func7=Out Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+   // State7=0 State6=T State5=T State4=T State3=T State2=T State1=T State0=T
    PORTB=0x00;
    DDRB=0x00;        //SerIRQ if input
-   
+
    // Port C initialization
-   // Func7=In Func6=In Func5=Out Func4=Out Func3=Out Func2=Out Func1=In Func0=In 
-   // State7=T State6=T State5=1 State4=1 State3=1 State2=1 State1=T State0=T 
+   // Func7=In Func6=In Func5=Out Func4=Out Func3=Out Func2=Out Func1=In Func0=In
+   // State7=T State6=T State5=1 State4=1 State3=1 State2=1 State1=T State0=T
    PORTC=0x3C;
    DDRC=0x3C;
-   
+
    // Port D initialization
-   // Func7=Out Func6=In Func5=Out Func4=In Func3=Out Func2=In Func1=In Func0=In 
-   // State7=1 State6=T State5=0 State4=T State3=0 State2=T State1=T State0=T 
+   // Func7=Out Func6=In Func5=Out Func4=In Func3=Out Func2=In Func1=In Func0=In
+   // State7=1 State6=T State5=0 State4=T State3=0 State2=T State1=T State0=T
    PORTD=0x80;
    DDRD=0xA8;
-   
+
    // Port E initialization
-   // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=Out Func0=In 
-   // State7=T State6=T State5=T State4=T State3=T State2=T State1=0 State0=T 
+   // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=Out Func0=In
+   // State7=T State6=T State5=T State4=T State3=T State2=T State1=0 State0=T
    PORTE=0x00;
    DDRE=0x02;
-   
+
    // Port F initialization
-   // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
-   // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T 
+   // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+   // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T
    PORTF=0x00;
    DDRF=0x00;
-   
+
    // Port G initialization
-   // Func4=In Func3=In Func2=In Func1=In Func0=In 
-   // State4=T State3=T State2=T State1=T State0=T 
+   // Func4=In Func3=In Func2=In Func1=In Func0=In
+   // State4=T State3=T State2=T State1=T State0=T
    PORTG=0x00;
    DDRG=0x00;
-   
+
    // Timer/Counter 0 initialization
    // Clock source: System Clock
    // Clock value: 1000,000 kHz
@@ -326,7 +326,7 @@ void main(void)
    TCNT0=0x00;
 //   OCR0A=((OSCILLATOR_FREQUENCY/8)*0.0001)-1; //((OSCILLATOR_FREQUENCY/8)*0.0001)-1 => 100uS
    OCR0A=((OSCILLATOR_FREQUENCY/8)*0.001)-1; //((OSCILLATOR_FREQUENCY/8)*0.0001)-1 => 100uS
-   
+
    // Timer/Counter 1 initialization
    // Clock source: System Clock
    // Clock value: Timer 1 Stopped
@@ -353,7 +353,7 @@ void main(void)
    OCR1BL=0x00;
    OCR1CH=0x00;
    OCR1CL=0x00;
-   
+
    // Timer/Counter 2 initialization
    // Clock source: System Clock
    // Clock value: Timer 2 Stopped
@@ -363,7 +363,7 @@ void main(void)
    TCCR2A=0x00;
    TCNT2=0x00;
    OCR2A=0x00;
-   
+
    // Timer/Counter 3 initialization
    // Clock source: System Clock
    // Clock value: Timer 3 Stopped
@@ -390,7 +390,7 @@ void main(void)
    OCR3BL=0x00;
    OCR3CH=0x00;
    OCR3CL=0x00;
-   
+
    // External Interrupt(s) initialization
    // INT0: Off
    // INT1: Off
@@ -403,7 +403,7 @@ void main(void)
    EICRA=0x00;
    EICRB=0x00;
    EIMSK=0x00;
-   
+
    // Timer/Counter 0 Interrupt(s) initialization
    TIMSK0=0x02;
    // Timer/Counter 1 Interrupt(s) initialization
@@ -412,7 +412,7 @@ void main(void)
    TIMSK2=0x00;
    // Timer/Counter 3 Interrupt(s) initialization
    TIMSK3=0x00;
-   
+
    // USART1 initialization
    // Communication Parameters: 8 Data, 1 Stop, No Parity
    // USART1 Receiver: On
@@ -427,17 +427,17 @@ void main(void)
    UCSR1C=0x06;
    UBRR1H=0x00;
    UBRR1L=0x07;
-   
+
 //UBRR1L=0x22;//57600
 //UBRR1L=0x33;//38400
-//UBRR1L=0xCF;//9600   
-   
+//UBRR1L=0xCF;//9600
+
    // Analog Comparator initialization
    // Analog Comparator: Off
    // Analog Comparator Input Capture by Timer/Counter 1: Off
    ACSR=0x80;
    ADCSRB=0x00;
-   
+
    // ADC initialization
    // ADC Clock frequency: 1000,000 kHz
    // ADC Voltage Reference: AVCC pin
@@ -446,7 +446,7 @@ void main(void)
    DIDR0=0x00;
    ADMUX=FIRST_ADC_INPUT | (ADC_VREF_TYPE & 0xff);
    ADCSRA=0xCB;
-   
+
    // 2 Wire Bus initialization
    // Generate Acknowledge Pulse: On
    // 2 Wire Bus Slave Address: 0h
@@ -456,23 +456,23 @@ void main(void)
    TWBR=0x02;
    TWAR=0x01;
    TWCR=0x45;
-                       
+
    InitializeCAN();
    AddressValidated = 1;
-   
+
 //   AddressReservationData[0].ManufacturerID        = ManufacturerID;
 //   AddressReservationData[0].ProductID             = ProductID;
 //   AddressReservationData[0].UniqueIDPerProduct    = UniqueIDPerProduct;
 //   AddressReservationData[0].CANAddress            = 0x00000001;
-   SetLocalCANAddress(0x00000001);  
-   
+   SetLocalCANAddress(0x00000001);
+
    cntUSART1DataOverrun = 0;
    cntUSART1FramingError = 0;
    cntUSART1ParityError = 0;
    cntMambaNetFormatErrorFromSerial = 0;
    cntTransmitOverrunToUART = 0;
 
-#ifdef LCD_CONNECTED            
+#ifdef LCD_CONNECTED
    SetupLCD();
    delay_ms(500);
    sprintf(DebugString, "Start value %04X%04X", GlobalReceiveSequenceCANAddress>>16, GlobalReceiveSequenceCANAddress&0xFFFF);
@@ -482,32 +482,32 @@ void main(void)
 
    // Global enable interrupts
    #asm("sei")
-   
+
    while (1)
-   {             
-      // Place your code here     
-#ifdef LCD_CONNECTED   
+   {
+      // Place your code here
+#ifdef LCD_CONNECTED
       if ((cntMilliSecond-PreviousMilliSecond)>1000)
       {
          PreviousMilliSecond = cntMilliSecond;
-         cntAlive++;  
+         cntAlive++;
 
          sprintf(DebugString, "Alive (%d) %04X%04X - S:%02X C:%02X", cntAlive, GlobalReceiveSequenceCANAddress>>16, GlobalReceiveSequenceCANAddress&0xFFFF, Debug_SerialTransmitBufferCount, Debug_CANReceiveBufferCount);
          SetLCDModule(0, 0, DebugString);
          sprintf(DebugString, "D%d S%d O%d, M%d O%d R%d T%d ", cntUSART1DataOverrun, cntMambaNetFormatErrorFromSerial, cntTransmitOverrunToUART, cntMambaNetFormatErrorFromCAN, cntMambaNetOverrunFromCAN, cntGlobalCANMessageReceived, cntCANMessageTransmitted);
-         SetLCDModule(0, 1, DebugString);               
+         SetLCDModule(0, 1, DebugString);
       }
-#endif         
+#endif
 
-     
+
       if (rx_counter1)
       //while (rx_counter1)
       {
          unsigned char ReceivedByte;
          char cnt;
 
-         ReceivedByte = getchar1();       
-         
+         ReceivedByte = getchar1();
+
          switch (ReceivedByte)
          {
             case 0xE0:
@@ -526,13 +526,13 @@ void main(void)
                   {
                      if (ReceivedByte&0x40)
                      {
-                        SerialReceiveMambaNetMessage = 0;               
+                        SerialReceiveMambaNetMessage = 0;
                      }
                      else
                      {
-                        SerialReceiveMambaNetMessage = 1;               
-                     }                  
-                     ToCANAddress = (ReceivedByte<<7)&0x1F;
+                        SerialReceiveMambaNetMessage = 1;
+                     }
+                     ToCANAddress = ((unsigned int)ReceivedByte<<7)&0x1F;
                      SequenceNumber = 0;
                   }
                   break;
@@ -541,13 +541,13 @@ void main(void)
                      ToCANAddress |= ReceivedByte&0x7F;
                      SequenceNumber = 0;
                   }
-                  break; 
+                  break;
                   case 2:
                   {
-                     SequenceNumber = ReceivedByte&0x0F; 
+                     SequenceNumber = ReceivedByte&0x0F;
                   }
                   break;
-                  default: 
+                  default:
                   {
                      if (SerialReceiveMambaNetMessage)
                      {
@@ -571,11 +571,11 @@ void main(void)
                      else
                      { //CAN Control message
                         ReceivedSerialMessageBuffer[cntReceivedSerialMessageBuffer-3] = ReceivedByte;
-                     } 
+                     }
                   }
-                  break; 
+                  break;
                }
-               cntReceivedSerialMessageBuffer++; 
+               cntReceivedSerialMessageBuffer++;
             }
             break;
             case 0xE1:
@@ -583,13 +583,13 @@ void main(void)
                if (!SerialReceiveMambaNetMessage)
                {  //Parent control message received
                   if (cntReceivedSerialMessageBuffer == 11)
-                  {     
+                  {
                      SendCANParentControlMessage(ReceivedSerialMessageBuffer);
                   }
                }
             }
             break;
-         }       
+         }
       }
 
 
@@ -597,9 +597,9 @@ void main(void)
       if (UARTTransmitBufferBottom != UARTTransmitBufferTop)
       {
          char cntTransmitByte;
-                 
+
          for (cntTransmitByte=0; cntTransmitByte<13; cntTransmitByte++)
-         {         
+         {
             putchar1(UARTTransmitBuffer[UARTTransmitBufferBottom][cntTransmitByte]);
          }
          UARTTransmitBufferBottom++;

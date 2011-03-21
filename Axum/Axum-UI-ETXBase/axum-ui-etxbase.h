@@ -40,9 +40,7 @@
 /********************************/
 /* global declarations          */
 /********************************/
-unsigned int cntTimer0;
 volatile unsigned int cntMilliSecond;
-unsigned int PreviousMilliSecond;
 
 //Information required for CANTransportLayer.h
 #define CAN_ADDRESS_SERVER
