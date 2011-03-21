@@ -31,17 +31,12 @@ Data Stack size     : 512
 #include "PPM-VU-Meter-2x60-MambaNet.h"
 #include "stdlib.h"
 
-unsigned char cntDebug;
-
 char pos_to_db_lo[1024];
 char pos_to_db_hi[1024];
 char db_to_led[120];
 
 int NewLeftPos;
 int NewRightPos;
-
-unsigned char MambaNetLeftData[2];
-unsigned char MambaNetRightData[2];
 
 unsigned char LeftNrOfLEDs;
 unsigned char RightNrOfLEDs;
@@ -991,10 +986,6 @@ OCR3CL=0x00;
 
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
-   unsigned char MessageDone;
-
-   MessageDone = 0;
-
    if (MessageID)
    {
       Ack = 1;
@@ -1129,6 +1120,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
       }
       break;
    }
+   ToAddress++;
+   FromAddress++;
+   DataLength++;
 }
 
 void SetTLC5920(char cntBlock)
@@ -1245,7 +1239,6 @@ void SetLeftLEDNr(int LEDNr, char State)
 {
    char Block;
    char LEDNrInBlock;
-   char cntLEDs;
    unsigned int Mask;
 
    if (LEDNr>0)
@@ -1271,7 +1264,6 @@ void SetRightLEDNr(int LEDNr, char State)
 {
    char Block;
    char LEDNrInBlock;
-   char cntLEDs;
    unsigned int Mask;
 
    if (LEDNr>0)

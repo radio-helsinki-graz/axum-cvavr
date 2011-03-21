@@ -24,7 +24,10 @@ Data Stack size     : 512
 #define PCB_MINOR_VERSION        0
 
 #define FIRMWARE_MAJOR_VERSION   1
-#define FIRMWARE_MINOR_VERSION   0
+#define TRANSPORTLAYER_MINOR_CORRECTION 2
+#define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+//Local FIRMWARE_MINOR_VERSION
+//1.0: Initial release
 
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               19    //PPM-VU-Meter-2x60
@@ -42,8 +45,7 @@ Data Stack size     : 512
 /********************************/
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
-eeprom unsigned int UniqueIDPerProduct    = 0x0001;
-unsigned char CANServices                 = 0x00;
+eeprom unsigned int UniqueIDPerProduct    = 0;
 flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;

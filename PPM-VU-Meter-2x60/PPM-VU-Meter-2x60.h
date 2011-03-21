@@ -45,7 +45,6 @@ unsigned int cntTimer0;
 volatile unsigned int cntMilliSecond;
 unsigned int PreviousMilliSecond;
 unsigned int PreviousMilliSecondReservation;
-unsigned int PreviousLEDBlinkMilliSecond;
 
 //char SwitchCheck(unsigned char cntRow, unsigned char SwitchNr, char SwitchReturn);
 //void ReadSwitches();
