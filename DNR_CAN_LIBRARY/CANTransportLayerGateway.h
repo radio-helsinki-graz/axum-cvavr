@@ -296,7 +296,7 @@ unsigned char UARTTransmitBuffer[NR_OF_UART_BUFFERS][13];
 
 void SetLocalCANAddress(unsigned long int NewLocalAddress);
 void SendCANParentControlMessage(unsigned char *Buffer);
-void SendCANReservationResponse(unsigned int ManufacturerID, unsigned int ProductID, unsigned int UniqueIDPerProduct, unsigned long int NewCANAddress);
+void SendCANReservationResponse(unsigned int ReceivedManufacturerID, unsigned int ReceivedProductID, unsigned int ReceivedUniqueIDPerProduct, unsigned long int NewCANAddress);
 void ProcessCANControlMessage(unsigned char CANControlMessageType);
 
 // CAN Timer Overrun interrupt service routine
@@ -334,7 +334,7 @@ if ((CANSIT1 & 0x40) == 0x40 ) /* MOb14 interrupt (SIT14=1) */
 CANPAGE = (0x0E << 4); /* select MOb14 */
 CANSTMOB = 0x00; /* reset MOb14 status */
 CANCDMOB = 0x88; /* reception enable */
-}                                                         
+}
 
    /******** MOb0 ********/
    /* local receive A    */
@@ -357,7 +357,7 @@ CANCDMOB = 0x88; /* reception enable */
       if(CANSTMOB & 0x20)
       {  // RXOK
          CANSTMOB &= 0xdf;       // reset RXOK bit
-         
+
          BusError = 0;
 
    //PDO=1;
@@ -366,14 +366,14 @@ CANCDMOB = 0x88; /* reception enable */
          FromCANAddress  = (CANIDT4>>7)&0x001;
          FromCANAddress |= (((unsigned int)CANIDT3)<<1)&0x1FE;
          FromCANAddress |= (((unsigned int)CANIDT2)<<9)&0xE00;
-                 
+
          UARTTransmitBuffer[UARTTransmitBufferTop][0] = 0xE0;
          UARTTransmitBuffer[UARTTransmitBufferTop][1] = (FromCANAddress>>7)&0x1F;
          UARTTransmitBuffer[UARTTransmitBufferTop][2] = FromCANAddress&0x7F;
          UARTTransmitBuffer[UARTTransmitBufferTop][3] = SequenceNumber&0x0F;
          for (cntByte=0; cntByte<8; cntByte++)
          {
-            UARTTransmitBuffer[UARTTransmitBufferTop][4+cntByte] = CANMSG;
+            UARTTransmitBuffer[UARTTransmitBufferTop][(unsigned char)(4+cntByte)] = CANMSG;
          }
          UARTTransmitBuffer[UARTTransmitBufferTop][12] = 0xE1;
 
@@ -389,7 +389,7 @@ CANCDMOB = 0x88; /* reception enable */
                UARTTransmitBufferTop = 0;
             }
          }
-         
+
 /*         if (MessageComplete)
          {
             ReceiveSequenceCANAddress = (LocalCANAddress<<16)&0xFFFF0000;
@@ -406,9 +406,9 @@ CANCDMOB = 0x88; /* reception enable */
 
          CANCDMOB |= 0x10; // IDE = 1 CAN rev.2.0B (Indentifier 29bit)
          CANCDMOB |= 0x08; // DLC = 1 Data Length Code
-         */         
+         */
          CANCDMOB |= 0x80; // CONMOB1:0: Configuration of Message Object = Reception
-         
+
          cntCANMob0StatusInterruptRXOK++;
    //PDO=0;
 
@@ -475,7 +475,7 @@ CANCDMOB = 0x88; /* reception enable */
          UARTTransmitBuffer[UARTTransmitBufferTop][3] = SequenceNumber&0x0F;
          for (cntByte=0; cntByte<8; cntByte++)
          {
-            UARTTransmitBuffer[UARTTransmitBufferTop][4+cntByte] = CANMSG;
+            UARTTransmitBuffer[UARTTransmitBufferTop][(unsigned char)(4+cntByte)] = CANMSG;
          }
          UARTTransmitBuffer[UARTTransmitBufferTop][12] = 0xE1;
 
@@ -575,7 +575,7 @@ CANCDMOB = 0x88; /* reception enable */
 
       if(CANSTMOB & 0x10)
       {  // BERR: Bit Error (The bit value monitored is different from the bit value sent
-         CANSTMOB &= 0xef; // reset BERR bit       
+         CANSTMOB &= 0xef; // reset BERR bit
          cntCANBitErrorMob1++;
          //BusError = 1;
       }
@@ -644,10 +644,10 @@ CANCDMOB = 0x88; /* reception enable */
          CANCDMOB |= 0x10; // IDE = 1 CAN rev.2.0B (Indentifier 29bit)
          CANCDMOB |= 0x08; // DLC = 1 Data Length Code
          CANCDMOB |= 0x80; // CONMOB1:0: Configuration of Massage Object = Reception
-         
-         //LEDGRN = !LEDGRN; 
 
-                 
+         //LEDGRN = !LEDGRN;
+
+
          ProcessCANControlMessage(CANControlMessageType);
       }
 
@@ -793,19 +793,19 @@ CANCDMOB = 0x88; /* reception enable */
       {   // AERG: Acknowledgment Error General
          cntCANAcknowledgementErrorGeneral++;
          CANGIT |= 0x01;
-         
+
          BusError = 1;
       }
    }
-   
+
    if (BusError)
    {
       CanBussError();
           //AddressValidated = 0;
        //timerReservationInfo = 1;
    }
-   
-   
+
+
 
    cntCANInterrupt++;
 
@@ -843,7 +843,7 @@ void InitializeCAN()
    CANIE1=0x00;
    // Highest Interrupt Priority: MOb0
    CANHPMOB=0x00;
-   // CAN System Clock: 8000,0 kHz  
+   // CAN System Clock: 8000,0 kHz
 //   CANBT1=0x02;//0x00 or 0x02;
    CANBT1=0x00;// 87,5% Sample point
    // Propagation Time Segement: 0,375 us
@@ -953,7 +953,7 @@ void InitializeCAN()
    CANIDM1  = 0x00;
 
    CANCDMOB = 0x88; /* reception enable */
-                                                         
+
    CANGIE |= 0x80;
 
    cntCANBusOff = 0;
@@ -1001,7 +1001,7 @@ void SendMambaNetMessageToCAN_DedicatedAddress(unsigned long int CANAddress, uns
          while (cntTransmitCANMessageBuffer < TransmitCANMessageBufferLength);
 
          if (cntTransmitCANMessageBuffer >= TransmitCANMessageBufferLength)
-         {            
+         {
             for (cntBuffer=0; cntBuffer<DataLength; cntBuffer++)
             {
                TransmitCANMessageBuffer[cntBuffer] = Data[cntBuffer];
@@ -1129,12 +1129,12 @@ void SendCANParentControlMessage(unsigned char *Buffer)
       CANIDT3  = (BROADCAST_PARENT_CONTROL_ADDRESS>>5)&0xFF;
       CANIDT2  = (BROADCAST_PARENT_CONTROL_ADDRESS>>13)&0xFF;
       CANIDT1  = (BROADCAST_PARENT_CONTROL_ADDRESS>>21)&0xFF;
-      
+
       CANIDM4  = 0xFF;
       CANIDM3  = 0xFF;
       CANIDM2  = 0xFF;
       CANIDM1  = 0xFF;
-   
+
       CANCDMOB |= 0x10; //IDE = 1
       CANCDMOB |= 0x08; //DLC = 1
 
@@ -1317,14 +1317,14 @@ void ProcessCANControlMessage(unsigned char CANControlMessageType)
       case 1:
       {
          unsigned char cntByte;
-                 
+
          UARTTransmitBuffer[UARTTransmitBufferTop][0] = 0xE0;
          UARTTransmitBuffer[UARTTransmitBufferTop][1] = 0x40 | ((0xFFF>>7)&0x1F);
          UARTTransmitBuffer[UARTTransmitBufferTop][2] = 0xFFF&0x7F;
          UARTTransmitBuffer[UARTTransmitBufferTop][3] = 0x01&0x0F;
          for (cntByte=0; cntByte<8; cntByte++)
          {
-            UARTTransmitBuffer[UARTTransmitBufferTop][4+cntByte] = CANControlMessage[cntByte];
+            UARTTransmitBuffer[UARTTransmitBufferTop][(unsigned char)(4+cntByte)] = CANControlMessage[cntByte];
          }
          UARTTransmitBuffer[UARTTransmitBufferTop][12] = 0xE1;
 
