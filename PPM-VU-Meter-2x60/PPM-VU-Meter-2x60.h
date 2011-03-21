@@ -36,6 +36,19 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+unsigned int LEDDataLeft[4];
+unsigned int LEDDataRight[4];
+
+#define LOGIC_LEDS(a)   if (a)                      \
+                        {                           \
+                          LEDDataLeft[0] |= 0x8000; \
+                        }                           \
+                        else                        \
+                        {                           \
+                          LEDDataLeft[0] &= 0x7FFF; \
+                        }                           \
+                        LEDDataRight[0] |= 0x8000;  \
+
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 

@@ -46,8 +46,6 @@ unsigned char cntLeftHoldTime;
 unsigned char cntRightHoldTime;
 
 unsigned char cntBlock;
-unsigned int LEDDataLeft[4];
-unsigned int LEDDataRight[4];
 unsigned char LeftPeak, RightPeak;
 
 
@@ -812,6 +810,9 @@ OCR3CL=0x00;
 
    // Global enable interrupts
    #asm("sei")
+
+   CheckUniqueIDPerProduct();
+
    while (1)
    {
       ProcessCAN();
@@ -954,15 +955,15 @@ OCR3CL=0x00;
          SetRightLEDNr(RightHoldLEDNr, 1);
       }
 
-      LEDDataLeft[0] |= 0x8000;
       if (AddressValidated)
       {
-        LEDDataRight[0] |= 0x8000;
+        LEDDataLeft[0] |= 0x8000;
       }
       else
       {
-         LEDDataRight[0] &= 0x7FFF;
+         LEDDataLeft[0] &= 0x7FFF;
       }
+      LEDDataRight[0] |= 0x8000;
 
       if (LeftPeak)
       {
