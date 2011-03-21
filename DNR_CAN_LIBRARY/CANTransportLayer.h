@@ -3061,6 +3061,74 @@ unsigned char Float2VariableFloat(float InputFloat, unsigned char VariableFloatB
    return ReturnStatus;
 }
 
+void CheckUniqueIDPerProduct()
+{
+  if (UniqueIDPerProduct == 0x0000)
+  {
+    unsigned char OldDDRE = DDRE;
+    unsigned char OldDDRB = DDRB;
+    unsigned char Finished = 0;
+    unsigned char cntBit = 0;
+    unsigned char PreviousPSCK = 0, NewPSCK = 0;
+    unsigned int UniqueID = 0x0000;
+#if !defined(LOGIC_LEDS) && !defined(UNIQUE_ID_LCD)
+  #error "No signalling for UniqueID = 0"
+#endif
+#ifdef LOGIC_LEDS
+    unsigned char LEDState = 0;
+#endif
+#ifdef UNIQUE_ID_LCD
+    unsigned char DebugText[41];
+    UNIQUE_ID_LCD("Waiting for unique id...                ");
+#endif
+
+    DDRE = ((OldDDRE | 0x02) & 0xFE);
+    DDRB = OldDDRB & 0xFD;
+
+    while (!Finished)
+    {
+      if (cntMilliSecond - PreviousMilliSecondReservation > 100)
+      {
+#ifdef LOGIC_LEDS
+        LOGIC_LEDS(LEDState);
+        LEDState = !LEDState;
+#endif
+        PreviousMilliSecondReservation = cntMilliSecond;
+      }
+
+      NewPSCK = PSCK;
+      if ((PreviousPSCK == 0) && NewPSCK)
+      {
+        UniqueID <<= 1;
+        if (PINE.0)
+        {
+          UniqueID |= 0x0001;
+        }
+        cntBit++;
+        if (cntBit == 16)
+        {
+          Finished = 1;
+        }
+      }
+      PreviousPSCK = NewPSCK;
+    }
+
+    UniqueIDPerProduct = UniqueID;
+
+    DDRE = OldDDRE;
+    DDRB = OldDDRB;
+
+#ifdef UNIQUE_ID_LCD
+    sprintf(DebugText, "Unique ID: %5d written!               ", UniqueID);
+    UNIQUE_ID_LCD(DebugText);
+    delay_ms(1000);
+    UNIQUE_ID_LCD("                                        ");
+#endif
+#ifdef LOGIC_LEDS
+    LOGIC_LEDS(0);
+#endif
+  }
+}
 
 #endif
 
