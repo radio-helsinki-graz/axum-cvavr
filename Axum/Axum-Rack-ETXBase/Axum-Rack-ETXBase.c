@@ -498,7 +498,7 @@ void main(void)
                      {
                         SerialReceiveMambaNetMessage = 1;
                      }
-                     ToCANAddress = (ReceivedByte<<7)&0x1F;
+                     ToCANAddress = ((unsigned int)ReceivedByte<<7)&0x1F;
                      SequenceNumber = 0;
                   }
                   break;
