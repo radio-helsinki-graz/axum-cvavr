@@ -256,7 +256,7 @@ void main(void)
       LogicLEDData[cntByte] = 0xFF;
    }
    SetLEDs();
-	BLANK = 0;
+   BLANK = 0;
 
    delay_ms(500);
 
@@ -265,10 +265,10 @@ void main(void)
       LogicLEDData[cntByte] = 0x00;
    }
    SetLEDs();
-   
+
    for (cntByte=0; cntByte<64; cntByte++)
    {
-      SwitchState[cntByte] = 0;      
+      SwitchState[cntByte] = 0;
    }
 
    PreviousEncoderABStatus = 0;
@@ -281,10 +281,12 @@ void main(void)
    // Global enable interrupts
    #asm("sei")
 
+   CheckUniqueIDPerProduct();
+
    while (1)
    {
       unsigned char CurrentState_nSW_CC;
-       
+
       // Place your code here
       ProcessCAN();
 
@@ -345,13 +347,13 @@ void main(void)
 
       //TrackData[0] = 0x03FF;
       ReadTracks();
-      
+
       //read chipcard switch
       CurrentState_nSW_CC = nSW_CC;
       if (PreviousState_nSW_CC != CurrentState_nSW_CC)
-      {        
+      {
          if (cntChipcardSwitchDelay<10)
-         {         
+         {
             cntChipcardSwitchDelay++;
          }
          else if (cntChipcardSwitchDelay == 10)
@@ -363,36 +365,36 @@ void main(void)
             SmartCardInserted = 0;
             if (CurrentState_nSW_CC == 0)
             {
-               if (CheckForValidSmartCard(0xA0, 0x00))
-		         {
-   			      SmartCardInserted = 1;
-   	            
-   		         //Power-On, Reset and not Selected
-   					RST_CC = 1;
-   					nCS_CC = 1; 
-   		
-   		         //Out-Reset
-   					RST_CC = 0;
-   		
-   		         //Select
-   					nCS_CC = 0; 
-   		
-   		         //Do I2C
-   		         I2CRead(0xA0, 0x0000, ChipCardData, 48);
-   		
-   		         //Deselect
-   					nCS_CC = 1; 													
-               }
+              if (CheckForValidSmartCard(0xA0, 0x00))
+		          {
+   			        SmartCardInserted = 1;
+
+   		          //Power-On, Reset and not Selected
+   					    RST_CC = 1;
+   					    nCS_CC = 1;
+
+   		          //Out-Reset
+   					    RST_CC = 0;
+
+   		          //Select
+   					    nCS_CC = 0;
+
+   		          //Do I2C
+   		          I2CRead(0xA0, 0x0000, ChipCardData, 48);
+
+   		          //Deselect
+   					    nCS_CC = 1;
+              }
             }
-            TransmitBuffer[0] = SmartCardInserted;            
+            TransmitBuffer[0] = SmartCardInserted;
             SendSensorChangeToMambaNet(ObjectNr, STATE_DATATYPE, 1, TransmitBuffer);
-            
+
             cntChipcardSwitchDelay = 100;
          }
       }
       else
       {
-         cntChipcardSwitchDelay = 0; 
+         cntChipcardSwitchDelay = 0;
       }
    }
 }
@@ -508,35 +510,35 @@ void ReadSwitches()
       selectRow(cntRow);
 
 		ReturnValue = SwitchCheck(cntRow, 0, nSW1);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+0];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+0)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 1, nSW2);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+1];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+1)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 2, nSW3);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+2];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+2)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 3, nSW4);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+3];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+3)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 4, nSW5);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+4];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+4)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 5, nSW6);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+5];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+5)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 6, nSW7);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+6];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+6)];
       DoSwitch(LogicSwitchNr, ReturnValue);
 
 		ReturnValue = SwitchCheck(cntRow, 7, nSW8);
-      LogicSwitchNr = SwitchNr2LogicSwitchNr[(cntRow*8)+7];
+      LogicSwitchNr = SwitchNr2LogicSwitchNr[(unsigned char)((cntRow*8)+7)];
       DoSwitch(LogicSwitchNr, ReturnValue);
    }
 }
@@ -613,11 +615,11 @@ void ReadTracks()
          case 6:
          {
             Difference = PreviousADC_Data[cntTrack]-adc_data[cntTrack];
-                
+
             if (abs(Difference)>TRACK_WIBBLE)
             {
                char TrackNr;
-            
+
                TrackNr = cntTrack>>1;
                if (TrackNr == 1)
                {
@@ -629,8 +631,8 @@ void ReadTracks()
                }
 
                TrackPosition[TrackNr] = adc_data[cntTrack];
-                  
-               PreviousADC_Data[cntTrack] = adc_data[cntTrack];              
+
+               PreviousADC_Data[cntTrack] = adc_data[cntTrack];
             }
          }
          break;
@@ -659,7 +661,7 @@ void DoSwitch(unsigned char LogicSwitchNr, int Event)
       {   //Other switches
          SwitchNr -= 2;
       }
-      
+
       ObjectNr = 1024+SwitchNr;
 
       TransmitBuffer[0] = 0;
@@ -708,15 +710,15 @@ void SetLEDs()
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
    unsigned char MessageDone;
-   
+
    MessageDone = 0;
-   
+
 
    if (MessageID)
    {
       Ack = 1;
    }
-   
+
    switch (MessageType)
    {
       //MessageType = 0, handled in the stack
@@ -739,16 +741,16 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                TransmitBuffer[1] = ObjectNr&0xFF;
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
-                   
+
                if ((ObjectNr>=1024) && (ObjectNr<1078))
                {  //Switches
                   char LogicSwitchNr = ObjectNr-1024;
-                  
+
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = SwitchState[LogicSwitchNr];
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-               
+
                   MessageDone = 1;
                }
                if ((ObjectNr>=1078) && (ObjectNr<1079))
@@ -757,7 +759,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = 0;
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-               
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1079) && (ObjectNr<1080))
@@ -767,9 +769,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = SwitchState[LogicSwitchNr];
-                  
+
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-               
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1081) && (ObjectNr<1085))
@@ -780,9 +782,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[4] = 2;
                   TransmitBuffer[5] = (TrackPosition[PotmeterNr]>>8)&0xFF;
                   TransmitBuffer[6] = TrackPosition[PotmeterNr]&0xFF;
-                  
+
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
-               
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1085) && (ObjectNr<1086))
@@ -792,9 +794,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = SwitchState[LogicSwitchNr];
-                  
+
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-               
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1086) && (ObjectNr<1087))
@@ -802,9 +804,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[3] = STATE_DATATYPE;
                   TransmitBuffer[4] = 1;
                   TransmitBuffer[5] = SmartCardInserted;
-                  
+
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-               
+
                   MessageDone = 1;
                }
                else if ((ObjectNr == 1087) || (ObjectNr == 1088))
@@ -817,8 +819,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      TransmitBuffer[4] = 32;
                      for (cntByte=0; cntByte<32; cntByte++)
                      {
-                        TransmitBuffer[5+cntByte] = ChipCardData[cntByte];
-                     }                  
+                        TransmitBuffer[(unsigned char)(5+cntByte)] = ChipCardData[cntByte];
+                     }
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 37);
                   }
                   else
@@ -826,8 +828,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      TransmitBuffer[4] = 16;
                      for (cntByte=0; cntByte<16; cntByte++)
                      {
-                        TransmitBuffer[5+cntByte] = ChipCardData[32+cntByte];
-                     }                  
+                        TransmitBuffer[(unsigned char)(5+cntByte)] = ChipCardData[(unsigned char)(32+cntByte)];
+                     }
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 21);
                   }
                }
@@ -856,12 +858,12 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[19] = 'c';
                   TransmitBuffer[20] = 't';
 
-                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 21);            
-               }            
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 21);
+               }
             }
             break;
             case  MAMBANET_OBJECT_ACTION_GET_ACTUATOR_DATA:
-            {  
+            {
                unsigned char TransmitBuffer[64];
 
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -895,7 +897,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (LogicLEDData[ByteNr] & Mask)
                   {
                      TransmitBuffer[5] = 1;
-                  }  
+                  }
                   else
                   {
                      TransmitBuffer[5] = 0;
@@ -906,12 +908,12 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1080) && (ObjectNr<1081))
-               {  //Control LED Bar                 
+               {  //Control LED Bar
                   TransmitBuffer[3] = BIT_STRING_DATATYPE;
                   TransmitBuffer[4] = 1;
-                  
-                  TransmitBuffer[5] = (LogicLEDData[2]>>6)&0x03; 
-                  TransmitBuffer[5] |= (LogicLEDData[3]<<2)&0x7C; 
+
+                  TransmitBuffer[5] = (LogicLEDData[2]>>6)&0x03;
+                  TransmitBuffer[5] |= (LogicLEDData[3]<<2)&0x7C;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
 
@@ -927,8 +929,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      TransmitBuffer[4] = 32;
                      for (cntByte=0; cntByte<32; cntByte++)
                      {
-                        TransmitBuffer[5+cntByte] = WriteChipCardData[cntByte];
-                     }                  
+                        TransmitBuffer[(unsigned char)(5+cntByte)] = WriteChipCardData[cntByte];
+                     }
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 37);
                   }
                   else
@@ -936,13 +938,13 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      TransmitBuffer[4] = 16;
                      for (cntByte=0; cntByte<16; cntByte++)
                      {
-                        TransmitBuffer[5+cntByte] = WriteChipCardData[32+cntByte];
-                     }                  
+                        TransmitBuffer[(unsigned char)(5+cntByte)] = WriteChipCardData[(unsigned char)(32+cntByte)];
+                     }
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 21);
                   }
                   MessageDone = 1;
                }
-               
+
                if (!MessageDone)
                {
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -970,7 +972,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[22] = 't';
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 23);
-               }               
+               }
             }
             break;
             case  MAMBANET_OBJECT_ACTION_SET_ACTUATOR_DATA:
@@ -978,7 +980,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -1047,17 +1049,17 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (DataType == OCTET_STRING_DATATYPE)
                   {
                      char cntByte;
-                     
+
                      if (ObjectNr == 1087)
                      {
                         if (DataSize<=32)
                         {
                            for (cntByte=0; cntByte<DataSize; cntByte++)
                            {
-                              WriteChipCardData[cntByte] = Data[5+cntByte];
+                              WriteChipCardData[cntByte] = Data[(unsigned char)(5+cntByte)];
                            }
                            FormatError = 0;
-                        }                  
+                        }
                      }
                      else
                      {
@@ -1065,20 +1067,20 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         {
                            for (cntByte=0; cntByte<DataSize; cntByte++)
                            {
-                              WriteChipCardData[32+cntByte] = Data[5+cntByte];
+                              WriteChipCardData[(unsigned char)(32+cntByte)] = Data[(unsigned char)(5+cntByte)];
                            }
                            FormatError = 0;
                         }
                      }
-                     
+
                      //Select
-   					   nCS_CC = 0; 
-   		
+   					   nCS_CC = 0;
+
    		            //Do I2C
                      SmartCardWrite(0xA0, 0x0000, WriteChipCardData, 48);
-   		
+
    		            //Deselect
-   					   nCS_CC = 1; 													                  
+   					   nCS_CC = 1;
 
                      MessageDone = 1;
                   }
@@ -1091,7 +1093,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1114,7 +1116,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1122,13 +1124,15 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }                 
+               }
             }
             break;
          }
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 //I2C section for chipcard
@@ -1141,7 +1145,7 @@ void SetSDA(unsigned char SDAData)
 unsigned char GetSDA()
 {
 	PORTC.2 = 1; //Pull-up
-	DDRC &= 0xFB;   
+	DDRC &= 0xFB;
 	return PINC.2;
 }
 
@@ -1242,7 +1246,7 @@ void SmartCardWrite(unsigned char I2CAddress, unsigned int StartAddress, unsigne
       BufferLength = Length-BufferIndex;
       if (BufferLength>16)
          BufferLength = 16;
-  
+
       I2CWrite(I2CAddress, PageAddress, &Buffer[BufferIndex], BufferLength);
 
       PageAddress += 16;
@@ -1307,15 +1311,15 @@ unsigned char CheckForValidSmartCard(unsigned char I2CAddress, unsigned int Star
    unsigned char Address;
    unsigned char NoError = 1;
 
-    //Reset and not Selected  
+    //Reset and not Selected
 	RST_CC = 1;
-	nCS_CC = 1; 
+	nCS_CC = 1;
 
 	//Out-Reset
 	RST_CC = 0;
 
 	//Select
-	nCS_CC = 0; 
+	nCS_CC = 0;
 
 	//Make Read + AddressOffset
 	Address = I2CAddress | ((StartAddress>>7)&0x0E) & 0xFE;
@@ -1326,7 +1330,7 @@ unsigned char CheckForValidSmartCard(unsigned char I2CAddress, unsigned int Star
 	{
 		NoError = 0;
 	}
-	
+
 	if (I2CByteWrite(StartAddress&0xFF))
 	{
     	NoError = 0;
@@ -1338,7 +1342,7 @@ unsigned char CheckForValidSmartCard(unsigned char I2CAddress, unsigned int Star
    delay_ms(10);
 
    //Deselect
-	nCS_CC = 1; 
+	nCS_CC = 1;
 
    return NoError;
 }

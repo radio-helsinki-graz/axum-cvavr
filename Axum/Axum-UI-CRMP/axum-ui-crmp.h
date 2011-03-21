@@ -1,9 +1,9 @@
 #ifndef Axum_UI_CRMPH
 #define Axum_UI_CRMPH
- 
-/********************************/ 
+
+/********************************/
 /* Define Ports                 */
-/********************************/ 
+/********************************/
 #define  nSW1           PINA.0
 #define  nSW2           PINA.1
 #define  nSW3           PINA.2
@@ -15,6 +15,7 @@
 
 #define  nROW1          PORTB.0
 #define  SCK_SPI        PINB.1
+#define  PSCK           PINB.1
 #define  nROW2          PORTB.2
 #define  nROW3          PORTB.3
 #define  nROW4          PORTB.4
@@ -47,13 +48,23 @@
 #define  WIPER_CRM1     PINF.4
 #define  WIPER_CRM2     PINF.6
 #define  JUMPER4        PINF.7
-                              
+
 #define  nSW_A          PING.3
 #define  nSW_B          PING.4
-                               
-/********************************/ 
+
+/********************************/
 /* Specific defines             */
-/********************************/ 
+/********************************/
+#define LOGIC_LEDS(a) if (a)                      \
+                      {                           \
+                        LogicLEDData[0] |= 0x01;  \
+                      }                           \
+                      else                        \
+                      {                           \
+                        LogicLEDData[0] &= 0xFE;  \
+                      }                           \
+                      SetLEDs();
+
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -132,7 +143,7 @@ unsigned char TLC5921DAPData[NR_OF_LEDS/8];
 
 unsigned char SwitchData[7][8];
 //unsigned int SwitchPressedTime[7][8];
-unsigned char SwitchState[64]; 
+unsigned char SwitchState[64];
 
 unsigned char EncoderABStatus;
 unsigned char PreviousEncoderABStatus;
