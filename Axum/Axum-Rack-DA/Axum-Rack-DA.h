@@ -8,6 +8,7 @@
 
 #define  nSS            PORTB.0
 #define  SCK_PSCK       PORTB.1
+#define  PSCK           PINB.1
 #define  MOSI           PORTB.2
 #define  MISO           PINB.3
 #define  SLOTADR0       PINB.4
@@ -57,6 +58,7 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define LOGIC_LEDS(a)            nACT_LED = a;
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -103,8 +105,8 @@ unsigned char OutputPhase[8];
 unsigned char OutputTalkback[4][16];
 float OutputTalkbackLevel[8];
 unsigned char OutputTalkbackStereoSelect[8];
-unsigned char OutputTalkbackPhase[8];   
-unsigned char TalkbackFPGAAddress[8] = { 0x38, 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30 };
+unsigned char OutputTalkbackPhase[8];
+//unsigned char TalkbackFPGAAddress[8] = { 0x38, 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30 };
 
 char SwitchCheck(unsigned char cntRow, unsigned char SwitchNr, char SwitchReturn);
 void ReadSwitches();

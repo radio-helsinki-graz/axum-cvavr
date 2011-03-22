@@ -281,7 +281,7 @@ void main(void)
 
    NewSignalState = 0;
    SignalState = 0;
-   
+
    GPIState[0] = 0;
    GPIState[1] = 0;
    GPIState[2] = 0;
@@ -341,7 +341,7 @@ void main(void)
    LEDData[6] = 0x00;
    LEDData[7] = 0x00;
    SetLEDs();
-   
+
    for (cntByte=0; cntByte<8; cntByte++)
    {
       OutputStereoSelect[cntByte] = 0x01<<(cntByte&0x01);
@@ -349,7 +349,7 @@ void main(void)
       OutputDim[cntByte] = 0x00;
       OutputDimLevel[cntByte] = -20;
       OutputMute[cntByte] = 0x00;
-      OutputPhase[cntByte] = 0x00;   
+      OutputPhase[cntByte] = 0x00;
       if (cntByte<4)
       {
          char cntTalkback;
@@ -386,9 +386,9 @@ void main(void)
 
    IO112 = 0; //DR/nSR
    IO113 = 1; //nRST-DA
-   
+
    delay_ms(100);
-   
+
    IO114 = 0; //MUTE-DA
 
    delay_ms(100);
@@ -397,6 +397,8 @@ void main(void)
 
    // Global enable interrupts
    #asm("sei")
+
+   CheckUniqueIDPerProduct();
 
    while (1)
    {
@@ -472,11 +474,11 @@ void main(void)
          for  (cntChannel=0; cntChannel<8; cntChannel++)
          {
             unsigned char Mask = 0x01<<cntChannel;
-            
+
             if ((SignalState^NewSignalState)&Mask)
             {
                unsigned char TransmitBuffer[1];
-                             
+
                TransmitBuffer[0] = 0;
                if (NewSignalState&Mask)
                {
@@ -550,9 +552,6 @@ void ReadSwitches()
 {
    //Switch Rows
    char ReturnValue;
-   unsigned char Overload;
-   unsigned char Mask;
-   unsigned char cntBit;
 
 	ReturnValue = SwitchCheck(0, 0, nGPI1);
    DoSwitch(0, ReturnValue);
@@ -599,7 +598,7 @@ void DoSwitch(unsigned char LogicSwitchNr, int Event)
          GPIState[LogicSwitchNr] = TransmitBuffer[0];
 
          SendSensorChangeToMambaNet(ObjectNr, STATE_DATATYPE, 1, TransmitBuffer);
-      }      
+      }
    }
 }
 
@@ -630,14 +629,14 @@ void SetGPOs()
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
    unsigned char MessageDone;
-   
+
    MessageDone = 0;
-   
+
    if (MessageID)
    {
       Ack = 1;
    }
-   
+
    switch (MessageType)
    {
       //MessageType = 0, handled in the stack
@@ -671,8 +670,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = RackSlotNr;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
-                  MessageDone = 1;                    
+
+                  MessageDone = 1;
                }
                else if ((ObjectNr>=1025) && (ObjectNr<1026))
                {  //Input channel count
@@ -684,8 +683,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = 0;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
-                  MessageDone = 1;                    
+
+                  MessageDone = 1;
                }
                else if ((ObjectNr>=1026) && (ObjectNr<1027))
                {  //Output channel count
@@ -697,8 +696,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = 8;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
-                  MessageDone = 1;                    
+
+                  MessageDone = 1;
                }
                else if ((ObjectNr>=1027) && (ObjectNr<1035))
                {  //GPI
@@ -784,7 +783,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             }
             break;
             case  MAMBANET_OBJECT_ACTION_GET_ACTUATOR_DATA:
-            {       
+            {
                unsigned char TransmitBuffer[23];
 
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -950,7 +949,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                {  //Line-out talkback
                   unsigned char TalkbackNr;
                   unsigned char OutputNr;
-                  
+
                   TalkbackNr = (ObjectNr-1139)&0x0F;
                   OutputNr = (ObjectNr-1139)>>4;
 
@@ -976,7 +975,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1211) && (ObjectNr<1219))
-               {  //Line-out talkback level               
+               {  //Line-out talkback level
                   unsigned char ChannelNr;
                   unsigned char VariableFloat[2];
 
@@ -1021,7 +1020,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-            
+
                if (!MessageDone)
                {
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -1061,7 +1060,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -1090,7 +1089,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      {
                         unsigned char GPONr;
                         GPONr = ObjectNr-1051;
-                        
+
                         if (Data[5])
                         {
                            GPOState[GPONr] = GPOActiveState[GPONr];
@@ -1179,7 +1178,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1099) && (ObjectNr<1107))
                {  //Line-out routing
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1099;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1196,7 +1195,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1107) && (ObjectNr<1115))
                {  //Line-out level
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1107;
                   if (DataType == FLOAT_DATATYPE)
                   {
@@ -1225,7 +1224,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1115) && (ObjectNr<1123))
                {  //Line-out phase
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1115;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1242,7 +1241,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1123) && (ObjectNr<1131))
                {  //Line-out dim
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1123;
 
                   if (DataType == STATE_DATATYPE)
@@ -1260,7 +1259,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1131) && (ObjectNr<1139))
                {  //Line-out dim level
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1131;
 
                   if (DataType == FLOAT_DATATYPE)
@@ -1291,7 +1290,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                {  //Line-out talkback
                   unsigned char TalkbackNr;
                   unsigned char OutputNr;
-                  
+
                   TalkbackNr = (ObjectNr-1139)&0x0F;
                   OutputNr = (ObjectNr-1139)>>4;
 
@@ -1310,7 +1309,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1203) && (ObjectNr<1211))
                {  //Line-out talkback routing
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1203;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1327,7 +1326,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1211) && (ObjectNr<1219))
                {  //Line-out talkback level
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1211;
 
                   if (DataType == FLOAT_DATATYPE)
@@ -1357,7 +1356,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1219) && (ObjectNr<1227))
                {  //Line-out talkback phase
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1219;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1374,7 +1373,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1227) && (ObjectNr<1235))
                {  //Line-out mute
                   unsigned char ChannelNr;
-                  
+
                   ChannelNr = ObjectNr-1227;
                   if (DataType == STATE_DATATYPE)
                   {
@@ -1417,7 +1416,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1440,7 +1439,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1448,13 +1447,15 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }                 
+               }
             }
             break;
          }
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 
@@ -1479,8 +1480,6 @@ char GetSlotNr()
    SlotNr = 0;
    for (cntBit=0; cntBit<4; cntBit++)
    {
-      unsigned char Weight;
-
       SlotNr *= 3;
 
       if (TempSlotNrFloat&(0x08>>cntBit))
@@ -1534,7 +1533,6 @@ void ReadFPGA()
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 {
    unsigned char cntBit;
-   unsigned char cntByte;
    unsigned char Mask;
    unsigned char FunctionDataBuffer[2];
 
@@ -1543,7 +1541,7 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 
    nSS = 0;
    SCK_PSCK = 0;
-   
+
    Mask = 0x80;
    for (cntBit=0; cntBit<8; cntBit++)
    {
@@ -1576,18 +1574,18 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 }
 
 void SetOutputRoutingAndLevel(unsigned char ChannelNr)
-{          
-   unsigned char FPGABlockAddress; 
-   unsigned int StereoSelect;          
+{
+   unsigned char FPGABlockAddress;
+   unsigned int StereoSelect;
    float Level;
    unsigned int IntegerLevel;
    char cntNrOfSummation;
    char cntTalkback;
    unsigned int TalkbackData[2];
 
-   //Output                 
+   //Output
    FPGABlockAddress = (((ChannelNr&0xFE)<<3)+0x10);
-  
+
    Level = OutputLevel[ChannelNr];
    if (OutputDim[ChannelNr])
    {
@@ -1601,7 +1599,7 @@ void SetOutputRoutingAndLevel(unsigned char ChannelNr)
    {
       Level = -60;
    }
-   
+
    IntegerLevel = ((float)32)/pow(10, (float)Level/20);
    if (OutputPhase[ChannelNr])
    {
@@ -1615,57 +1613,57 @@ void SetOutputRoutingAndLevel(unsigned char ChannelNr)
       IntegerLevel *= -1;
    }
    SetFPGA(FPGABlockAddress+5+(ChannelNr&0x01), IntegerLevel);
-  
+
    StereoSelect = (OutputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (OutputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
-   if (OutputMute[(ChannelNr&0xFE)])  
+   StereoSelect |= (unsigned int)(OutputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
+   if (OutputMute[(ChannelNr&0xFE)])
    {
       StereoSelect |= 0x0100;
-   }  
-   if (OutputMute[(ChannelNr&0xFE)+1])  
+   }
+   if (OutputMute[(unsigned char)((ChannelNr&0xFE)+1)])
    {
       StereoSelect |= 0x0200;
    }
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<6;
+   StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
+   StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<6;
    SetFPGA(FPGABlockAddress+7, StereoSelect);
 
    //Talkback
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
-   
+
    cntNrOfSummation = 0;
    TalkbackData[0] = 0;
    TalkbackData[1] = 0;
    for (cntTalkback = 0; cntTalkback<16; cntTalkback++)
    {
       if (OutputTalkback[(ChannelNr>>1)][cntTalkback])
-      {  
+      {
          switch (cntNrOfSummation)
          {
             case 0:
-            { 
+            {
                TalkbackData[0] |= ((unsigned int)cntTalkback+1);
             }
             break;
             case 1:
-            { 
+            {
                TalkbackData[0] |= ((unsigned int)cntTalkback+1)<<8;
             }
             break;
             case 2:
-            { 
+            {
                TalkbackData[1] |= ((unsigned int)cntTalkback+1);
             }
             break;
             case 3:
-            { 
+            {
                TalkbackData[1] |= ((unsigned int)cntTalkback+1)<<8;
             }
             break;
          }
          cntNrOfSummation++;
       }
-   }   
+   }
 
    SetFPGA(FPGABlockAddress+8, TalkbackData[0]);
    SetFPGA(FPGABlockAddress+9, TalkbackData[1]);
@@ -1689,11 +1687,11 @@ void GetGPIOModes()
    READ_SLOTADR = 1;
    delay_ms(1);
    GPIOModesB = PINF;
-      
+
    for (cntBit=0; cntBit<8; cntBit++)
    {
       unsigned char Mask = 0x80>>cntBit;
-      if ((GPIOModesA&Mask) == (GPIOModesB&Mask)) 
+      if ((GPIOModesA&Mask) == (GPIOModesB&Mask))
       {
          GPIOMode[cntBit] = 1;
       }
