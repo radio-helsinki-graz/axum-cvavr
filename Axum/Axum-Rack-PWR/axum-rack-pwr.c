@@ -39,7 +39,6 @@ Data Stack size     : 512
 
 unsigned int cntFanTimer;
 unsigned int Previous_cntFanTimer;
-unsigned int Previous_cntDebug;
 
 unsigned char PowerFail;
 unsigned char cntDebugLED;
@@ -62,8 +61,8 @@ interrupt [TIM0_COMP] void timer0_comp_isr(void)
 interrupt [EXT_INT7] void ext_int7_isr(void)
 {
    FanTimerCount += cntFanTimer-Previous_cntFanTimer;
-   FanTachoCount++; 
-      
+   FanTachoCount++;
+
    Previous_cntFanTimer = cntFanTimer;
 }
 
@@ -255,15 +254,15 @@ void main(void)
    DIDR0=0x00;
    ADMUX=FIRST_ADC_INPUT | (ADC_VREF_TYPE & 0xff);
    ADCSRA=0xCC;
-   
+
    delay_ms(250);
-   
+
    HardwareMinorRevision = PINA&0x0F;
    FPGAFirmwareMajorRevision = 0;
    FPGAFirmwareMinorRevision = 0;
 
    // I2C Bus initialization
-   i2c_init(); 
+   i2c_init();
 
    // CAN Controller initialization
    InitializeCAN();
@@ -274,15 +273,15 @@ void main(void)
    PreviousMilliSecond = 0;
 
    RackSlotNr = GetSlotNr();
-   
+
    PreviousPre_5V    = 0;
    PreviousPre_15V   = 0;
    PreviousPre_n15V  = 0;
    FanSpeed = 0;
    SpeedSet = 1023;
-   
-   InitTMP75(); 
-   
+
+   InitTMP75();
+
    LEDRED = 0;
    LEDGRN = 1;
    delay_ms(500);
@@ -292,10 +291,12 @@ void main(void)
    LEDRED = 0;
    LEDGRN = 0;
    delay_ms(500);
-                 
+
    PowerFail = 0;
    // Global enable interrupts
    #asm("sei")
+
+   CheckUniqueIDPerProduct();
 
    while (1)
    {
@@ -321,20 +322,20 @@ void main(void)
       }
 
       if ((cntMilliSecond - PreviousLEDBlinkMilliSecond) > 250)
-      {  //LED Blink 4 times per second.       
+      {  //LED Blink 4 times per second.
          PreviousLEDBlinkMilliSecond = cntMilliSecond;
 //         Debug[500] = cntDebug;
 
          if (AddressValidated)
          {
-            if (PowerFail) 
+            if (PowerFail)
             {
                LEDRED = cntDebugLED++&0x04;
-               LEDGRN = 0;        
+               LEDGRN = 0;
             }
             else
             {
-               LEDRED = 0;        
+               LEDRED = 0;
                LEDGRN = cntDebugLED++&0x04;
             }
          }
@@ -343,11 +344,11 @@ void main(void)
             if (PowerFail)
             {
                LEDRED = cntDebugLED++&0x01;
-               LEDGRN = 0;        
+               LEDGRN = 0;
             }
             else
             {
-               LEDRED = 0;        
+               LEDRED = 0;
                LEDGRN = cntDebugLED++&0x01;
             }
          }
@@ -358,11 +359,11 @@ void main(void)
             FanSpeed = (int)((float)10000/((float)FanTimerCount/FanTachoCount));
          }
          FanTimerCount = 0;
-         FanTachoCount = 0; 
+         FanTachoCount = 0;
 
-         CurrentTemperature = ReadTMP75();            
+         CurrentTemperature = ReadTMP75();
       }
-      
+
       Pre_5V  = ((float)adc_data[0]*(5*((10+10)/10)))/1023;
       Pre_15V  = ((float)adc_data[2]*(5*((1+10)/1)))/1023;
       Pre_n15V  = 5-(((5-(((float)adc_data[4]*5)/1023))/2)*(2+10));
@@ -376,26 +377,26 @@ void main(void)
          LEDRED = 1;
          LEDGRN = 0;
       }
-                   
+
       if (ObjectWritableInformation[1].UpdateFrequency)
       {
          unsigned int ms_to_wait = GetMillisecondsToWaitFromObjectFrequency(ObjectWritableInformation[1].UpdateFrequency);
-         
+
          if ((cntMilliSecond - PreviousPre_5VCheckMilliSecond) > ms_to_wait)
          {
-            if (PreviousPre_5V != Pre_5V) 
+            if (PreviousPre_5V != Pre_5V)
             {
                unsigned char Voltage[2];
-               
+
                Float2VariableFloat(Pre_5V, 2, Voltage);
 
                SendSensorChangeToMambaNet(1025, FLOAT_DATATYPE, 2, Voltage);
                PreviousPre_5V = Pre_5V;
             }
             PreviousPre_5VCheckMilliSecond = cntMilliSecond;
-         }         
+         }
       }
-      
+
       if (ObjectWritableInformation[2].UpdateFrequency)
       {
          unsigned int ms_to_wait = GetMillisecondsToWaitFromObjectFrequency(ObjectWritableInformation[2].UpdateFrequency);
@@ -405,15 +406,15 @@ void main(void)
             if (PreviousPre_15V != Pre_15V)
             {
                unsigned char Voltage[2];
-               
+
                Float2VariableFloat(Pre_15V, 2, Voltage);
 
                SendSensorChangeToMambaNet(1026, FLOAT_DATATYPE, 2, Voltage);
                PreviousPre_15V = Pre_15V;
             }
             PreviousPre_15VCheckMilliSecond = cntMilliSecond;
-         }         
-      }            
+         }
+      }
 
       if (ObjectWritableInformation[3].UpdateFrequency)
       {
@@ -424,7 +425,7 @@ void main(void)
             if (PreviousPre_n15V != Pre_n15V)
             {
                unsigned char Voltage[2];
-               
+
                Float2VariableFloat(Pre_n15V, 2, Voltage);
 
                SendSensorChangeToMambaNet(1027, FLOAT_DATATYPE, 2, Voltage);
@@ -434,23 +435,23 @@ void main(void)
          }
       }
 
-      
+
       if (ObjectWritableInformation[4].UpdateFrequency == 1)
       {
          unsigned int ms_to_wait = GetMillisecondsToWaitFromObjectFrequency(ObjectWritableInformation[4].UpdateFrequency);
 
          if ((cntMilliSecond - PreviousFanSpeedCheckMilliSecond) > ms_to_wait)
-         {           
+         {
             if (PreviousFanSpeed != FanSpeed)
             {
                unsigned char FanSpeedData[2];
-                              
+
                FanSpeedData[0] = (((int)FanSpeed)>>8)&0xFF;
                FanSpeedData[1] = ((int)FanSpeed)&0xFF;
 
                SendSensorChangeToMambaNet(1028, UNSIGNED_INTEGER_DATATYPE, 2, FanSpeedData);
                PreviousFanSpeed = FanSpeed;
-            }        
+            }
          }
       }
 
@@ -462,14 +463,14 @@ void main(void)
          {
             if (PreviousTemperature != CurrentTemperature)
             {
-               unsigned char TemperatureData[2];   
-               
+               unsigned char TemperatureData[2];
+
                Float2VariableFloat(CurrentTemperature, 2, TemperatureData);
 
-               SendSensorChangeToMambaNet(1029, FLOAT_DATATYPE, 2, TemperatureData);               
+               SendSensorChangeToMambaNet(1029, FLOAT_DATATYPE, 2, TemperatureData);
                PreviousTemperature = CurrentTemperature;
             }
-            PreviousTemperatureCheckMilliSecond = cntMilliSecond;        
+            PreviousTemperatureCheckMilliSecond = cntMilliSecond;
          }
       }
    }
@@ -481,7 +482,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
    unsigned char MessageDone;
 
    MessageDone = 0;
-   
+
    if (MessageID)
    {
       Ack = 1;
@@ -524,10 +525,10 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1025) && (ObjectNr<1028))   
-               {  //+5V Pre  
+               else if ((ObjectNr>=1025) && (ObjectNr<1028))
+               {  //+5V Pre
                   float Voltage;
-                  
+
                   switch (ObjectNr)
                   {
                      case 1025:
@@ -546,7 +547,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                      break;
                   }
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
@@ -558,8 +559,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-               else if ((ObjectNr>=1028) && (ObjectNr<1029))   
-               {  //Fan speed                    
+               else if ((ObjectNr>=1028) && (ObjectNr<1029))
+               {  //Fan speed
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
@@ -571,9 +572,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
 
                   MessageDone = 1;
-               }               
-               else if ((ObjectNr>=1029) && (ObjectNr<1030))   
-               {  //Temperature                    
+               }
+               else if ((ObjectNr>=1029) && (ObjectNr<1030))
+               {  //Temperature
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
@@ -619,7 +620,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             }
             break;
             case  MAMBANET_OBJECT_ACTION_GET_ACTUATOR_DATA:
-            {      
+            {
                unsigned char TransmitBuffer[23];
 
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -677,7 +678,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -690,14 +691,14 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      if (DataSize == 2)
                      {
                         unsigned int PWMValue;
-                        
+
                         SpeedSet = ((unsigned int)Data[5]<<8) | Data[6];
-                        
+
                         PWMValue = (0x3FF*SpeedSet)/1023;
 
                         OCR3AH=(PWMValue>>8)&0xFF;
                         OCR3AL=PWMValue&0xFF;
-                         
+
                         if (SpeedSet>=512)
                         {
                            POWER_FAN = 1;
@@ -720,7 +721,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -743,7 +744,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -751,13 +752,15 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }                 
+               }
             }
             break;
          }
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 char GetSlotNr()
@@ -850,8 +853,8 @@ unsigned int GetMillisecondsToWaitFromObjectFrequency(unsigned char ObjectFreque
          MillisecondsToWait = 10000;
       }
       break;
-   }     
-   
+   }
+
    return MillisecondsToWait;
 }
 
@@ -879,8 +882,8 @@ float ReadTMP75()
    IntegerTemperature <<= 8;
    IntegerTemperature |= i2c_read(0);
    i2c_stop();
-   
-   FloatTemperature = (float)((float)IntegerTemperature)/256; 
+
+   FloatTemperature = (float)((float)IntegerTemperature)/256;
 
    return FloatTemperature;
 }

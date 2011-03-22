@@ -12,6 +12,7 @@
 #define	LEDGRN			PORTA.7
 
 #define  SCK            PORTB.1
+#define  PSCK           PINB.1
 #define  SLOTADR0       PINB.4
 #define  SLOTADR1       PINB.5
 #define  SLOTADR2       PINB.6
@@ -42,6 +43,8 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define LOGIC_LEDS(a)    LEDRED = a;  \
+                         LEDGRN = a;
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -59,11 +62,11 @@ unsigned int PreviousPre_15VCheckMilliSecond;
 unsigned int PreviousPre_n15VCheckMilliSecond;
 unsigned int PreviousFanSpeedCheckMilliSecond;
 unsigned int PreviousTemperatureCheckMilliSecond;
-unsigned int PreviousFanMilliSecond;
+//unsigned int PreviousFanMilliSecond;
 //unsigned int FanSpeedDifference;
 //unsigned int PreviousFanSpeedDifference;
 long int FanTimerCount;
-long int FanTachoCount; 
+long int FanTachoCount;
 
 unsigned char RackSlotNr;
 
@@ -80,7 +83,7 @@ int FanSpeed;
 int SpeedSet;
 
 char GetSlotNr();
-void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData);
+//void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData);
 unsigned int GetMillisecondsToWaitFromObjectFrequency(unsigned char ObjectFrequency);
 void InitTMP75();
 float ReadTMP75();
