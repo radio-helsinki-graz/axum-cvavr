@@ -25,12 +25,12 @@ Data Stack size     : 512
 
 #define FIRMWARE_MAJOR_VERSION   1
 #define TRANSPORTLAYER_MINOR_CORRECTION 0
-#define FIRMWARE_MINOR_VERSION   1+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
+#define FIRMWARE_MINOR_VERSION   2+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
 //Local FIRMWARE_MINOR_VERSION
-//0:  Initial release
-//1:  Changed name/description with 'Axum' word
+//1.0:  Initial release
+//1.1:  Changed name/description with 'Axum' word
 //    Acknowlegde only on processed messages
-
+//1.2:  Added function to program UniqueID of is '0'
 #define MANUFACTURER_ID          1     //D&R
 #define PRODUCT_ID               12    //Axum-Rack-Backplane
 
@@ -48,7 +48,7 @@ Data Stack size     : 512
 /********************************/
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
-eeprom unsigned int UniqueIDPerProduct    = 9;//0x0004;
+eeprom unsigned int UniqueIDPerProduct    = 0;
 flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;

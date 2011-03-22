@@ -4,11 +4,12 @@
 /********************************/
 /* Define Ports                 */
 /********************************/
-#define  SWF1_LCD       PINA.7			
-#define  SWF2_LCD       PINA.6			
+#define  SWF1_LCD       PINA.7
+#define  SWF2_LCD       PINA.6
 
 #define  nSS            PORTB.0
 #define  SCK            PORTB.1
+#define  PSCK           PINB.1
 #define  MOSI           PORTB.2
 #define  MISO           PINB.3
 #define  PB4            PINB.4
@@ -55,6 +56,8 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define UNIQUE_ID_LCD(a)         SetLCDModule(0, 0, a);
+
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -67,7 +70,7 @@ unsigned int PreviousMilliSecondReservation;
 unsigned int PreviousLEDBlinkMilliSecond;
 
 unsigned FPGAData[4];
-unsigned int FPGAFirmwareType;   
+unsigned int FPGAFirmwareType;
 
 unsigned char FPGAPLLLock;
 unsigned char EnableSum[4];

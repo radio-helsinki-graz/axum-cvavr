@@ -27,12 +27,9 @@ Data Stack size     : 512
 #include <math.h>
 
 #include "Axum-Rack-Backplane.h"
+#include "lcd.h"
 #include "CANTransportLayer.h"
 #include "Axum-Rack-Backplane-MambaNet.h"
-
-#include "lcd.h"
-
-unsigned char cntDebug;
 
 /**********************************/
 // Timer 0 output compare interrupt service routine
@@ -71,7 +68,6 @@ ADCSRA|=0x40;
 
 void main(void)
 {
-   char cntByte;
    unsigned int cntTransmitReservation=0;
 
    // Declare your local variables here
@@ -243,9 +239,9 @@ void main(void)
    PLLC3 = 0;
 
    HardwareMinorRevision = (PINE>>4)&0x0F;
-   
+
    delay_ms(500);
-   
+
    ReadFPGA();
    FPGAFirmwareMajorRevision = FPGAData[0];
    FPGAFirmwareMinorRevision = FPGAData[1];
@@ -258,16 +254,16 @@ void main(void)
    {
       FPGAPLLLock = 1;
    }
-   
+
    EnableSum[0] = 0;
    EnableSum[1] = 0;
    EnableSum[2] = 0;
    EnableSum[3] = 0;
-   
+
    Samplerate = 2;
 
    PreviousPLLLock = 0;
-   PLLLock = 0;   
+   PLLLock = 0;
 
    // CAN Controller initialization
    InitializeCAN();
@@ -293,19 +289,21 @@ void main(void)
    LocalMambaNetAddress = 0x00000106;
 
    //SetPLL1706(2);
-   
+
    SetFPGA(0x0800, 0x000E);
 
 
    // Global enable interrupts
    #asm("sei")
-   
+
    Parent[0] = (ManufacturerID>>8)&0xFF;
    Parent[1] = ManufacturerID&0xFF;
    Parent[2] = (ProductID>>8)&0xFF;
    Parent[3] = ProductID&0xFF;
    Parent[4] = (UniqueIDPerProduct>>8)&0xFF;
    Parent[5] = UniqueIDPerProduct&0xFF;
+
+   CheckUniqueIDPerProduct();
 
    while (1)
    {
@@ -331,22 +329,15 @@ void main(void)
             sprintf(TextString, "Gen       S:%d, C:%d, F:%d, A:%d", cntCANStuffErrorGeneral, cntCANCRCErrorGeneral, cntCANFormErrorGeneral, cntCANAcknowledgementErrorGeneral);
             SetLCDModule(0, 1, TextString);
          }
-/*         {
-            unsigned char TextString[40];
-            sprintf(TextString, "(%d, %d) 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X", cntTransmitReservation, cntReceiveCANControl, CANControlMessage[0], CANControlMessage[1], CANControlMessage[2], CANControlMessage[3], CANControlMessage[4], CANControlMessage[5]);
-            SetLCDModule(0, 0, TextString);
-            sprintf(TextString, "L:%d G:%d", LocalCANAddress, GatewayCANAddress);
-            SetLCDModule(0, 1, TextString);
-         }*/
          cntTransmitReservation++;
-            
+
          SendCANParentControlMessage();
       }
 
       if (cntMilliSecond - PreviousMilliSecond > 40)
       {  //Send track/relative information maximal 25 times per second.
          PreviousMilliSecond = cntMilliSecond;
-         
+
          PLLLock = EXTR_LOCK;
          if (PreviousPLLLock != PLLLock)
          {
@@ -482,14 +473,14 @@ void DoSwitch(unsigned char LogicSwitchNr, int Event)
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
    unsigned char MessageDone;
-   
+
    MessageDone = 0;
-   
+
    if (MessageID)
    {
       Ack = 1;
-   } 
-   
+   }
+
    switch (MessageType)
    {
       //MessageType = 0, handled in the stack
@@ -507,9 +498,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             {  // static objects are handled in the stack
                if ((ObjectNr>=(1024+NumberOfStaticObjects)) && (ObjectNr<(1024+DefaultNodeObjects.NumberOfObjects)))
                {  //Only for the non-standard objects
-                  unsigned char TransmitBuffer[96];              
+                  unsigned char TransmitBuffer[96];
                   char cntSize;
-                  char DataSize;
                   unsigned long int TempData;
                   char cntChar;
                   char *TextStart;
@@ -517,26 +507,26 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   unsigned char BlockNr;
                   unsigned char BlockChannelNr;
-                  
+
                   unsigned char SlotNr;
                   unsigned char ChannelNr;
-                  
+
                   OutputNr = ObjectNr-(NumberOfStaticObjects+1024);
-                                          
-                  cntSize=0;         
+
+                  cntSize=0;
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
-                  TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_INFORMATION_RESPONSE; 
+                  TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_INFORMATION_RESPONSE;
                   TransmitBuffer[3] = OBJECT_INFORMATION_DATATYPE;
                   TransmitBuffer[4] = cntSize;  //updated later...
-                  TextStart = &TransmitBuffer[5+cntSize];
+                  TextStart = &TransmitBuffer[(unsigned char)(5+cntSize)];
                   for (cntChar=0; cntChar<32; cntChar++)
                   {
-                     TransmitBuffer[5+cntSize++] = 0x00;
+                     TransmitBuffer[(unsigned char)(5+cntSize++)] = 0x00;
                   }
                   BlockNr = (OutputNr>>5);
                   BlockChannelNr = (OutputNr&0x1F);
-                  
+
                   if (BlockNr<56)
                   {
                      if (BlockNr<15)
@@ -548,18 +538,18 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      {
                         unsigned char DSPSlotNr;
                         unsigned char DSPLineNr;
-                        
+
                         DSPSlotNr = (BlockNr-15)/5;
                         DSPLineNr = (BlockNr-15)%5;
-                        
-                        SlotNr = 15+DSPSlotNr;                   
+
+                        SlotNr = 15+DSPSlotNr;
                         ChannelNr = BlockChannelNr+(DSPLineNr*32);
-                     }                             
+                     }
                      else
                      {
                         SlotNr = BlockNr-14;
                         ChannelNr = BlockChannelNr;
-                     }              
+                     }
                      //max length 32
                      sprintf(TextStart, "Audio to slot %d, channel %d", SlotNr+1, ChannelNr+1);
                   }
@@ -569,38 +559,38 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      sprintf(TextStart, "Audio to all slots, channel %d",  BlockChannelNr+1);
                   }
 
-                  TransmitBuffer[5+cntSize++] = 0x00; //services
-                  
+                  TransmitBuffer[(unsigned char)(5+cntSize++)] = 0x00; //services
+
                   //Sensor
-                  TransmitBuffer[5+cntSize++] = NO_DATA_DATATYPE;
-                  TransmitBuffer[5+cntSize++] = 0; //data size
-                  
+                  TransmitBuffer[(unsigned char)(5+cntSize++)] = NO_DATA_DATATYPE;
+                  TransmitBuffer[(unsigned char)(5+cntSize++)] = 0; //data size
+
                   //Actuator
-                  TransmitBuffer[5+cntSize++] = UNSIGNED_INTEGER_DATATYPE;
-                  TransmitBuffer[5+cntSize++] = 2; //data size
-                   
+                  TransmitBuffer[(unsigned char)(5+cntSize++)] = UNSIGNED_INTEGER_DATATYPE;
+                  TransmitBuffer[(unsigned char)(5+cntSize++)] = 2; //data size
+
                   TempData = 0;  //min
                   for (cntChar=0; cntChar<2; cntChar++)
                   {
-                     TransmitBuffer[5+cntSize++] = (TempData>>(((2-cntChar)-1)<<3))&0xFF;
+                     TransmitBuffer[(unsigned char)(5+cntSize++)] = (TempData>>(unsigned char)(((2-cntChar)-1)<<3))&0xFF;
                   }
                   TempData = 1664; //max
                   for (cntChar=0; cntChar<2; cntChar++)
                   {
-                     TransmitBuffer[5+cntSize++] = (TempData>>(((2-cntChar)-1)<<3))&0xFF;
+                     TransmitBuffer[(unsigned char)(5+cntSize++)] = (TempData>>(unsigned char)(((2-cntChar)-1)<<3))&0xFF;
                   }
                   TempData = 0; //default
                   for (cntChar=0; cntChar<2; cntChar++)
                   {
-                     TransmitBuffer[5+cntSize++] = (TempData>>(((2-cntChar)-1)<<3))&0xFF;
+                     TransmitBuffer[(unsigned char)(5+cntSize++)] = (TempData>>(unsigned char)(((2-cntChar)-1)<<3))&0xFF;
                   }
                   //Adjust the size
                   TransmitBuffer[4] = cntSize;
-                      
+
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, cntSize+5);
-               }   
+               }
             }
-            break;            
+            break;
             case  MAMBANET_OBJECT_ACTION_INFORMATION_RESPONSE:
             {       //Not yet implemented
             }
@@ -621,7 +611,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   {
                      FPGAPLLLock = 1;
                   }
-               
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
@@ -630,12 +620,12 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = FPGAPLLLock;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1031) && (ObjectNr<1032))
                {  //PLL Lock
-               
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
@@ -644,7 +634,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = EXTR_LOCK;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
                }
 
@@ -681,7 +671,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             }
             break;
             case  MAMBANET_OBJECT_ACTION_GET_ACTUATOR_DATA:
-            {  
+            {
                unsigned char TransmitBuffer[23];
 
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -742,7 +732,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 20);
                   MessageDone = 1;
                }
-               
+
                if (!MessageDone)
                {
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -770,7 +760,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[22] = 't';
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 23);
-               }               
+               }
             }
             break;
             case  MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE:
@@ -782,7 +772,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -833,18 +823,18 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      {
                         unsigned int FunctionNr = 0x0800;
                         unsigned int FunctionData = 0x0000;
-                        char cnt;  
-                  
+                        char cnt;
+
                         EnableSum[ObjectNr-1026] = Data[5];
-                                                    
+
                         for (cnt=0; cnt<4; cnt++)
                         {
                            if (EnableSum[cnt] == 0)
-                           {                        
-                              FunctionData |= (0x01<<cnt);
+                           {
+                              FunctionData |= (unsigned char)(0x01<<cnt);
                            }
-                        }  
-                  
+                        }
+
                         SetFPGA(FunctionNr, FunctionData);
 
                         FormatError = 0;
@@ -903,17 +893,17 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      if (DataSize == 2)
                      {
                         unsigned int InputNr;
-                        unsigned int FunctionNr;                        
+                        unsigned int FunctionNr;
                         unsigned char SlotNr;
-                        unsigned char ChannelNr;                      
-                                     
+                        unsigned char ChannelNr;
+
                         InputNr = Data[5];
                         InputNr <<= 8;
                         InputNr |= Data[6];
-                        
+
                         ChannelNr = (ObjectNr-1032)&0x1F;
                         SlotNr = ((ObjectNr-1032)>>5)&0x3F;
-                        
+
                         FunctionNr = ChannelNr;
                         FunctionNr <<= 5;
                         FunctionNr |= (SlotNr&0x1F);
@@ -921,7 +911,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         {
                            FunctionNr |= 0x400;
                         }
-                        
+
                         SetFPGA(FunctionNr, InputNr);
 
                         FormatError = 0;
@@ -937,7 +927,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -960,7 +950,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -968,13 +958,15 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }                 
+               }
             }
             break;
          }
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 void ReadFPGA()
@@ -983,14 +975,14 @@ void ReadFPGA()
    unsigned char cntByte;
    unsigned char Mask;
    unsigned char DataByte;
-   
+
    SCK = 0;
    nSS = 0;
-   
+
    for (cntByte=0; cntByte<4; cntByte++)
    {
       Mask = 0x80;
-      DataByte = 0x00;   
+      DataByte = 0x00;
       for (cntBit=0; cntBit<8; cntBit++)
       {
          MOSI = 1;// write 1's has no influence in FPGA
@@ -1003,7 +995,7 @@ void ReadFPGA()
          Mask >>= 1;
          SCK = 0;
       }
-      FPGAData[cntByte] = DataByte;     
+      FPGAData[cntByte] = DataByte;
    }
 
    nSS=1;
@@ -1012,7 +1004,6 @@ void ReadFPGA()
 void SetFPGA(unsigned int FunctionNr, unsigned int FunctionData)
 {
    unsigned char cntBit;
-   unsigned char cntByte;
    unsigned char Mask;
    unsigned char FunctionNrBuffer[2];
    unsigned char FunctionDataBuffer[2];
@@ -1066,5 +1057,5 @@ void SetFPGA(unsigned int FunctionNr, unsigned int FunctionData)
 void CanBussError()
 {
 //   AddressValidated = 0;
-//   timerReservationInfo = 1;      
+//   timerReservationInfo = 1;
 }
