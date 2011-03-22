@@ -31,6 +31,7 @@ Data Stack size     : 512
 //Local FIRMWARE_MINOR_VERSION
 //0:  Initial release
 
+
 #define MANUFACTURER_ID          1     //D&R
 #ifndef COBRANET_16X16
   #define PRODUCT_ID               27    //Axum-Rack-CN8x8
@@ -54,7 +55,7 @@ Data Stack size     : 512
 /********************************/
 unsigned int ManufacturerID               = MANUFACTURER_ID;
 unsigned int ProductID                    = PRODUCT_ID;
-eeprom unsigned int UniqueIDPerProduct    = 0x0001;
+eeprom unsigned int UniqueIDPerProduct    = 0;
 flash unsigned char NodeServices          = 0x00;
 
 flash unsigned int NumberOfStaticObjects  = NR_OF_STATIC_OBJECTS;
