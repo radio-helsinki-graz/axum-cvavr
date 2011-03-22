@@ -10,6 +10,7 @@
 
 #define  nSS            PORTB.0
 #define  SCK_PSCK       PORTB.1
+#define  PSCK           PINB.1
 #define  MOSI           PORTB.2
 #define  MISO           PINB.3
 #define  SLOTADR0       PINB.4
@@ -32,6 +33,7 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define LOGIC_LEDS(a)            nACT_LED = a;
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -46,7 +48,7 @@ unsigned int PreviousLEDBlinkMilliSecond;
 unsigned char RackSlotNr;
 
 char GetSlotNr();
-void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData);
+//void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData);
 
 //Information required for CANTransportLayer.h
 //#define CAN_ADDRESS_SERVER

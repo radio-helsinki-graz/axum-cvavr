@@ -69,10 +69,6 @@ ADCSRA|=0x40;
 
 void main(void)
 {
-   char cntByte;
-
-   // Declare your local variables here
-
    // Crystal Oscillator division factor: 1
    #pragma optsize-
    CLKPR=0x80;
@@ -247,6 +243,8 @@ void main(void)
    // Global enable interrupts
    #asm("sei")
 
+   CheckUniqueIDPerProduct();
+
    while (1)
    {
       ProcessCAN();
@@ -262,7 +260,7 @@ void main(void)
          else
          {
             SendMambaNetReservationInfo();
-         }    
+         }
       }
 
       if (cntMilliSecond - PreviousMilliSecond > 40)
@@ -271,7 +269,7 @@ void main(void)
       }
 
       if (cntMilliSecond - PreviousLEDBlinkMilliSecond > 250)
-      {  //LED Blink 4 times per second.       
+      {  //LED Blink 4 times per second.
          if (AddressValidated)
          {
             nACT_LED = cntDebug++&0x04;
@@ -291,7 +289,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
    unsigned char MessageDone;
 
    MessageDone = 0;
-   
+
    if (MessageID)
    {
       Ack = 1;
@@ -378,7 +376,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -404,7 +402,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[22] = 't';
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 23);
-               }               
+               }
             }
             break;
             case  MAMBANET_OBJECT_ACTION_SET_ACTUATOR_DATA:
@@ -412,7 +410,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -435,7 +433,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -458,7 +456,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -466,13 +464,15 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }                 
+               }
             }
             break;
          }
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 char GetSlotNr()
@@ -496,8 +496,6 @@ char GetSlotNr()
    SlotNr = 0;
    for (cntBit=0; cntBit<4; cntBit++)
    {
-      unsigned char Weight;
-
       SlotNr *= 3;
 
       if (TempSlotNrFloat&(0x08>>cntBit))
@@ -516,10 +514,10 @@ char GetSlotNr()
    return SlotNr;
 }
 
+/*
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 {
    unsigned char cntBit;
-   unsigned char cntByte;
    unsigned char Mask;
    unsigned char FunctionDataBuffer[2];
 
@@ -559,6 +557,7 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
    nSS=1;
    nSS=0;
 }
+*/
 
 void CanBussError()
 {
