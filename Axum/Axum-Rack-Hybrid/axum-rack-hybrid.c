@@ -562,6 +562,8 @@ void main(void)
    // Global enable interrupts
    #asm("sei")
 
+   CheckUniqueIDPerProduct();
+
    while (1)
    {
       ProcessCAN();
@@ -952,7 +954,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[4] = CallerIDLength[HybridNr];
                   for (cnt=0; cnt<TransmitBuffer[4]; cnt++)
                   {
-                    TransmitBuffer[5+cnt] = CallerID[HybridNr][cnt];
+                    TransmitBuffer[(unsigned char)(5+cnt)] = CallerID[HybridNr][cnt];
                   }
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 5+TransmitBuffer[4]);
 
@@ -1204,7 +1206,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   }
                   for (cntByte=0; cntByte<TransmitBuffer[4]; cntByte++)
                   {
-                    TransmitBuffer[5+cntByte] = LastDialedNumber[HybridNr][cntByte];
+                    TransmitBuffer[(unsigned char)(5+cntByte)] = LastDialedNumber[HybridNr][cntByte];
                   }
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, TransmitBuffer[4]+5);
@@ -1597,14 +1599,14 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         unsigned char cntData;
                         for (cntData=0; cntData<DataSize; cntData++)
                         {
-                          if (Data[5+cntData] == '+')
+                          if (Data[(unsigned char)(5+cntData)] == '+')
                           {
                             LastDialedNumber[HybridNr][cntChar++] = '0';
                             LastDialedNumber[HybridNr][cntChar++] = '0';
                           }
                           else
                           {
-                            LastDialedNumber[HybridNr][cntChar++] = Data[5+cntData];
+                            LastDialedNumber[HybridNr][cntChar++] = Data[(unsigned char)(5+cntData)];
                           }
                         }
                         LastDialedNumber[HybridNr][DataSize] = 0;
@@ -1759,6 +1761,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 
@@ -1892,12 +1896,12 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
 
    InputRouting = HybridInputRouting[(ChannelNr&0xFE)];
-   InputRouting |= HybridInputRouting[(ChannelNr&0xFE)+1]<<4;
+   InputRouting |= (unsigned int)HybridInputRouting[(unsigned char)((ChannelNr&0xFE)+1)]<<4;
    if (InputMute[(ChannelNr&0xFE)])
    {
       InputRouting |= 0x0100;
    }
-   if (InputMute[(ChannelNr&0xFE)+1])
+   if (InputMute[(unsigned char)((ChannelNr&0xFE)+1)])
    {
       InputRouting |= 0x0200;
    }
@@ -2377,6 +2381,7 @@ void CheckOffHook(unsigned char cntChip)
   }
 }
 
+/*
 void StopCMX865A(unsigned char ChipNr)
 {
   ResetCMX865A(ChipNr);
@@ -2384,6 +2389,7 @@ void StopCMX865A(unsigned char ChipNr)
 //  SetCMX865A(ChipNr, 0xE0, 0x81C0);
   SetCMX865A(ChipNr, 0xE0, nTXA_TXA_CMX865A | 0x01C0);
 }
+*/
 
 void StartCMX865A(unsigned char ChipNr)
 {

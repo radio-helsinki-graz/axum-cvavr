@@ -15,6 +15,7 @@
 
 #define nSS             PORTB.0
 #define SCK_PSCK        PORTB.1
+#define PSCK            PINB.1
 #define MOSI            PORTB.2
 #define MISO            PINB.3
 #define SLOTADR0        PINB.4
@@ -63,6 +64,7 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define LOGIC_LEDS(a)            nACT_LED = a;
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -165,7 +167,7 @@ void ResetCMX865A(unsigned char ChipNr);
 void DTMFDigit(unsigned char ChipNr, char Digit);
 void CheckOffHook(unsigned char cntChip);
 
-void StopCMX865A(unsigned char ChipNr);
+//void StopCMX865A(unsigned char ChipNr);
 void StartCMX865A(unsigned char ChipNr);
 
 //Information required for CANTransportLayer.h
