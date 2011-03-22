@@ -420,6 +420,8 @@ void main(void)
    // Global enable interrupts
    #asm("sei")
 
+   CheckUniqueIDPerProduct();
+
    while (1)
    {
       ProcessCAN();
@@ -1495,6 +1497,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 
@@ -1772,9 +1776,9 @@ void SetCRMRoutingAndLevel(unsigned char ChannelNr)
    SetFPGA(FPGABlockAddress+5+(ChannelNr&0x01), IntegerLevel);
 
    StereoSelect = (CRMStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (CRMStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
-   StereoSelect |= (CRMTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
-   StereoSelect |= (CRMTalkbackStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<6;
+   StereoSelect |= (unsigned int)(CRMStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
+   StereoSelect |= (unsigned int)(CRMTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
+   StereoSelect |= (unsigned int)(CRMTalkbackStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<6;
    SetFPGA(FPGABlockAddress+7, StereoSelect);
 
    //Talkback
