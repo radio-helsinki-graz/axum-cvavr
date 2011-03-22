@@ -15,6 +15,7 @@
 
 #define  nSS            PORTB.0
 #define  SCK_PSCK       PORTB.1
+#define  PSCK           PINB.1
 #define  MOSI           PORTB.2
 #define  MISO           PINB.3
 #define  SLOTADR0       PINB.4
@@ -35,7 +36,7 @@
 #define  nACT_LED       PORTD.3
 #define  RS_CAN         PORTD.4
 #define  TXD_CAN        PORTD.5
-#define  RXD_CAN        PIND.6 
+#define  RXD_CAN        PIND.6
 #define  IO115          PIND.7
 
 #define  PDI_GPO5       PORTE.0
@@ -65,6 +66,7 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define LOGIC_LEDS(a)            nACT_LED = a;
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -75,7 +77,7 @@ volatile unsigned int cntMilliSecond;
 unsigned int PreviousMilliSecond;
 unsigned int PreviousMilliSecondReservation;
 unsigned int PreviousLEDBlinkMilliSecond;
-                         
+
 unsigned char LEDState[8];
 unsigned char LEDMode[8];
 unsigned char LEDData[8];
@@ -100,7 +102,7 @@ unsigned char SwitchData[2][8];
 unsigned char RackSlotNr;
 
 unsigned char FPGAData[12];
-unsigned int FPGAFirmwareType;   
+unsigned int FPGAFirmwareType;
 
 unsigned char InputStereoSelect[8];
 float InputLevel[8];

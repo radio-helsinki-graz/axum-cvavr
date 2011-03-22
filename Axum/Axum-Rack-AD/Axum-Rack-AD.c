@@ -233,23 +233,23 @@ void main(void)
    DIDR0=0x00;
    ADMUX=FIRST_ADC_INPUT | (ADC_VREF_TYPE & 0xff);
    ADCSRA=0xCC;
-   
+
    nREAD_OVL = 1;
    PORTA |= 0x0F;
    delay_us(100);
    HardwareMinorRevision = PINA&0x0F;
    PORTA &= 0xF0;
    nREAD_OVL = 0;
-   
+
    delay_ms(150);
-   
+
    nSS = 1;
 
-   ReadFPGA();  
+   ReadFPGA();
    FPGAFirmwareMajorRevision = FPGAData[8];
    FPGAFirmwareMinorRevision = FPGAData[9];
    FPGAFirmwareType = (((unsigned int)FPGAData[10])<<8) | FPGAData[11];
-   
+
    // CAN Controller initialization
    InitializeCAN();
 
@@ -289,7 +289,7 @@ void main(void)
    OverloadState[5] = 0;
    OverloadState[6] = 0;
    OverloadState[7] = 0;
-   
+
    NewSignalState = 0;
    SignalState = 0;
 
@@ -301,7 +301,7 @@ void main(void)
    GPIState[5] = 0;
    GPIState[6] = 0;
    GPIState[7] = 0;
-   
+
    GPIActiveState[0] = 1;
    GPIActiveState[1] = 1;
    GPIActiveState[2] = 1;
@@ -330,7 +330,7 @@ void main(void)
    GPOActiveState[5] = 1;
    GPOActiveState[6] = 1;
    GPOActiveState[7] = 1;
-   
+
    GPOState[0] = !GPOActiveState[0];
    GPOState[1] = !GPOActiveState[1];
    GPOState[2] = !GPOActiveState[2];
@@ -360,7 +360,7 @@ void main(void)
       InputPhase[cntByte] = 0x00;
       SetInputRoutingAndLevel(cntByte);
    }
-   
+
    TransmitCANMessageBufferLength = 0;
    cntTransmitCANMessageBuffer = 0;
 
@@ -378,7 +378,7 @@ void main(void)
       LEDData[5] = 1;
       LEDData[6] = 0;
       LEDData[7] = 1;
-      SetLEDs();      
+      SetLEDs();
    }
 
    IO113 = 1; //nRST-AD
@@ -386,6 +386,8 @@ void main(void)
 
    // Global enable interrupts
    #asm("sei")
+
+   CheckUniqueIDPerProduct();
 
    while (1)
    {
@@ -455,18 +457,18 @@ void main(void)
          {
             nACT_LED = cntDebug++&0x01;
          }
-         
+
          //read signal
          ReadFPGA();
          NewSignalState = FPGAData[3];
          for  (cntChannel=0; cntChannel<8; cntChannel++)
          {
             unsigned char Mask = 0x01<<cntChannel;
-            
+
             if ((SignalState^NewSignalState)&Mask)
             {
                unsigned char TransmitBuffer[1];
-                             
+
                TransmitBuffer[0] = 0;
                if (NewSignalState&Mask)
                {
@@ -651,14 +653,14 @@ void SetGPOs()
 void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned long int FromAddress, unsigned char Ack, unsigned long int MessageID, unsigned int MessageType, unsigned char *Data, unsigned char DataLength)
 {
    unsigned char MessageDone;
-   
+
    MessageDone = 0;
-   
+
    if (MessageID)
    {
       Ack = 1;
    }
-   
+
    switch (MessageType)
    {
       //MessageType = 0, handled in the stack
@@ -689,7 +691,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = RackSlotNr;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1025) && (ObjectNr<1026))
@@ -702,7 +704,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = 8;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1026) && (ObjectNr<1027))
@@ -715,9 +717,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = 0;
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
-               }               
+               }
                else if ((ObjectNr>=1027) && (ObjectNr<1035))
                {  //GPI
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
@@ -728,8 +730,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = GPIState[ObjectNr-1027];
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
-                  MessageDone = 1;               
+
+                  MessageDone = 1;
                }
                else if ((ObjectNr>=1043) && (ObjectNr<1051))
                {  //GPIO Mode
@@ -743,7 +745,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = GPIOMode[ObjectNr-1043];
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
+
                   MessageDone = 1;
                }
                else if ((ObjectNr>=1091) && (ObjectNr<1099))
@@ -756,13 +758,13 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[5] = OverloadState[ObjectNr-1091];
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
-                  
-                  MessageDone = 1;        
+
+                  MessageDone = 1;
                }
                else if ((ObjectNr>=1099) && (ObjectNr<1107))
                {  //input signal >-28dB
                   unsigned char Mask = 0x01<<(ObjectNr-1099);
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
@@ -978,7 +980,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -997,7 +999,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         FormatError = 0;
                         MessageDone = 1;
                      }
-                  }                  
+                  }
                }
                if ((ObjectNr>=1051) && (ObjectNr<1059))
                {  //GPO
@@ -1007,7 +1009,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      {
                         unsigned char GPONr;
                         GPONr = ObjectNr-1051;
-                        
+
                         if (Data[5])
                         {
                            GPOState[GPONr] = GPOActiveState[GPONr];
@@ -1052,7 +1054,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         GPONr = ObjectNr-1067;
                         GPOActiveState[GPONr] = Data[5];
                         SetGPOs();
-                        
+
                         FormatError = 0;
                         MessageDone = 1;
                      }
@@ -1070,7 +1072,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         LEDState[LEDNr] = Data[5];
                         LEDData[LEDNr] = LEDState[LEDNr];
                         SetLEDs();
-                     
+
                         FormatError = 0;
                         MessageDone = 1;
                      }
@@ -1096,7 +1098,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1107) && (ObjectNr<1115))
                {  //Line-in routing
-                  unsigned char ChannelNr;                 
+                  unsigned char ChannelNr;
                   ChannelNr = ObjectNr-1107;
 
                   if (DataType == STATE_DATATYPE)
@@ -1113,7 +1115,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1115) && (ObjectNr<1123))
                {  //Line-in level
-                  unsigned char ChannelNr;                  
+                  unsigned char ChannelNr;
                   ChannelNr = ObjectNr-1115;
 
                   if (DataType == FLOAT_DATATYPE)
@@ -1142,7 +1144,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1123) && (ObjectNr<1131))
                {  //Digital-in phase
-                  unsigned char ChannelNr;                  
+                  unsigned char ChannelNr;
                   ChannelNr = ObjectNr-1123;
 
                   if (DataType == STATE_DATATYPE)
@@ -1182,11 +1184,11 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                {
                   FormatError = 0;
                }
-               
+
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1209,7 +1211,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1217,13 +1219,16 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }                 
+               }
             }
             break;
          }
       }
       break;
    }
+
+   ToAddress++;
+   DataLength++;
 }
 
 
@@ -1250,8 +1255,6 @@ char GetSlotNr()
    SlotNr = 0;
    for (cntBit=0; cntBit<4; cntBit++)
    {
-      unsigned char Weight;
-
       SlotNr *= 3;
 
       if (TempSlotNrFloat&(0x08>>cntBit))
@@ -1276,14 +1279,14 @@ void ReadFPGA()
    unsigned char cntByte;
    unsigned char Mask;
    unsigned char DataByte;
-   
+
    SCK_PSCK = 0;
    nSS = 0;
-   
+
    for (cntByte=0; cntByte<12; cntByte++)
    {
       Mask = 0x80;
-      DataByte = 0x00;   
+      DataByte = 0x00;
       for (cntBit=0; cntBit<8; cntBit++)
       {
          MOSI = 1;// write 1's has no influence in FPGA
@@ -1296,7 +1299,7 @@ void ReadFPGA()
          Mask >>= 1;
          SCK_PSCK = 0;
       }
-      FPGAData[cntByte] = DataByte;     
+      FPGAData[cntByte] = DataByte;
    }
 
    nSS=1;
@@ -1305,7 +1308,6 @@ void ReadFPGA()
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 {
    unsigned char cntBit;
-   unsigned char cntByte;
    unsigned char Mask;
    unsigned char FunctionDataBuffer[2];
 
@@ -1314,7 +1316,7 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 
    nSS = 0;
    SCK_PSCK = 0;
-   
+
    Mask = 0x80;
    for (cntBit=0; cntBit<8; cntBit++)
    {
@@ -1347,26 +1349,26 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 }
 
 void SetInputRoutingAndLevel(unsigned char ChannelNr)
-{          
-   unsigned char FPGABlockAddress; 
-   unsigned int StereoSelect;          
+{
+   unsigned char FPGABlockAddress;
+   unsigned int StereoSelect;
    float Level;
    unsigned int IntegerLevel;
 
-   //Input                 
+   //Input
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
 
    StereoSelect = (InputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (InputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
+   StereoSelect |= (unsigned int)(InputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
    SetFPGA(FPGABlockAddress+2, StereoSelect);
 
-   Level = InputLevel[ChannelNr]; 
+   Level = InputLevel[ChannelNr];
    IntegerLevel = ((float)32)/pow(10, (float)Level/20);
    if (InputPhase[ChannelNr])
    {
       IntegerLevel *= -1;
    }
-   SetFPGA(FPGABlockAddress+(ChannelNr&0x01), IntegerLevel);     
+   SetFPGA(FPGABlockAddress+(ChannelNr&0x01), IntegerLevel);
 }
 
 void CanBussError()
@@ -1387,11 +1389,11 @@ void GetGPIOModes()
    READ_SLOTADR = 1;
    delay_ms(1);
    GPIOModesB = PINF;
-      
+
    for (cntBit=0; cntBit<8; cntBit++)
    {
       unsigned char Mask = 0x80>>cntBit;
-      if ((GPIOModesA&Mask) == (GPIOModesB&Mask)) 
+      if ((GPIOModesA&Mask) == (GPIOModesB&Mask))
       {
          GPIOMode[cntBit] = 1;
       }
