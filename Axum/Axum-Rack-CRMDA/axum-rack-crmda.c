@@ -1584,11 +1584,8 @@ void SetCRMLevels()
     }
     CS3318Value = (FloatLevel*4)+420;
 
-    if (CS3318Levels[cntChannel] != CS3318Value)
-    {
-      CS3318Levels[cntChannel] = CS3318Value;
-      SetLevels = 1;
-    }
+    CS3318Levels[cntChannel] = CS3318Value;
+    SetLevels = 1;
   }
   if (SetLevels)
   {
