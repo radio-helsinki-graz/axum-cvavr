@@ -1043,7 +1043,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         float Value;
                         if (VariableFloat2Float(&Data[5], Data[4], &Value) == 0)
                         {
-                           float dB = Value+20;
+                           float dB = Value;
                            dB += 50;
                            if (dB<0)
                            {
@@ -1074,7 +1074,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                         float Value;
                         if (VariableFloat2Float(&Data[5], Data[4], &Value) == 0)
                         {
-                           float dB = Value+20;
+                           float dB = Value;
                            dB += 50;
                            if (dB<0)
                            {
