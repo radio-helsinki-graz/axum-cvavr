@@ -406,6 +406,8 @@ void main(void)
    // Global enable interrupts
    #asm("sei")
 
+   CheckUniqueIDPerProduct();
+
    while (1)
    {
       ProcessCAN();
@@ -577,9 +579,6 @@ void ReadSwitches()
 {
    //Switch Rows
    char ReturnValue;
-   unsigned char Overload;
-   unsigned char Mask;
-   unsigned char cntBit;
 
 	ReturnValue = SwitchCheck(0, 0, nGPI1);
    DoSwitch(0, ReturnValue);
@@ -1139,8 +1138,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1271) && (ObjectNr<1275))
                {  //Transmitter control register
-                  unsigned char TransmitterNr;
-                  TransmitterNr = ObjectNr-1271;
+                  //unsigned char TransmitterNr;
+                  //TransmitterNr = ObjectNr-1271;
 
                   //TransmitBuffer[4] = 3;
                   //TransmitBuffer[5] = DIX4192StatusBuffer[ReceiverNr][0];
@@ -1672,6 +1671,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 
@@ -1696,8 +1697,6 @@ char GetSlotNr()
    SlotNr = 0;
    for (cntBit=0; cntBit<4; cntBit++)
    {
-      unsigned char Weight;
-
       SlotNr *= 3;
 
       if (TempSlotNrFloat&(0x08>>cntBit))
@@ -1871,7 +1870,6 @@ void ReadFPGA()
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 {
    unsigned char cntBit;
-   unsigned char cntByte;
    unsigned char Mask;
    unsigned char FunctionDataBuffer[2];
 
@@ -1926,7 +1924,7 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
 
    StereoSelect = (InputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (InputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
+   StereoSelect |= (unsigned int)(InputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
 
    SetFPGA(FPGABlockAddress+2, StereoSelect);
 
@@ -1970,17 +1968,17 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    SetFPGA(FPGABlockAddress+5+(ChannelNr&0x01), IntegerLevel);
 
    StereoSelect = (OutputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (OutputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
+   StereoSelect |= (unsigned int)(OutputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
    if (OutputMute[(ChannelNr&0xFE)])
    {
       StereoSelect |= 0x0100;
    }
-   if (OutputMute[(ChannelNr&0xFE)+1])
+   if (OutputMute[(unsigned char)((ChannelNr&0xFE)+1)])
    {
       StereoSelect |= 0x0200;
    }
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<6;
+   StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
+   StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<6;
    SetFPGA(FPGABlockAddress+7, StereoSelect);
 
    //Talkback
