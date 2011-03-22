@@ -15,6 +15,7 @@
 
 #define  nSS            PORTB.0
 #define  SCK_PSCK       PORTB.1
+#define  PSCK           PINB.1
 #define  MOSI           PORTB.2
 #define  MISO           PINB.3
 #define  SLOTADR0       PINB.4
@@ -30,14 +31,14 @@
 #define	nLG_L2			PORTC.5
 #define	GPO4  			PORTC.6
 #define  GPO3           PORTC.7
-                                  
+
 #define  SDI_PGA1       PORTD.0
 #define  nCS_PGA        PORTD.1
 #define  SCLK_PGA       PORTD.2
 #define  SDO_PGA        PORTD.3
 #define  RS_CAN         PORTD.4
 #define  TXD_CAN        PORTD.5
-#define  RXD_CAN        PIND.6 
+#define  RXD_CAN        PIND.6
 #define  IO115          PIND.7
 #define  nACT_LED       PORTD.7
 
@@ -69,6 +70,7 @@
 /********************************/
 /* Specific defines             */
 /********************************/
+#define LOGIC_LEDS(a)            nACT_LED = a;
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
 
@@ -103,7 +105,7 @@ unsigned char SwitchData[2][8];
 //Row 0: GPIx
 //Row 1: OVLx
 
-unsigned char RackSlotNr;   
+unsigned char RackSlotNr;
 
 unsigned char FPGAData[12];
 unsigned int FPGAFirmwareType;
