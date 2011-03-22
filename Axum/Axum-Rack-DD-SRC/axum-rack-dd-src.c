@@ -289,7 +289,7 @@ void main(void)
    LEDData[6] = 0x01;
    LEDData[7] = 0x01;
    SetLEDs();
-   
+
    NewInputSignalState = 0;
    InputSignalState = 0;
    NewOutputSignalState = 0;
@@ -410,6 +410,8 @@ void main(void)
    // Global enable interrupts
    #asm("sei")
 
+   CheckUniqueIDPerProduct();
+
    while (1)
    {
       ProcessCAN();
@@ -484,11 +486,11 @@ void main(void)
          for  (cntChannel=0; cntChannel<8; cntChannel++)
          {
             unsigned char Mask = 0x01<<cntChannel;
-            
+
             if ((InputSignalState^NewInputSignalState)&Mask)
             {
                unsigned char TransmitBuffer[1];
-                             
+
                TransmitBuffer[0] = 0;
                if (NewInputSignalState&Mask)
                {
@@ -503,11 +505,11 @@ void main(void)
          for  (cntChannel=0; cntChannel<8; cntChannel++)
          {
             unsigned char Mask = 0x01<<cntChannel;
-            
+
             if ((OutputSignalState^NewOutputSignalState)&Mask)
             {
                unsigned char TransmitBuffer[1];
-                             
+
                TransmitBuffer[0] = 0;
                if (NewOutputSignalState&Mask)
                {
@@ -581,9 +583,6 @@ void ReadSwitches()
 {
    //Switch Rows
    char ReturnValue;
-   unsigned char Overload;
-   unsigned char Mask;
-   unsigned char cntBit;
 
     ReturnValue = SwitchCheck(0, 0, nGPI1);
    DoSwitch(0, ReturnValue);
@@ -784,7 +783,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                else if ((ObjectNr>=1123) && (ObjectNr<1131))
                {  //Digital out signal >-28dB )
                   unsigned char Mask = 0x01<<(ObjectNr-1123);
-                 
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
@@ -1069,7 +1068,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                {  //Digital-out talkback
                   unsigned char TalkbackNr;
                   unsigned char OutputNr;
-                  
+
                   TalkbackNr = (ObjectNr-1171)&0x0F;
                   OutputNr = (ObjectNr-1171)>>4;
 
@@ -1142,8 +1141,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                }
                else if ((ObjectNr>=1271) && (ObjectNr<1275))
                {  //Transmitter control register
-                  unsigned char TransmitterNr;
-                  TransmitterNr = ObjectNr-1211;
+                  //unsigned char TransmitterNr;
+                  //TransmitterNr = ObjectNr-1211;
 
                   //TransmitBuffer[4] = 3;
                   //TransmitBuffer[5] = DIX4192StatusBuffer[ReceiverNr][0];
@@ -1194,7 +1193,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                unsigned char DataType;
                unsigned char DataSize;
                unsigned char FormatError;
-               
+
                FormatError = 1;
 
                DataType = Data[3];
@@ -1347,7 +1346,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                            {
                               InputLevel[ChannelNr] = -60;
                            }
-                  
+
                            SetRoutingAndLevel(ChannelNr);
 
                            FormatError = 0;
@@ -1617,7 +1616,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                if (!MessageDone)
                {
                   unsigned char TransmitBuffer[23];
-                  
+
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1640,7 +1639,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   if (MessageID)
                   {
                      unsigned char TransmitBuffer[16];
-                  
+
                      TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                      TransmitBuffer[1] = ObjectNr&0xFF;
                      TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
@@ -1655,6 +1654,8 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
       }
       break;
    }
+   ToAddress++;
+   DataLength++;
 }
 
 
@@ -1679,8 +1680,6 @@ char GetSlotNr()
    SlotNr = 0;
    for (cntBit=0; cntBit<4; cntBit++)
    {
-      unsigned char Weight;
-
       SlotNr *= 3;
 
       if (TempSlotNrFloat&(0x08>>cntBit))
@@ -1865,7 +1864,6 @@ void ReadFPGA()
 void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 {
    unsigned char cntBit;
-   unsigned char cntByte;
    unsigned char Mask;
    unsigned char FunctionDataBuffer[2];
 
@@ -1914,12 +1912,12 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    char cntNrOfSummation;
    char cntTalkback;
    unsigned int TalkbackData[2];
-      
+
    //Input
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
 
    StereoSelect = (InputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (InputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
+   StereoSelect |= (unsigned int)(InputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
 
    SetFPGA(FPGABlockAddress+2, StereoSelect);
 
@@ -1930,10 +1928,10 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
       IntegerLevel *= -1;
    }
    SetFPGA(FPGABlockAddress+(ChannelNr&0x01), IntegerLevel);
-   
+
    //Output
    FPGABlockAddress += 0x10;
-    
+
    Level = OutputLevel[ChannelNr];
    if (OutputDim[ChannelNr])
    {
@@ -1963,55 +1961,55 @@ void SetRoutingAndLevel(unsigned char ChannelNr)
    SetFPGA(FPGABlockAddress+5+(ChannelNr&0x01), IntegerLevel);
 
    StereoSelect = (OutputStereoSelect[(ChannelNr&0xFE)]&0x03);
-   StereoSelect |= (OutputStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<2;
+   StereoSelect |= (unsigned int)(OutputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
    if (OutputMute[(ChannelNr&0xFE)])
-   {    
+   {
       StereoSelect |= 0x0100;
    }
-   if (OutputMute[(ChannelNr&0xFE)+1])
-   {    
+   if (OutputMute[(unsigned char)((ChannelNr&0xFE)+1)])
+   {
       StereoSelect |= 0x0200;
    }
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
-   StereoSelect |= (OutputTalkbackStereoSelect[(ChannelNr&0xFE)+1]&0x03)<<6;
+   StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
+   StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<6;
    SetFPGA(FPGABlockAddress+7, StereoSelect);
-   
+
    //Talkback
    FPGABlockAddress = ((ChannelNr&0xFE)<<3);
-   
+
    cntNrOfSummation = 0;
    TalkbackData[0] = 0;
    TalkbackData[1] = 0;
    for (cntTalkback = 0; cntTalkback<16; cntTalkback++)
    {
       if (OutputTalkback[(ChannelNr>>1)][cntTalkback])
-      {  
+      {
          switch (cntNrOfSummation)
          {
             case 0:
-            { 
+            {
                TalkbackData[0] |= ((unsigned int)cntTalkback+1);
             }
             break;
             case 1:
-            { 
+            {
                TalkbackData[0] |= ((unsigned int)cntTalkback+1)<<8;
             }
             break;
             case 2:
-            { 
+            {
                TalkbackData[1] |= ((unsigned int)cntTalkback+1);
             }
             break;
             case 3:
-            { 
+            {
                TalkbackData[1] |= ((unsigned int)cntTalkback+1)<<8;
             }
             break;
          }
          cntNrOfSummation++;
       }
-   }   
+   }
 
    SetFPGA(FPGABlockAddress+8, TalkbackData[0]);
    SetFPGA(FPGABlockAddress+9, TalkbackData[1]);
@@ -2035,11 +2033,11 @@ void GetGPIOModes()
    READ_SLOTADR = 1;
    delay_ms(1);
    GPIOModesB = PINF;
-      
+
    for (cntBit=0; cntBit<8; cntBit++)
    {
       unsigned char Mask = 0x80>>cntBit;
-      if ((GPIOModesA&Mask) == (GPIOModesB&Mask)) 
+      if ((GPIOModesA&Mask) == (GPIOModesB&Mask))
       {
          GPIOMode[cntBit] = 1;
       }
