@@ -3063,7 +3063,7 @@ unsigned char Float2VariableFloat(float InputFloat, unsigned char VariableFloatB
 
 void CheckUniqueIDPerProduct()
 {
-  if (UniqueIDPerProduct == 0x0000)
+  if ((UniqueIDPerProduct == 0x0000) || (UniqueIDPerProduct == 0xFFFF))
   {
     unsigned char OldDDRE = DDRE;
     unsigned char OldDDRB = DDRB;
