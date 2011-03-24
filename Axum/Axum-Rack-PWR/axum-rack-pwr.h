@@ -43,7 +43,7 @@
 /********************************/
 /* Specific defines             */
 /********************************/
-#define LOGIC_LEDS(a)    LEDRED = a;  \
+#define LOGIC_LEDS(a)    LEDRED = 0;  \
                          LEDGRN = a;
 #define SWITCHDELAY              10
 #define TRACK_WIBBLE             4
