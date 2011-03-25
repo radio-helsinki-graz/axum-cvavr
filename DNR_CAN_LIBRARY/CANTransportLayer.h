@@ -3071,6 +3071,7 @@ void CheckUniqueIDPerProduct()
     unsigned char cntBit = 0;
     unsigned char PreviousPSCK = 0, NewPSCK = 0;
     unsigned int UniqueID = 0x0000;
+    unsigned int ControlValue = 0x0000;
 #if !defined(LOGIC_LEDS) && !defined(UNIQUE_ID_LCD)
   #error "No signalling for UniqueID = 0"
 #endif
@@ -3099,15 +3100,38 @@ void CheckUniqueIDPerProduct()
       NewPSCK = PSCK;
       if ((PreviousPSCK == 0) && NewPSCK)
       {
-        UniqueID <<= 1;
-        if (PINE.0)
+        if (cntBit<16)
         {
-          UniqueID |= 0x0001;
+          UniqueID <<= 1;
+          if (PINE.0)
+          {
+            UniqueID |= 0x0001;
+          }
+          cntBit++;
         }
-        cntBit++;
-        if (cntBit == 16)
+        else if (cntBit<32)
         {
-          Finished = 1;
+          ControlValue <<= 1;
+          if (PINE.0)
+          {
+            ControlValue |= 0x0001;
+          }
+          cntBit++;
+
+          if (cntBit == 32)
+          {
+            if (ControlValue == 0xAC5A)
+            {
+              Finished = 1;
+            }
+            else
+            {
+              Finished = 0;
+              UniqueID = 0x0000;
+              ControlValue = 0x0000;
+              cntBit = 0;
+            }
+          }
         }
       }
       PreviousPSCK = NewPSCK;
