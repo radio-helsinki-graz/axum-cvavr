@@ -86,19 +86,19 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
    { "Slot number"            , 0x00
                               , {UNSIGNED_INTEGER_DATATYPE  ,  1, 0     , 255    }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "+5V (pre)"              , 0x03
+   { "+5V (pre)"              , 0x00
                               , {FLOAT_DATATYPE             ,  2, 0x0000, 0x4900 }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "+15V (pre)"             , 0x03
+   { "+15V (pre)"             , 0x00
                               , {FLOAT_DATATYPE             ,  2, 0x0000, 0x4D00 }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "-15V (pre)"             , 0x03
+   { "-15V (pre)"             , 0x00
                               , {FLOAT_DATATYPE             ,  2, 0xCD00, 0x0000 }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }},
-   { "Fan speed"              , 0x03
+   { "Fan speed"              , 0x00
                               , {UNSIGNED_INTEGER_DATATYPE  ,  2, 0     , 4000   }
                               , {UNSIGNED_INTEGER_DATATYPE  ,  2, 0     , 1023   , 1023}},
-   { "Temperature"            , 0x03
+   { "Temperature"            , 0x00
                               , {FLOAT_DATATYPE             ,  2, 0xD100, 0x57D0 }
                               , {NO_DATA_DATATYPE           ,  0, 0     , 0      , 0   }}
 };
