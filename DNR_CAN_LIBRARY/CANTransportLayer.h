@@ -3063,7 +3063,7 @@ unsigned char Float2VariableFloat(float InputFloat, unsigned char VariableFloatB
 
 void CheckUniqueIDPerProduct()
 {
-  if ((UniqueIDPerProduct == 0x0000) || (UniqueIDPerProduct == 0xFFFF))
+  if (UniqueIDPerProduct == 0x0000)
   {
     unsigned char OldDDRE = DDRE;
     unsigned char OldDDRB = DDRB;
@@ -3143,7 +3143,7 @@ void CheckUniqueIDPerProduct()
     DDRB = OldDDRB;
 
 #ifdef UNIQUE_ID_LCD
-    sprintf(DebugText, "Unique ID: %5d written!               ", UniqueID);
+    sprintf(DebugText, "Unique ID: %5u written!               ", UniqueID);
     UNIQUE_ID_LCD(DebugText);
     delay_ms(1000);
     UNIQUE_ID_LCD("                                        ");
