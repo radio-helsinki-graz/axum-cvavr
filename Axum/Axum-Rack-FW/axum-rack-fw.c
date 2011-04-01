@@ -590,7 +590,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             break;
             case  MAMBANET_OBJECT_ACTION_GET_ACTUATOR_DATA:
             {       //Not yet implemented.
-               unsigned char TransmitBuffer[23];
+               unsigned char TransmitBuffer[24];
 
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                TransmitBuffer[1] = ObjectNr&0xFF;
