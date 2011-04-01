@@ -82,6 +82,7 @@ unsigned int FPGAFirmwareType;
 
 unsigned char RackSlotNr;
 
+
 unsigned char InputStereoSelect[16];
 float InputLevel[16];
 unsigned char InputPhase[16];
@@ -93,7 +94,7 @@ float OutputDimLevel[16];
 unsigned char OutputMute[16];
 unsigned char OutputPhase[16];
 
-unsigned char OutputTalkback[16];
+unsigned char OutputTalkback[8][16];
 float OutputTalkbackLevel[16];
 unsigned char OutputTalkbackStereoSelect[16];
 unsigned char OutputTalkbackPhase[16];

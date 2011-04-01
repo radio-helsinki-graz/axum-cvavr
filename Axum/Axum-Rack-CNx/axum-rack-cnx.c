@@ -236,10 +236,13 @@ void main(void)
       OutputDimLevel[cntByte] = -10;
       OutputMute[cntByte] = 0x00;
       OutputPhase[cntByte] = 0x00;
-      if (cntByte<4)
-      {
-         OutputTalkback[cntByte] = 0x00;
-      }
+      OutputTalkback[0][cntByte] = 0x00;
+      OutputTalkback[1][cntByte] = 0x00;
+      OutputTalkback[2][cntByte] = 0x00;
+      OutputTalkback[3][cntByte] = 0x00;
+      OutputTalkback[5][cntByte] = 0x00;
+      OutputTalkback[6][cntByte] = 0x00;
+      OutputTalkback[7][cntByte] = 0x00;
       OutputTalkbackLevel[cntByte] = 0x00;
       OutputTalkbackStereoSelect[cntByte] = 0x00;
       OutputTalkbackPhase[cntByte] = 0x00;
@@ -297,7 +300,11 @@ void main(void)
          //read signal
          ReadFPGA();
          NewInputSignalState = (((unsigned int)FPGAData[2])<<8) | FPGAData[3];
+#ifndef COBRANET_16X16
+         for  (cntChannel=0; cntChannel<8; cntChannel++)
+#else
          for  (cntChannel=0; cntChannel<16; cntChannel++)
+#endif
          {
             unsigned char Mask = 0x01<<cntChannel;
 
@@ -310,13 +317,17 @@ void main(void)
                {
                   TransmitBuffer[0] = 1;
                }
-               //SendSensorChangeToMambaNet(1037+cntChannel, STATE_DATATYPE, 1, TransmitBuffer);
+               SendSensorChangeToMambaNet(1027+cntChannel, STATE_DATATYPE, 1, TransmitBuffer);
             }
          }
          InputSignalState = NewInputSignalState;
 
          NewOutputSignalState = (((unsigned int)FPGAData[2])<<8) | FPGAData[3];
+#ifndef COBRANET_16X16
+         for  (cntChannel=0; cntChannel<8; cntChannel++)
+#else
          for  (cntChannel=0; cntChannel<16; cntChannel++)
+#endif
          {
             unsigned char Mask = 0x01<<cntChannel;
 
@@ -329,7 +340,11 @@ void main(void)
                {
                   TransmitBuffer[0] = 1;
                }
-               //SendSensorChangeToMambaNet(1053+cntChannel, STATE_DATATYPE, 1, TransmitBuffer);
+#ifndef COBRANET_16X16
+               SendSensorChangeToMambaNet(1059+cntChannel, STATE_DATATYPE, 1, TransmitBuffer);
+#else
+               SendSensorChangeToMambaNet(1091+cntChannel, STATE_DATATYPE, 1, TransmitBuffer);
+#endif
             }
          }
          OutputSignalState = NewOutputSignalState;
@@ -371,7 +386,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             break;
             case  MAMBANET_OBJECT_ACTION_GET_SENSOR_DATA:
             {
-               unsigned char TransmitBuffer[8];
+               unsigned char TransmitBuffer[24];
 
                // if (ObjectNr<1024) is handled in the stack
                if ((ObjectNr>=1024) && (ObjectNr<1025))
@@ -413,24 +428,86 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                   MessageDone = 1;
                }
-/*             else if ((ObjectNr>=1027) && (ObjectNr<1029))
-               {  //FPGA Firmware version
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1027) && (ObjectNr<1035))
+#else
+               else if ((ObjectNr>=1027) && (ObjectNr<1043))
+#endif
+               {  //Digital in signal >-28dB
+                  unsigned int Mask = 0x01<<(ObjectNr-1027);
+
+                  TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
+                  TransmitBuffer[1] = ObjectNr&0xFF;
+                  TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  if (InputSignalState&Mask)
+                  {
+                     TransmitBuffer[5] = 1;
+                  }
+                  else
+                  {
+                     TransmitBuffer[5] = 0;
+                  }
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
                }
-               else if ((ObjectNr>=1037) && (ObjectNr<1039))
-               {  //ADAT-input-status
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1059) && (ObjectNr<1067))
+               {  //Digital out signal >-28dB )
+                  unsigned int Mask = 0x01<<(ObjectNr-1059);
+#else
+               else if ((ObjectNr>=1091) && (ObjectNr<1107))
+               {  //Digital out signal >-28dB )
+                  unsigned int Mask = 0x01<<(ObjectNr-1091);
+#endif
+
+                  TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
+                  TransmitBuffer[1] = ObjectNr&0xFF;
+                  TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  if (OutputSignalState&Mask)
+                  {
+                     TransmitBuffer[5] = 1;
+                  }
+                  else
+                  {
+                     TransmitBuffer[5] = 0;
+                  }
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
                }
-               else if ((ObjectNr>=1039) && (ObjectNr<1055))
-               {  //Digital in peak hold
-               }*/
 
                if (!MessageDone)
                {
                   TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_SENSOR_DATA_RESPONSE;
-                  TransmitBuffer[3] = NO_DATA_DATATYPE;
+                  TransmitBuffer[3] = ERROR_DATATYPE;
+                  TransmitBuffer[4] = 16;
+                  TransmitBuffer[5] = 'N';
+                  TransmitBuffer[6] = 'o';
+                  TransmitBuffer[7] = ' ';
+                  TransmitBuffer[8] = 's';
+                  TransmitBuffer[9] = 'e';
+                  TransmitBuffer[10] = 'n';
+                  TransmitBuffer[11] = 's';
+                  TransmitBuffer[12] = 'o';
+                  TransmitBuffer[13] = 'r';
+                  TransmitBuffer[14] = ' ';
+                  TransmitBuffer[15] = 'o';
+                  TransmitBuffer[16] = 'b';
+                  TransmitBuffer[17] = 'j';
+                  TransmitBuffer[18] = 'e';
+                  TransmitBuffer[19] = 'c';
+                  TransmitBuffer[20] = 't';
 
-                  SendMambaNetMessageToCAN(0x10000000, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 21);
                }
             }
             break;
@@ -440,14 +517,331 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             break;
             case  MAMBANET_OBJECT_ACTION_GET_ACTUATOR_DATA:
             {       //Not yet implemented.
-               unsigned char TransmitBuffer[4];
+               unsigned char TransmitBuffer[24];
 
                TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
                TransmitBuffer[1] = ObjectNr&0xFF;
                TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
-               TransmitBuffer[3] = NO_DATA_DATATYPE;
 
-               SendMambaNetMessageToCAN(0x10000000, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
+#ifndef COBRANET_16X16
+               if ((ObjectNr>=1035) && (ObjectNr<1043))
+               {  //Digital-in routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1035;
+#else
+               if ((ObjectNr>=1043) && (ObjectNr<1059))
+               {  //Digital-in routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1043;
+#endif
+
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = InputStereoSelect[ChannelNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1043) && (ObjectNr<1051))
+               {  //Digital-in level
+                  unsigned char ChannelNr;
+                  unsigned char VariableFloat[2];
+                  ChannelNr = ObjectNr-1043;
+#else
+               else if ((ObjectNr>=1059) && (ObjectNr<1075))
+               {  //Digital-in level
+                  unsigned char ChannelNr;
+                  unsigned char VariableFloat[2];
+                  ChannelNr = ObjectNr-1059;
+#endif
+                  if (Float2VariableFloat(InputLevel[ChannelNr], 2, VariableFloat) == 0)
+                  {
+                     TransmitBuffer[3] = FLOAT_DATATYPE;
+                     TransmitBuffer[4] = 2;
+                     TransmitBuffer[5] = VariableFloat[0];
+                     TransmitBuffer[6] = VariableFloat[1];
+
+                     SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
+
+                     MessageDone = 1;
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1051) && (ObjectNr<1059))
+               {  //Digital-in phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1051;
+#else
+               else if ((ObjectNr>=1075) && (ObjectNr<1091))
+               {  //Digital-in phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1075;
+#endif
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = InputPhase[ChannelNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1067) && (ObjectNr<1175))
+               {  //Digital-out routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1067;
+#else
+               else if ((ObjectNr>=1107) && (ObjectNr<1123))
+               {  //Digital-out routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1107;
+#endif
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OutputStereoSelect[ChannelNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1075) && (ObjectNr<1083))
+               {  //Digital-out level
+                  unsigned char ChannelNr;
+                  unsigned char VariableFloat[2];
+                  ChannelNr = ObjectNr-1075;
+#else
+               else if ((ObjectNr>=1123) && (ObjectNr<1139))
+               {  //Digital-out level
+                  unsigned char ChannelNr;
+                  unsigned char VariableFloat[2];
+                  ChannelNr = ObjectNr-1123;
+#endif
+                  if (Float2VariableFloat(OutputLevel[ChannelNr], 2, VariableFloat) == 0)
+                  {
+                     TransmitBuffer[3] = FLOAT_DATATYPE;
+                     TransmitBuffer[4] = 2;
+                     TransmitBuffer[5] = VariableFloat[0];
+                     TransmitBuffer[6] = VariableFloat[1];
+
+                     SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
+
+                     MessageDone = 1;
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1083) && (ObjectNr<1091))
+               {  //Digital-out phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1083;
+#else
+               else if ((ObjectNr>=1139) && (ObjectNr<1155))
+               {  //Digital-out phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1139;
+#endif
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OutputPhase[ChannelNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1091) && (ObjectNr<1099))
+               {  //Digital-out dim
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1091;
+#else
+               else if ((ObjectNr>=1155) && (ObjectNr<1171))
+               {  //Digital-out dim
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1155;
+#endif
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OutputDim[ChannelNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1099) && (ObjectNr<1107))
+               {  //Digital-out dim level
+                  unsigned char ChannelNr;
+                  unsigned char VariableFloat[2];
+                  ChannelNr = ObjectNr-1099;
+#else
+               else if ((ObjectNr>=1171) && (ObjectNr<1187))
+               {  //Digital-out dim level
+                  unsigned char ChannelNr;
+                  unsigned char VariableFloat[2];
+                  ChannelNr = ObjectNr-1171;
+#endif
+                  if (Float2VariableFloat(OutputDimLevel[ChannelNr], 2, VariableFloat) == 0)
+                  {
+                     TransmitBuffer[3] = FLOAT_DATATYPE;
+                     TransmitBuffer[4] = 2;
+                     TransmitBuffer[5] = VariableFloat[0];
+                     TransmitBuffer[6] = VariableFloat[1];
+
+                     SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
+
+                     MessageDone = 1;
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1107) && (ObjectNr<1171))
+               {  //Digital-out talkback
+                  unsigned char TalkbackNr;
+                  unsigned char OutputNr;
+                  TalkbackNr = (ObjectNr-1107)&0x0F;
+                  OutputNr = (ObjectNr-1107)>>4;
+#else
+               else if ((ObjectNr>=1187) && (ObjectNr<1315))
+               {  //Digital-out talkback
+                  unsigned char TalkbackNr;
+                  unsigned char OutputNr;
+                  TalkbackNr = (ObjectNr-1187)&0x0F;
+                  OutputNr = (ObjectNr-1187)>>4;
+#endif
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OutputTalkback[OutputNr][TalkbackNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1171) && (ObjectNr<1179))
+               {  //Digital-out talkback routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1171;
+#else
+               else if ((ObjectNr>=1315) && (ObjectNr<1331))
+               {  //Digital-out talkback routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1315;
+#endif
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OutputTalkbackStereoSelect[ChannelNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1179) && (ObjectNr<1187))
+               {  //Digital-out talkback level
+                  unsigned char ChannelNr;
+                  unsigned char VariableFloat[2];
+                  ChannelNr = ObjectNr-1179;
+#else
+               else if ((ObjectNr>=1331) && (ObjectNr<1347))
+               {  //Digital-out talkback level
+                  unsigned char ChannelNr;
+                  unsigned char VariableFloat[2];
+                  ChannelNr = ObjectNr-1331;
+#endif
+                  if (Float2VariableFloat(OutputTalkbackLevel[ChannelNr], 2, VariableFloat) == 0)
+                  {
+                     TransmitBuffer[3] = FLOAT_DATATYPE;
+                     TransmitBuffer[4] = 2;
+                     TransmitBuffer[5] = VariableFloat[0];
+                     TransmitBuffer[6] = VariableFloat[1];
+
+                     SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 7);
+
+                     MessageDone = 1;
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1187) && (ObjectNr<1195))
+               {  //Digital-out talkback phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1187;
+#else
+               else if ((ObjectNr>=1347) && (ObjectNr<1363))
+               {  //Digital-out talkback phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1347;
+#endif
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OutputTalkbackPhase[ChannelNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1195) && (ObjectNr<1203))
+               {  //Digital-out mute
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1195;
+#else
+               else if ((ObjectNr>=1363) && (ObjectNr<1379))
+               {  //Digital-out mute
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1363;
+#endif
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = OutputMute[ChannelNr];
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+#ifndef COBRANET_16X16
+               else if (ObjectNr == 1203)
+#else
+               else if (ObjectNr == 1379)
+#endif
+               {
+                  TransmitBuffer[3] = STATE_DATATYPE;
+                  TransmitBuffer[4] = 1;
+                  TransmitBuffer[5] = DE_RCLK;
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 6);
+
+                  MessageDone = 1;
+               }
+
+               if (!MessageDone)
+               {
+                  TransmitBuffer[0] = (ObjectNr>>8)&0xFF;
+                  TransmitBuffer[1] = ObjectNr&0xFF;
+                  TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
+                  TransmitBuffer[3] = ERROR_DATATYPE;
+                  TransmitBuffer[4] = 18;
+                  TransmitBuffer[5] = 'N';
+                  TransmitBuffer[6] = 'o';
+                  TransmitBuffer[7] = ' ';
+                  TransmitBuffer[8] = 'a';
+                  TransmitBuffer[9] = 'c';
+                  TransmitBuffer[10] = 't';
+                  TransmitBuffer[11] = 'u';
+                  TransmitBuffer[12] = 'a';
+                  TransmitBuffer[13] = 't';
+                  TransmitBuffer[14] = 'o';
+                  TransmitBuffer[15] = 'r';
+                  TransmitBuffer[16] = ' ';
+                  TransmitBuffer[17] = 'o';
+                  TransmitBuffer[18] = 'b';
+                  TransmitBuffer[19] = 'j';
+                  TransmitBuffer[20] = 'e';
+                  TransmitBuffer[21] = 'c';
+                  TransmitBuffer[22] = 't';
+
+                  SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 23);
+               }
             }
             break;
             case  MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE:
@@ -458,11 +852,372 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
             {
                unsigned char DataType;
                unsigned char DataSize;
+               unsigned char FormatError;
+
+               FormatError = 1;
 
                DataType = Data[3];
                DataSize = Data[4];
 
-               if (ObjectNr == 1259)
+#ifndef COBRANET_16X16
+               if ((ObjectNr>=1035) && (ObjectNr<1043))
+               {  //Digital-in routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1035;
+#else
+               if ((ObjectNr>=1043) && (ObjectNr<1059))
+               {  //Digital-in routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1043;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        InputStereoSelect[ChannelNr] = Data[5];
+                        SetRoutingAndLevel(ChannelNr);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1043) && (ObjectNr<1051))
+               {  //Digital-in level
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1043;
+#else
+               else if ((ObjectNr>=1059) && (ObjectNr<1075))
+               {  //Digital-in level
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1059;
+#endif
+                  if (DataType == FLOAT_DATATYPE)
+                  {
+                     if (DataSize == 2)
+                     {
+                        float FloatData;
+                        if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
+                        {
+                           InputLevel[ChannelNr] = FloatData;
+                           if (InputLevel[ChannelNr]>24)
+                           {
+                              InputLevel[ChannelNr] = 24;
+                           }
+                           else if (InputLevel[ChannelNr]<-60)
+                           {
+                              InputLevel[ChannelNr] = -60;
+                           }
+
+                           SetRoutingAndLevel(ChannelNr);
+
+                           FormatError = 0;
+                           MessageDone = 1;
+                        }
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1051) && (ObjectNr<1059))
+               {  //Digital-in phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1051;
+#else
+               else if ((ObjectNr>=1075) && (ObjectNr<1091))
+               {  //Digital-in phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1075;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        InputPhase[ChannelNr] = Data[5];
+                        SetRoutingAndLevel(ChannelNr);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1067) && (ObjectNr<1075))
+               {  //Digital-out routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1067;
+#else
+               else if ((ObjectNr>=1107) && (ObjectNr<1123))
+               {  //Digital-out routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1107;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        OutputStereoSelect[ChannelNr] = Data[5];
+                        SetRoutingAndLevel(ChannelNr);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1075) && (ObjectNr<1083))
+               {  //Digital-out level
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1075;
+#else
+               else if ((ObjectNr>=1123) && (ObjectNr<1139))
+               {  //Digital-out level
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1123;
+#endif
+                  if (DataType == FLOAT_DATATYPE)
+                  {
+                     if (DataSize == 2)
+                     {
+                        float FloatData;
+                        if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
+                        {
+                           OutputLevel[ChannelNr] = FloatData;
+                           if (OutputLevel[ChannelNr]>24)
+                           {
+                              OutputLevel[ChannelNr] = 24;
+                           }
+                           else if (OutputLevel[ChannelNr]<-60)
+                           {
+                              OutputLevel[ChannelNr] = -60;
+                           }
+                           SetRoutingAndLevel(ChannelNr);
+
+                           FormatError = 0;
+                           MessageDone = 1;
+                        }
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1083) && (ObjectNr<1091))
+               {  //Digital-out phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1083;
+#else
+               else if ((ObjectNr>=1139) && (ObjectNr<1155))
+               {  //Digital-out phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1139;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        OutputPhase[ChannelNr] = Data[5];
+                        SetRoutingAndLevel(ChannelNr);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1091) && (ObjectNr<1099))
+               {  //Digital-out dim
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1091;
+#else
+               else if ((ObjectNr>=1155) && (ObjectNr<1171))
+               {  //Digital-out dim
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1155;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        OutputDim[ChannelNr] = Data[5];
+                        SetRoutingAndLevel(ChannelNr);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1099) && (ObjectNr<1107))
+               {  //Digital-out dim level
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1099;
+#else
+               else if ((ObjectNr>=1171) && (ObjectNr<1187))
+               {  //Digital-out dim level
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1171;
+#endif
+                  if (DataType == FLOAT_DATATYPE)
+                  {
+                     if (DataSize == 2)
+                     {
+                        float FloatData;
+                        if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
+                        {
+                           OutputDimLevel[ChannelNr] = FloatData;
+                           if (OutputDimLevel[ChannelNr]>24)
+                           {
+                              OutputDimLevel[ChannelNr] = 24;
+                           }
+                           else if (OutputDimLevel[ChannelNr]<-60)
+                           {
+                              OutputDimLevel[ChannelNr] = -60;
+                           }
+                           SetRoutingAndLevel(ChannelNr);
+
+                           FormatError = 0;
+                           MessageDone = 1;
+                        }
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1107) && (ObjectNr<1171))
+               {  //Digital-out talkback
+                  unsigned char TalkbackNr;
+                  unsigned char OutputNr;
+
+                  TalkbackNr = (ObjectNr-1107)&0x0F;
+                  OutputNr = ((ObjectNr-1107)>>4)&0x07;
+#else
+               else if ((ObjectNr>=1187) && (ObjectNr<1315))
+               {  //Digital-out talkback
+                  unsigned char TalkbackNr;
+                  unsigned char OutputNr;
+
+                  TalkbackNr = (ObjectNr-1187)&0x0F;
+                  OutputNr = ((ObjectNr-1187)>>4)&0x07;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        OutputTalkback[OutputNr][TalkbackNr] = Data[5];
+                        SetRoutingAndLevel(OutputNr<<1);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1171) && (ObjectNr<1179))
+               {  //Digital-out talkback routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1171;
+#else
+               else if ((ObjectNr>=1315) && (ObjectNr<1331))
+               {  //Digital-out talkback routing
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1315;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        OutputTalkbackStereoSelect[ChannelNr] = Data[5];
+                        SetRoutingAndLevel(ChannelNr);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1179) && (ObjectNr<1187))
+               {  //Digital-out talkback level
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1179;
+#else
+               else if ((ObjectNr>=1331) && (ObjectNr<1347))
+               {  //Digital-out talkback level
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1331;
+#endif
+                  if (DataType == FLOAT_DATATYPE)
+                  {
+                     if (DataSize == 2)
+                     {
+                        float FloatData;
+                        if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
+                        {
+                           OutputTalkbackLevel[ChannelNr] = FloatData;
+                           if (OutputTalkbackLevel[ChannelNr]>24)
+                           {
+                              OutputTalkbackLevel[ChannelNr] = 24;
+                           }
+                           else if (OutputTalkbackLevel[ChannelNr]<-60)
+                           {
+                              OutputTalkbackLevel[ChannelNr] = -60;
+                           }
+                           SetRoutingAndLevel(ChannelNr);
+
+                           FormatError = 0;
+                           MessageDone = 1;
+                        }
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1187) && (ObjectNr<1195))
+               {  //Digital-out talkback phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1187;
+#else
+               else if ((ObjectNr>=1347) && (ObjectNr<1363))
+               {  //Digital-out talkback phase
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1347;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        OutputTalkbackPhase[ChannelNr] = Data[5];
+                        SetRoutingAndLevel(ChannelNr);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if ((ObjectNr>=1195) && (ObjectNr<1202))
+               {  //Digital-out mute
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1195;
+#else
+               else if ((ObjectNr>=1363) && (ObjectNr<1379))
+               {  //Digital-out mute
+                  unsigned char ChannelNr;
+                  ChannelNr = ObjectNr-1363;
+#endif
+                  if (DataType == STATE_DATATYPE)
+                  {
+                     if (DataSize == 1)
+                     {
+                        OutputMute[ChannelNr] = Data[5];
+                        SetRoutingAndLevel(ChannelNr);
+
+                        FormatError = 0;
+                        MessageDone = 1;
+                     }
+                  }
+               }
+#ifndef COBRANET_16X16
+               else if (ObjectNr == 1203)
+#else
+               else if (ObjectNr == 1379)
+#endif
                {
                   if (DataType == STATE_DATATYPE)
                   {
@@ -472,259 +1227,9 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                      }
                   }
                }
-
-/*             if ((ObjectNr>=1029) && (ObjectNr<1033))
-               {  //LED
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        unsigned char LEDNr;
-                        LEDNr = ObjectNr-1029;
-
-                        LEDState[LEDNr] = Data[5];
-                        LEDData[LEDNr] = LEDState[LEDNr];
-                        SetLEDs();
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1033) && (ObjectNr<1037))
-               {  //LED mode
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        unsigned char LEDNr;
-                        LEDNr = ObjectNr-1033;
-
-                        LEDMode[LEDNr] = Data[5];
-                        LEDData[LEDNr] = LEDState[LEDNr];
-                        SetLEDs();
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1091) && (ObjectNr<1099))
-               {  //Digital-in routing
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1091;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        InputStereoSelect[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1099) && (ObjectNr<1107))
-               {  //Digital-in level
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1099;
-                  if (DataType == FLOAT_DATATYPE)
-                  {
-                     if (DataSize == 2)
-                     {
-                        float FloatData;
-                        if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
-                        {
-                           InputLevel[ChannelNr] = FloatData;
-                           SetRoutingAndLevel(ChannelNr);
-                        }
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1107) && (ObjectNr<1115))
-               {  //Digital-in phase
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1107;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        InputPhase[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1123) && (ObjectNr<1131))
-               {  //Digital-out routing
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1123;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputStereoSelect[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1131) && (ObjectNr<1139))
-               {  //Digital-out level
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1131;
-                  if (DataType == FLOAT_DATATYPE)
-                  {
-                     if (DataSize == 2)
-                     {
-                        float FloatData;
-                        if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
-                        {
-                           OutputLevel[ChannelNr] = FloatData;
-                           SetRoutingAndLevel(ChannelNr);
-                        }
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1139) && (ObjectNr<1147))
-               {  //Digital-out phase
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1139;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputPhase[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1147) && (ObjectNr<1155))
-               {  //Digital-out dim
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1147;
-
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputDim[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1155) && (ObjectNr<1163))
-               {  //Digital-out dim level
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1155;
-
-                  if (DataType == FLOAT_DATATYPE)
-                  {
-                     if (DataSize == 2)
-                     {
-                        float FloatData;
-                        if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
-                        {
-                           OutputDimLevel[ChannelNr] = FloatData;
-                           SetRoutingAndLevel(ChannelNr);
-                        }
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1163) && (ObjectNr<1167))
-               {  //Digital-out talkback
-                  unsigned char TalkbackNr;
-
-                  TalkbackNr = ObjectNr-1163;
-
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputTalkback[TalkbackNr] = Data[5];
-                        SetRoutingAndLevel(TalkbackNr<<1);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1167) && (ObjectNr<1175))
-               {  //Digital-out talkback routing
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1167;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputTalkbackStereoSelect[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1175) && (ObjectNr<1183))
-               {  //Digital-out talkback level
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1175;
-
-                  if (DataType == FLOAT_DATATYPE)
-                  {
-                     if (DataSize == 2)
-                     {
-                        float FloatData;
-                        if (VariableFloat2Float(&Data[5], DataSize, &FloatData) == 0)
-                        {
-                           OutputTalkbackLevel[ChannelNr] = FloatData;
-                           SetRoutingAndLevel(ChannelNr);
-                        }
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1183) && (ObjectNr<1191))
-               {  //Digital-out talkback phase
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1183;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputTalkbackPhase[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1191) && (ObjectNr<1199))
-               {  //Digital-out mute
-                  unsigned char ChannelNr;
-
-                  ChannelNr = ObjectNr-1191;
-                  if (DataType == STATE_DATATYPE)
-                  {
-                     if (DataSize == 1)
-                     {
-                        OutputMute[ChannelNr] = Data[5];
-                        SetRoutingAndLevel(ChannelNr);
-                     }
-                  }
-               }
-               else if ((ObjectNr>=1203) && (ObjectNr<1207))
-               {  //Transmitter control register
-               }
-               else if (ObjectNr == 1270)
-               {  //Set FPGA
-                  if (DataType == OCTET_STRING_DATATYPE)
-                  {
-                     if (DataSize == 3)
-                     {
-                        unsigned char FunctionNr;
-                        unsigned int FunctionData;
-
-                        FunctionNr = Data[5];
-                        FunctionData = Data[6];
-                        FunctionData <<=8;
-                        FunctionData |= Data[7];
-
-                        SetFPGA(FunctionNr, FunctionData);
-                     }
-                  }
+               else
+               {
+                  FormatError = 0;
                }
 
                if (!MessageDone)
@@ -735,8 +1240,16 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                   TransmitBuffer[1] = ObjectNr&0xFF;
                   TransmitBuffer[2] = MAMBANET_OBJECT_ACTION_ACTUATOR_DATA_RESPONSE;
                   TransmitBuffer[3] = ERROR_DATATYPE;
-                  TransmitBuffer[4] = 18;
-                  sprintf(&TransmitBuffer[5], "No actuator object");
+                  if (FormatError)
+                  {
+                     TransmitBuffer[4] = 12;
+                     sprintf(&TransmitBuffer[5], "Format error");
+                  }
+                  else
+                  {
+                     TransmitBuffer[4] = 18;
+                     sprintf(&TransmitBuffer[5], "No actuator object");
+                  }
 
                   SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, TransmitBuffer[4]+5);
                }
@@ -753,7 +1266,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
 
                      SendMambaNetMessageToCAN(FromAddress, LocalMambaNetAddress, Ack, MessageID, 1, TransmitBuffer, 4);
                   }
-               }*/
+               }
             }
             break;
          }
@@ -881,57 +1394,114 @@ void SetFPGA(unsigned char FunctionNr, unsigned int FunctionData)
 
 void SetRoutingAndLevel(unsigned char ChannelNr)
 {
-   unsigned char FPGAAddress;
+   unsigned char FPGABlockAddress;
    unsigned int StereoSelect;
    float Level;
    unsigned int IntegerLevel;
+   char cntNrOfSummation;
+   char cntTalkback;
+   unsigned int TalkbackData[2];
 
-   FPGAAddress = (((ChannelNr&0xFE)<<2)+5);
+   FPGABlockAddress = ((ChannelNr&0xFE)<<3);
 
    StereoSelect = (InputStereoSelect[(ChannelNr&0xFE)]&0x03);
    StereoSelect |= (unsigned int)(InputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
-   StereoSelect |= ((unsigned int)(OutputTalkback[ChannelNr>>1]&0x1F))<<8;
 
-   SetFPGA((FPGAAddress+0), StereoSelect);
+   SetFPGA(FPGABlockAddress+2, StereoSelect);
 
    Level = InputLevel[ChannelNr];
-   IntegerLevel = ((float)16)/pow(10, (float)Level/20);
+   IntegerLevel = ((float)32)/pow(10, (float)Level/20);
    if (InputPhase[ChannelNr])
    {
       IntegerLevel *= -1;
    }
-   SetFPGA(FPGAAddress+1+(ChannelNr&0x01), IntegerLevel);
+   SetFPGA(FPGABlockAddress+(ChannelNr&0x01), IntegerLevel);
 
+   //Output
+   FPGABlockAddress += 0x10;
    Level = OutputLevel[ChannelNr];
    if (OutputDim[ChannelNr])
    {
       Level += OutputDimLevel[ChannelNr];
    }
+   if (Level>24)
+   {
+      Level = 24;
+   }
+   else if (Level<-60)
+   {
+      Level = -60;
+   }
 
-   IntegerLevel = ((float)16)/pow(10, (float)Level/20);
+   IntegerLevel = ((float)32)/pow(10, (float)Level/20);
    if (OutputPhase[ChannelNr])
    {
       IntegerLevel *= -1;
    }
-   SetFPGA(FPGAAddress+3+(ChannelNr&0x01), IntegerLevel);
+   SetFPGA(FPGABlockAddress+3+(ChannelNr&0x01), IntegerLevel);
 
-   IntegerLevel = ((float)16)/pow(10, (float)OutputTalkbackLevel[ChannelNr]/20);
+   IntegerLevel = ((float)32)/pow(10, (float)OutputTalkbackLevel[ChannelNr]/20);
    if (OutputTalkbackPhase[ChannelNr])
    {
       IntegerLevel *= -1;
    }
-   SetFPGA(FPGAAddress+5+(ChannelNr&0x01), IntegerLevel);
+   SetFPGA(FPGABlockAddress+5+(ChannelNr&0x01), IntegerLevel);
 
    StereoSelect = (OutputStereoSelect[(ChannelNr&0xFE)]&0x03);
    StereoSelect |= (unsigned int)(OutputStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<2;
-   if (OutputMute[ChannelNr])
+   if (OutputMute[(ChannelNr&0xFE)])
    {
-      StereoSelect |= 0x0100<<(ChannelNr&0x01);
+      StereoSelect |= 0x0100;
+   }
+   if (OutputMute[(unsigned char)((ChannelNr&0xFE)+1)])
+   {
+      StereoSelect |= 0x0200;
    }
    StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(ChannelNr&0xFE)]&0x03)<<4;
    StereoSelect |= (unsigned int)(OutputTalkbackStereoSelect[(unsigned char)((ChannelNr&0xFE)+1)]&0x03)<<6;
-   SetFPGA(FPGAAddress+7, StereoSelect);
+   SetFPGA(FPGABlockAddress+7, StereoSelect);
+
+   //Talkback
+   FPGABlockAddress = ((ChannelNr&0xFE)<<3);
+
+   cntNrOfSummation = 0;
+   TalkbackData[0] = 0;
+   TalkbackData[1] = 0;
+   for (cntTalkback = 0; cntTalkback<16; cntTalkback++)
+   {
+      if (OutputTalkback[(ChannelNr>>1)][cntTalkback])
+      {
+         switch (cntNrOfSummation)
+         {
+            case 0:
+            {
+               TalkbackData[0] |= ((unsigned int)cntTalkback+1);
+            }
+            break;
+            case 1:
+            {
+               TalkbackData[0] |= ((unsigned int)cntTalkback+1)<<8;
+            }
+            break;
+            case 2:
+            {
+               TalkbackData[1] |= ((unsigned int)cntTalkback+1);
+            }
+            break;
+            case 3:
+            {
+               TalkbackData[1] |= ((unsigned int)cntTalkback+1)<<8;
+            }
+            break;
+         }
+         cntNrOfSummation++;
+      }
+   }
+
+   SetFPGA(FPGABlockAddress+8, TalkbackData[0]);
+   SetFPGA(FPGABlockAddress+9, TalkbackData[1]);
 }
+
 
 void CanBussError()
 {

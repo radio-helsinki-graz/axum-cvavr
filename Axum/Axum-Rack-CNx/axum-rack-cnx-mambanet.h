@@ -25,24 +25,27 @@ Data Stack size     : 512
 #define PCB_MAJOR_VERSION        1
 #define PCB_MINOR_VERSION        0
 
-#define FIRMWARE_MAJOR_VERSION   1
+#define FIRMWARE_MAJOR_VERSION   2
 #define TRANSPORTLAYER_MINOR_CORRECTION 2
 #define FIRMWARE_MINOR_VERSION   0+TRANSPORTLAYER_MINOR-TRANSPORTLAYER_MINOR_CORRECTION
 //Local FIRMWARE_MINOR_VERSION
-//0:  Initial release
+//1.0:  Initial release
+//2.0:  Made correct TB objects, first production release
 
 
 #define MANUFACTURER_ID          1     //D&R
 #ifndef COBRANET_16X16
   #define PRODUCT_ID               27    //Axum-Rack-CN8x8
+  #warning Compiling as Axum-Rack-CN8x8
 #else
   #define PRODUCT_ID               28    //Axum-Rack-CN16x16
+  #warning Compiling as Axum-Rack-CN16x16
 #endif
 
 #ifndef COBRANET_16X16
-  #define NR_OF_STATIC_OBJECTS    (1143-1023)
+  #define NR_OF_STATIC_OBJECTS    (1203-1023)
 #else
-  #define NR_OF_STATIC_OBJECTS    (1259-1023)
+  #define NR_OF_STATIC_OBJECTS    (1379-1023)
 #endif
 #define NR_OF_OBJECTS            NR_OF_STATIC_OBJECTS
 
@@ -606,31 +609,392 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                  , {FLOAT_DATATYPE             ,  2, 0xD380, 0x4E00 , 0xC900 }},
 #endif
-   { "CobraNet-out-1/2-Talkback"   , 0x00
+   { "FW-out-1/2-Talkback-1"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 16     , 0   }},
-   { "CobraNet-out-3/4-Talkback"   , 0x00
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-2"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 16     , 0   }},
-   { "CobraNet-out-5/6-Talkback"   , 0x00
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-3"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 16     , 0   }},
-   { "CobraNet-out-7/8-Talkback"   , 0x00
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-4"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 16     , 0   }},
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-5"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-6"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-7"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-8"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-9"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-10"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-11"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-12"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-13"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-14"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-15"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-1/2-Talkback-16"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-1"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-2"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-3"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-4"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-5"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-6"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-7"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-8"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-9"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-10"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-11"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-12"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-13"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-14"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-15"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-3/4-Talkback-16"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-1"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-2"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-3"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-4"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-5"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-6"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-7"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-8"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-9"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-10"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-11"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-12"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-13"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-14"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-15"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-5/6-Talkback-16"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-1"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-2"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-3"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-4"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-5"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-6"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-7"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-8"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-9"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-10"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-11"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-12"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-13"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-14"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-15"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-7/8-Talkback-16"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+
 #ifdef COBRANET_16X16
-   { "CobraNet-out-9/10-Talkback"   , 0x00
+   { "FW-out-9/10-Talkback-1"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 16     , 0   }},
-   { "CobraNet-out-11/12-Talkback"   , 0x00
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-2"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 16     , 0   }},
-   { "CobraNet-out-13/14-Talkback"   , 0x00
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-3"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 16     , 0   }},
-   { "CobraNet-out-15/16-Talkback"   , 0x00
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-4"    , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                 , {STATE_DATATYPE             ,  1, 0     , 16     , 0   }},
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-5"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-6"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-7"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-8"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-9"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-10"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-11"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-12"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-13"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-14"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-15"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-9/10-Talkback-16"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-1"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-2"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-3"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-4"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-5"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-6"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-7"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-8"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-9"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-10"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-11"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-12"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-13"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-14"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-15"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-11/12-Talkback-16"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-1"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-2"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-3"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-4"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-5"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-6"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-7"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-8"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-9"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-10"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-11"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-12"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-13"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-14"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-15"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-13/14-Talkback-16"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-1"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-2"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-3"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-4"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-5"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-6"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-7"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-8"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-9"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-10"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-11"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-12"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-13"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-14"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-15"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
+   { "FW-out-15/16-Talkback-16"    , 0x00
+                                 , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
+                                 , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
 #endif
    { "CobraNet-out-1-TB-routing"     , 0x00
                                  , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
@@ -805,9 +1169,9 @@ flash OBJECT_VARIABLE_INFORMATION_STRUCT ObjectVariableInformation[NR_OF_STATIC_
                                     , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
    { "Total-CobraNet-out-8-Mute"      , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
-                                    , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }}
+                                    , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
 #ifdef COBRANET_16X16
-,
+
    { "Total-CobraNet-out-9-Mute"      , 0x00
                                     , {NO_DATA_DATATYPE           ,  0, 0     , 0      }
                                     , {STATE_DATATYPE             ,  1, 0     , 1      , 0   }},
