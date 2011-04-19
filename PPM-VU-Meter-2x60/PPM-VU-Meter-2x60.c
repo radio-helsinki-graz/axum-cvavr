@@ -1192,7 +1192,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                            {
                               NewLeftPos = 0;
                            }
-                           else if (dB>60)
+                           else if (dB>=60)
                            {
                               NewLeftPos = 60;
                            }
@@ -1223,7 +1223,7 @@ void ProcessMambaNetMessageFromCAN_Imp(unsigned long int ToAddress, unsigned lon
                            {
                               NewRightPos = 0;
                            }
-                           else if (dB>60)
+                           else if (dB>=60)
                            {
                               NewRightPos = 60;
                            }
