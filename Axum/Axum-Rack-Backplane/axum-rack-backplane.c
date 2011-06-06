@@ -334,8 +334,8 @@ void main(void)
          SendCANParentControlMessage();
       }
 
-      if (cntMilliSecond - PreviousMilliSecond > 40)
-      {  //Send track/relative information maximal 25 times per second.
+      if (cntMilliSecond - PreviousMilliSecond > 500)
+      {  //Send track/relative information maximal 2 times per second.
          PreviousMilliSecond = cntMilliSecond;
 
          PLLLock = EXTR_LOCK;
