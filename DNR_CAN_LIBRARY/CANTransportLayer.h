@@ -9,6 +9,8 @@
 /* Memory model        : Small            */
 /******************************************/
 
+Corne changed this...
+
 // -- Implementation information -- //
 
 //processor must run 16 Mhz
